@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<SplitPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onKeyPressed" prefHeight="506.0" prefWidth="742.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.fothlab.GameController">
+   <items>
+      <AnchorPane focusTraversable="true" prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <Canvas fx:id="gameCanvas" focusTraversable="true" height="505.0" layoutX="209.0" width="525.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="209.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="0.0" />
+            <VBox alignment="TOP_CENTER" focusTraversable="true" prefHeight="506.0" prefWidth="210.0" spacing="10.0" style="-fx-background-color: green;" AnchorPane.leftAnchor="0.0">
+               <children>
+                  <ListView fx:id="playersListView" prefHeight="422.0" prefWidth="220.0" style="-fx-background-color: green;" />
+                  <Button fx:id="exitButton" mnemonicParsing="false" onMousePressed="#onExitButtonPressed" text="Exit" />
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
+   </items>
+</SplitPane>
