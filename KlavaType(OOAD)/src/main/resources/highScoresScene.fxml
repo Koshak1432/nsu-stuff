@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.StackPane?>
+
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nsu.fit.ooad.klavatype.gui.HighScoresSceneController">
+   <children>
+      <ListView fx:id="listView" prefHeight="200.0" prefWidth="200.0" StackPane.alignment="CENTER" />
+      <Button fx:id="backButton" mnemonicParsing="false" onMouseClicked="#onBackButtonPressed" text="Back" StackPane.alignment="BOTTOM_CENTER" />
+   </children>
+</StackPane>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="317.0" prefWidth="402.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nsu.fit.ooad.klavatype.gui.ErrorNotificationSceneController">
+   <children>
+      <Label fx:id="errorDescLabel" text="Error">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+   </children>
+</StackPane>

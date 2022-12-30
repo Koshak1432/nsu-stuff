@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nsu.fit.ooad.klavatype.gui.LevelChoiceSceneController">
+   <children>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+         <children>
+            <Button fx:id="level1Button" mnemonicParsing="false" onMouseClicked="#onLevel1ButtonPressed" text="Level 1 (Speed)" />
+            <Button fx:id="level2Button" mnemonicParsing="false" onMouseClicked="#onLevel2ButtonPressed" text="Level 2 (Accuracy)" />
+            <Button fx:id="level3Button" mnemonicParsing="false" onMouseClicked="#onLevel3ButtonPressed" text="Level 3 (Speed)" />
+         </children>
+      </VBox>
+      <Button fx:id="backButton" mnemonicParsing="false" onMouseClicked="#backButtonOnLevelChoiceScenePressed" text="Back" StackPane.alignment="BOTTOM_CENTER" />
+   </children>
+</StackPane>
