@@ -1,0 +1,15 @@
+**/cmake-build-*/
+**/.idea/
+**/.clang-format
+**/Google_tests/lib/
+**/.gradle/
+**/build/
+**/gradle/
+**/geoImages/
+**/*.pdf
+**/*.bin
+**/*.img
+**/*.png
+**/*.xml
+**/*.bytecode
+**/*.debug
