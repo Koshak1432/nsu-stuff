@@ -1,0 +1,230 @@
+import string;
+import lingo/pegcode/driver;
+
+
+Expr ::= IntConst, Mul, Div, Add, Sub, Neg, Var;
+IntConst(value : int);
+Mul(left : Expr, right : Expr);
+Div(left : Expr, right : Expr);
+Add(left : Expr, right : Expr);
+Sub(left : Expr, right : Expr);
+Neg(arg : Expr);
+Var(name : string);
+
+HighPrior ::= ToMul, ToDiv;
+LowPrior ::= ToAdd, ToSub;
+
+ToMul(arg : Expr);
+ToDiv(arg : Expr);
+ToAdd(arg : Expr);
+ToSub(arg : Expr);
+
+Rational(top : int, bottom : int);
+
+
+grammarOp = compilePegGrammar("#include grammar.lingo");
+
+specialPegActions = {
+    pairs = [Pair("buildHigh", buildHigh), Pair("buildLow", buildLow)];
+    t = setTreeValues(defaultPegActions.t, pairs);
+    SemanticActions(t);
+}
+
+parse(src : string) -> Expr {
+    parsic(grammarOp, src, specialPegActions);
+}
+
+simplify(rat : Rational) -> Rational {
+    gcd = gcd(rat.top, rat.bottom);
+    Rational(rat.top / gcd, rat.bottom / gcd);
+}
+
+simplifyExpr(e : Expr) -> Expr {
+    switch(e) {
+        Mul(l, r) : {
+            simpleLeft = simplifyExpr(l);
+            simpleRight = simplifyExpr(r);
+            if (simpleLeft == IntConst(1)) {
+                simpleRight;
+            } else if (simpleRight == IntConst(1)) {
+                simpleLeft;
+            } else if (simpleLeft == IntConst(0) || simpleRight == IntConst(0)) {
+                IntConst(0);
+            } else {
+                Mul(simpleLeft, simpleRight);
+            }
+        }
+        Div(l, r) : {
+            simpleLeft = simplifyExpr(l);
+            simpleRight = simplifyExpr(r);
+            if (simpleLeft == IntConst(0)) {
+                IntConst(0);
+            } else if (simpleRight == IntConst(1)) {
+                simpleLeft;
+            } else if (simpleLeft == simpleRight) {
+                IntConst(1);
+            } else {
+                Div(simpleLeft, simpleRight);
+            }
+        }
+        Add(l, r) : {
+            simpleLeft = simplifyExpr(l);
+            simpleRight = simplifyExpr(r);
+            if (simpleLeft == IntConst(0)) {
+                simpleRight;
+            } else if (simpleRight == IntConst(0)) {
+                simpleLeft;
+            } else {
+                Add(simpleLeft, simpleRight);
+            }
+        }
+        Sub(l, r) : {
+            simpleLeft = simplifyExpr(l);
+            simpleRight = simplifyExpr(r);
+            if (simpleLeft == IntConst(0)) {
+                Neg(simpleRight);
+            } else if (simpleRight == IntConst(0)) {
+                simpleLeft;
+            } else if (simpleLeft == simpleRight) {
+                IntConst(0);
+            } else {
+                Sub(simpleLeft, simpleRight);
+            }
+        }
+        default : e;
+    }
+}
+
+mulRat(l : Rational, r : Rational) -> Rational {
+    simplify(Rational(l.top * r.top, l.bottom * r.bottom));
+}
+
+divRat(l : Rational, r : Rational) -> Rational {
+    simplify(Rational(l.top * r.bottom, l.bottom * r.top));
+}
+
+addRat(l : Rational, r : Rational) -> Rational {
+    simplify(Rational(l.top * r.bottom + r.top * l.bottom, l.bottom * r.bottom));
+}
+
+subRat(l : Rational, r : Rational) -> Rational {
+    simplify(Rational(l.top * r.bottom - r.top * l.bottom, l.bottom * r.bottom));
+}
+
+negRat(rat : Rational) -> Rational {
+    simplify(Rational(-rat.top, rat.bottom));
+}
+
+int2Rat(val : int) -> Rational {
+    Rational(val, 1);
+}
+
+buildHigh(arr : [flow]) {
+    fold(arr[1], arr[0], \acc, cur -> switch(cur) {
+        ToMul(arg) : Mul(acc, arg);
+        ToDiv(arg) : Div(acc, arg);
+    })
+}
+
+buildLow(arr : [flow]) {
+    fold(arr[1], arr[0], \acc, cur -> switch(cur) {
+        ToAdd(arg) : Add(acc, arg);
+        ToSub(arg) : Sub(acc, arg);
+    })
+}
+
+calculate(e : Expr, vars : Tree<string, Rational>) -> Maybe<Rational> {
+    switch(e) {
+        Mul(l, r) : maybeMap2(mulRat)(calculate(l, vars), calculate(r, vars));
+        Div(l, r) : maybeMap2(divRat)(calculate(l, vars), calculate(r, vars));
+        Add(l, r) : maybeMap2(addRat)(calculate(l, vars), calculate(r, vars));
+        Sub(l, r) : maybeMap2(subRat)(calculate(l, vars), calculate(r, vars));
+        Neg(a) : maybeMap(calculate(a, vars), negRat);
+        Var(name) : lookupTree(vars, name);
+        IntConst(c) : Some(int2Rat(c));
+    }
+}
+
+derivate(e : Expr, by : string) -> Expr {
+    switch(e) {
+        Mul(l, r) : Add(Mul(derivate(l, by), r), Mul(l, derivate(r, by)));
+        Div(l, r) : Div(Sub(Mul(derivate(l, by), r), Mul(l, derivate(r, by))), Mul(r, r));
+        Add(l, r) : Add(derivate(l, by), derivate(r, by));
+        Sub(l, r) : Sub(derivate(l, by), derivate(r, by));
+        Neg(a) : Neg(derivate(e, by));
+        IntConst(c) : IntConst(0);
+        Var(name) : {
+            if (name == by) {
+                IntConst(1);
+            } else {
+                IntConst(0);
+            }
+        };
+    }
+}
+
+e2s(e: Expr) -> string {
+    switch(e) {
+        IntConst(c) : i2s(c);
+        Mul(l, r) : "(" + e2s(l) + " * " + e2s(r) + ")";
+        Div(l, r) : "(" + e2s(l) + " / " + e2s(r) + ")";
+        Add(l, r) : "(" + e2s(l) + " + " + e2s(r) + ")";
+        Sub(l, r) : "(" + e2s(l) + " - " + e2s(r) + ")";
+        Neg(v) : "(-" + e2s(v) + ")";
+        Var(v) : v;
+    }
+}
+
+r2sSome(r : Rational) -> string {
+    if (r.bottom == 0) {
+        "Divide by zero!"
+    } else if (r.bottom == 1) {
+        i2s(r.top);
+    } else {
+        i2s(r.top) + "/" + i2s(r.bottom);
+    }
+}
+
+r2s(r : Maybe<Rational>) -> string {
+    eitherMap(r, r2sSome, "None");
+}
+
+
+main() {
+    sources = [ "1 - 0 + 40 * y",
+                " x * 1 * x + y / 2",
+                "x + y * 20",
+                "0 * x + y * 0 + y"];
+    vars = [Pair("x", Rational(5, 1)), Pair("y", Rational(1, 2))];
+    tree = setTreeValues(TreeEmpty(), vars);
+    expressions = map(sources, parse);
+    simpleExprs = map(expressions, simplifyExpr);
+    texts = map(simpleExprs, e2s);
+
+    results = [calculate(simpleExprs[0], tree),
+               calculate(simpleExprs[1], tree),
+               calculate(simpleExprs[2], tree),
+               calculate(simpleExprs[3], tree)];
+
+    derivated = [derivate(simpleExprs[0], "y"),
+                  derivate(simpleExprs[1], "y"),
+                  derivate(simpleExprs[2], "x"),
+                  derivate(simpleExprs[3], "y")];
+
+    simpleDer = map(derivated, simplifyExpr);
+
+    derResults = [calculate(simpleDer[0], tree),
+                  calculate(simpleDer[1], tree),
+                  calculate(simpleDer[2], tree),
+                  calculate(simpleDer[3], tree)];
+
+    println("Simplifyed:");
+    println(strGlue(texts, ", "));
+    println("Results:");
+    println(strGlue(map(results, r2s), ", "));
+    println("Derivated:");
+    println(strGlue(map(simpleDer, e2s), ", "));
+    println(strGlue(map(derResults, r2s), ", "));
+
+    quit(0);
+}

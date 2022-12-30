@@ -1,0 +1,189 @@
+import ds/tree;
+import ds/set;
+import translateNemo;
+
+export {
+    runNemoVM : (config : Configuration, ops : Tree<int, [Operator]>, evalConfigs : Set<ExecutionResult>, depth : int) -> Set<ExecutionResult>;
+	ExecutionResult ::= Configuration, ExecError;
+	ExecError(why : string);
+	EvalResult ::= Bool, VObj, ExecError;
+	Bool(b : bool);
+}
+
+
+runNemoVM(config : Configuration, ops : Tree<int, [Operator]>, evalConfigs : Set<ExecutionResult>, depth : int) -> Set<ExecutionResult> {
+	if (depth < 0) {
+		makeSet();
+	} else {
+		operations = getTreeArrayValue(ops, config.label);
+		if (operations == []) {
+			buildSet([config]);
+		} else {
+			executed = mergeSetsA(map(operations, \op -> execOp(config, op)));
+			foldSet(differenceSets(executed, evalConfigs), makeSet(), \res, execResult -> switch (execResult) {
+				Configuration(_, __) : mergeSets(res, runNemoVM(execResult, ops, mergeSets(executed, evalConfigs), depth-1));
+				ExecError(_) : res;
+			});
+		}
+	}
+}
+
+
+evalArithExpr(state : Tree<Var, VObj>, expr : ArithExpr) -> EvalResult {
+	valueOf = \e -> evalArithExpr(state, e);
+	evaluateIntBind = \f : ((int) -> int) -> \evalRes -> 
+		switch (evalRes) {
+			VInt(i): VInt(f(i));
+			default: evalRes;
+		};
+	evaluateIntBind2 = \f : ((int, int) -> int) -> \evalRes1, evalRes2 ->
+		switch(evalRes1) {
+		VInt(x) : switch(evalRes2) {
+			VInt(y): VInt(f(x,y));
+			default: evalRes2;
+		};
+		default: evalRes1;
+	};
+
+    switch(expr) {
+        Int(i) : VInt(i);
+		Access(n, t) : AccessEval(state, n, t); 
+		Neg(e) : evaluateIntBind(\x -> -x)(valueOf(e));
+		Mul(l, r) : evaluateIntBind2(\x, y -> x * y)(valueOf(l), valueOf(r));
+		Div(l, r) : evaluateIntBind2(\x, y -> x / y)(valueOf(l), valueOf(r));
+		Add(l, r) : evaluateIntBind2(\x, y -> x + y)(valueOf(l), valueOf(r));
+		Sub(l, r) : evaluateIntBind2(\x, y -> x - y)(valueOf(l), valueOf(r));
+		Var(v) : eitherMap(lookupTree(state, Var(v)), \obj -> switch (obj) {
+            VInt(i) : VInt(i);
+            default : typeMis;
+        }, noVar);
+    }
+}
+
+evalArray(state : Tree<Var, VObj>, arr : Array) -> EvalResult {
+	erlift : ((obj : VObj) -> EvalResult) = \obj -> obj;
+
+	switch (arr) {
+		Access(a, i) : AccessEval(state, a, i);
+		Upd(a, i, t) : UpdEval(state, a, i, t);
+		Var(_) : eitherFn(lookupTree(state, arr), erlift, \->noVar);
+	}
+}
+
+UpdEval(state : Tree<Var, VObj>, n: Array, a : nemoTerm, t : nemoTerm) {
+	oldArr = evalArray(state, n);
+	at = evalNemoTerm(state, a);
+    to = evalNemoTerm(state, t);
+
+	switch (oldArr) { 
+		VArray(elements) : switch (at) { 
+			VObj() : switch (to) { 
+				VObj() : VArray(setTree(elements, at, to))
+				default : to;
+			}
+			default : at;
+		}
+		default : oldArr;
+	} 
+}
+
+AccessEval(state : Tree<Var, VObj>, n : Array, at : nemoTerm) -> EvalResult {
+	aEvaled = evalNemoTerm(state, at);
+	arr = evalArray(state, n);
+	getObj : ((obj : VObj) -> EvalResult) = \obj -> obj;
+
+	switch (arr) { 
+		VArray(elements): switch (aEvaled) { 
+			VObj(): eitherFn(lookupTree(elements, aEvaled), getObj, \-> noElem(aEvaled));
+			default: aEvaled;
+		}
+		default: arr;
+	}
+}
+
+evalNemoTerm(state : Tree<Var, VObj>, expr : nemoTerm) -> EvalResult {
+	switch(expr) {
+		Upd(_, __, ___) : evalArray(state, expr);
+        ArithExpr() : evalArithExpr(state, expr);
+	}
+}
+
+intBoolBind(f : ((int, int) -> bool)) {
+	\evalRes1, evalRes2 -> 
+		switch(evalRes1) {VInt(xdef) : switch(evalRes2) {
+				VInt(ydef) : Bool(f(xdef, ydef));
+				default : evalRes2; 
+			}
+			default : evalRes1; 
+		};
+}
+
+evalPredicate(state: Tree<Var, VObj>, p: Predicate) -> EvalResult {
+	switch(p) {
+		Eq(l, r) : intBoolBind(\x, y -> x == y)(evalArithExpr(state, l),evalArithExpr(state, r)); 
+		Neq(l, r) : intBoolBind(\x, y -> x != y)(evalArithExpr(state, l),evalArithExpr(state, r));
+		Ge(l, r) : intBoolBind(\x, y -> x >= y)(evalArithExpr(state, l),evalArithExpr(state, r)); 
+		G(l, r) : intBoolBind(\x, y -> x > y)(evalArithExpr(state, l),evalArithExpr(state, r));  
+		Le(l, r) : intBoolBind(\x, y -> x <= y)(evalArithExpr(state, l),evalArithExpr(state, r)); 
+		L(l, r) : intBoolBind(\x, y -> x < y)(evalArithExpr(state, l),evalArithExpr(state, r)); 
+		True() : Bool(true);
+		False() : Bool(false);
+	}
+}
+
+evauatePredicateBind(f : (bool) -> bool) -> (EvalResult) -> EvalResult {
+	\per -> switch (per) {
+		Bool(b) : Bool(f(b));
+		default : per;
+	}
+}
+
+evauatePredicateBind2(f : (bool, bool) -> bool) -> (EvalResult, EvalResult) -> EvalResult {
+	\per, per2 -> switch (per) {
+		Bool(b): switch (per2) {
+				Bool(b2) : Bool(f(b, b2));
+				default: per2;
+			}
+		default: per;
+	}
+}
+
+evalForm(state : Tree<Var, VObj>, formula : Formula) -> EvalResult {
+	switch(formula) {
+		LNeg(f) : evauatePredicateBind(\b -> !b)(evalForm(state, f));
+		And(l, r) : evauatePredicateBind2(\x, y -> x && y)(evalForm(state, l), evalForm(state, r));
+		Or(l, r) : evauatePredicateBind2(\x, y -> x || y)(evalForm(state, l), evalForm(state, r));
+		Predicate() : evalPredicate(state, formula);
+	}
+}
+
+execAssign(state : Tree<Var, VObj>, assignment : Assignment, nextLabels : Set<int>) -> Set<ExecutionResult> {
+	tVal = evalNemoTerm(state, assignment.expr);
+	switch (tVal) {
+		VObj() : mapSet(nextLabels, \l -> Configuration(setTree(state, assignment.var, tVal), l));
+		ExecError(a) : makeSet1(tVal);
+		default : makeSet1(ExecError("Type missmatch"));
+	}
+}
+
+execOp(configuration : Configuration, op : Operator) -> Set<ExecutionResult> {
+	state = configuration.state;
+	
+	switch(op) {
+		Assign(assignment, nextLabels) : execAssign(state, assignment, nextLabels);
+		GoTo(cond, LabelsT, LabelsF) : {
+			updLabSet = \ls-> mapSet(ls, \l-> Configuration(state, l));
+			per = evalForm(state, cond);
+			switch (per) {
+				Bool(b) : updLabSet(if (b) LabelsT else LabelsF);
+				ExecError(mes) : makeSet1(per);
+				default : makeSet1(ExecError("Type missmatch"));
+			};
+		}
+	}
+}
+
+noElem = \obj-> ExecError(concatStrings(["No elements assosiated with ", getStringVObj(obj)]));
+noVar = ExecError("Novar error");
+typeMis = ExecError("Type mismatch");
+

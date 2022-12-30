@@ -1,0 +1,7 @@
+import string;
+
+main() {
+    arr = [10, 20, 30, 40];
+    println(fold(arr, 0, \x, y -> x + y));
+    quit(0);
+}

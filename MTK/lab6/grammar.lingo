@@ -1,0 +1,6 @@
+
+stack = elem+:elems {:elems};
+elem = int | bin;
+int = ws ('0' - '9')+ $d {IntConst(s2i($d))};
+bin = ws "+" {AddRpn()} | ws "*" {MulRpn()};
+ws = (' ' | '\r' | '\n' | '\t')*;

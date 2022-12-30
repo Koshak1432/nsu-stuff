@@ -1,0 +1,42 @@
+import string;
+import lingo/pegcode/driver;
+
+Expr ::= IntConst, Mul, Add;
+IntConst(value : int);
+Mul(left : Expr, right : Expr);
+Add(left : Expr, right : Expr);
+
+grammarOp = compilePegGrammar("#include gramm.lingo");
+
+calculate(e : Expr) -> int {
+    switch(e) {
+        IntConst(c) : c;
+        Add(l, r) : calculate(l) + calculate(r);
+        Mul(l, r) : calculate(l) * calculate(r);
+    }
+}
+
+e2s(e: Expr) -> string {
+    switch(e) {
+        IntConst(c) : i2s(c);
+        Add(l, r) : "(" + e2s(l) + " + " + e2s(r) + ")";
+        Mul(l, r) : e2s(l) + " * " + e2s(r);
+    }
+}
+
+parse(src : string) -> Expr {
+    parsic(grammarOp, src, defaultPegActions);
+}
+
+main() {
+    sources = ["0", "1 + 222", "1 + 3", "(1 * 4)", "(1 + 5) * (1 + 5)", "(25) * 1000", "22 + (10 * 30)"];
+    expressions = map(sources, parse);
+    texts = map(expressions, e2s);
+    results = map(expressions, calculate);
+
+    println(expressions);
+    println(strGlue(texts, ", "));
+    println(strGlue(map(results, i2s), ", "));
+
+    quit(0);
+}

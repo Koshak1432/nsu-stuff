@@ -1,0 +1,43 @@
+import ds/tree;
+import ds/array;
+import string;
+
+main() {
+    number = 10;
+    pairs = inds(enumFromTo(0, 20), number);
+    printResult(pairs, 0, length(pairs));
+    quit(0);
+}
+
+
+printResult(pairsArray : [Pair<int, int>], idx : int, len : int) {
+    if (idx < len) {
+        pair = pairsArray[idx];
+        println(i2s(pair.first) + ", " + i2s(pair.second));
+        printResult(pairsArray, idx + 1, len);
+    }
+}
+
+inds(array : [int], num : int) -> [Pair<int, int>] {
+    tree = fillTree(makeTree(), array, 0, length(array));
+    foldi(array, [], \i, res, nj -> {
+        ni = num - nj;
+        if (ni >= nj) {
+            concat(res, map(lookupTreeDef(tree, num - nj), []), \j -> Pair(i, j));
+        } else {
+            concat(res, []);
+        }
+    });
+
+}
+
+
+fillTree(tree : Tree<int, [int]>, array : [int], idx : int, len : int) {
+    if (idx >= len) {
+        tree;
+    } else {
+        num = array[idx];
+        idxes = arrayPush(either(lookupTree(tree, num), []), idx);
+        fillTree(setTree(tree, num, idxes), array, idx + 1, len);
+    }
+}

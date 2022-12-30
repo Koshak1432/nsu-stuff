@@ -1,0 +1,5 @@
+add = ws mul:left ws "+" ws add:right ws {Add(:left, :right)} | mul;
+mul = inPar:left ws "*" ws mul:right ws {Mul(:left, :right)} | inPar;
+inPar = int | "(" add:a ")" {:a};
+int = ('0' - '9')+ $d {IntConst(s2i($d))};
+ws = (' ' | '\r' | '\n' | '\t')*;

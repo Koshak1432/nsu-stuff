@@ -1,0 +1,43 @@
+prog = ws decls:d body:b {BuildProg(:d, :b)};
+
+decls = decl*;
+decl = 'VAR' ws var:v ws":" ws type:t ws ";" ws {Decl(:v, :t)};
+type = int:d ws "ARRAY" ws "OF" ws type:c {ArrayType(:d, :c)} | int:t {:t};
+int = "INT":t {IntType()} | "(" ws type:t ws ")" {:t};
+
+body =  assignment | test | iteration | choice | seq;
+assignment = var:v ws ":=" ws expression:e ws {Assignment(:v, :e)};
+test = "(" ws logicF:f ")" ws "?" ws {Test(:f)};
+iteration = "{" ws seqBody*:bs "}" ws "*" ws {BuildIter(:bs)};
+choice = "{" ws body:b choiceBody*:bs "}" ws {BuildChoice( :b, :bs )};
+choiceBody = "U" ws body:b {:b}; 
+seq = "{" ws seqBody*:bs "}" ws {Sequence(:bs)};
+seqBody = body:b ";" ws {:b};
+
+logicF = or;
+or = and:f1 "OR" ws or:f2 {Or(:f1, :f2)} | and;        
+and = logicAtom:f1 "AND" ws and:f2 {And(:f1, :f2)} | logicAtom;
+logicAtom = neg | logicOp | "(" ws logicF:f ")" ws {:f};
+neg = "NOT" ws logicF:f {LNeg(:f)};
+
+expression = arithExpr | arrayExpr;
+arithExpr = sum;
+sum = mul:e1 ws '+' ws sum:e2 {Add(:e1, :e2)} | mul:e1 ws '-' ws sum:e2 {Sub(:e1, :e2)} | mul;
+mul =  atom:e1 ws '*' ws mul:e2 {Mul(:e1, :e2)} | atom:e1 ws '/' ws mul:e2 {Div(:e1, :e2)} | atom;
+atom ='(' ws arithExpr:e ')' {:e} | '-' ws arithExpr:e {Neg(:e)} | number | var | access;
+access = "APP" ws "(" ws arrayExpr:v "," ws expression:at ws ")" {Access(:v, :at)};
+
+arrayExpr = upd | access | var;
+upd = "UPD" ws "(" ws arrayExpr:v "," ws expression:at ws "," ws expression:to ws ")" {Upd(:v, :at, :to )};
+
+logicOp = eq | neq | le | l | ge | g;
+eq = arithExpr:e1 ws "==" ws arithExpr:e2 ws {Eq(:e1, :e2)};
+neq = arithExpr:e1 ws "!=" ws arithExpr:e2 ws {Neq(:e1, :e2)};
+le = arithExpr:e1 ws "<=" ws arithExpr:e2 ws {Le(:e1, :e2)};
+l = arithExpr:e1 ws "<" ws arithExpr:e2 ws {L(:e1, :e2) };
+ge = arithExpr:e1 ws ">=" ws arithExpr:e2 ws {Ge(:e1, :e2)};
+g = arithExpr:e1 ws ">" ws arithExpr:e2 ws {G(:e1, :e2)};
+
+number = ('0'-'9')+$d {Int(s2i($d))};
+var = 'a'-'z'$v {Var($v)};
+ws = (' ' | '\t' | '\n' | '\r')*;

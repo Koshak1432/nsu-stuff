@@ -1,0 +1,194 @@
+import lingo/pegcode/driver;
+import sys/system;
+import ds/tree;
+import ds/tuples;
+import math/math;
+import string;
+
+export {
+	parseNemo : (string) -> flow;
+	getTypeMap : ([Decl]) -> Tree<string, Type>;
+	nemoParseRes ::= nemoAst, Error;
+
+	Error(mes : string);
+	nemoAst(decls : [Decl], prog : Body);
+	Decl: (var : Var, type : Type);
+
+	Type ::= IntType, ArrayType, UnknownType;
+	IntType();
+	ArrayType(type : Type, of : Type);
+	UnknownType();
+
+	Body ::= Assignment, Sequence, Test, Choice, Iter;
+	Assignment: (var : Var, expr : nemoTerm);
+	Sequence: (bodies : [Body]);
+	Test(form : Formula);
+	Choice(bodies : [Body]);
+	Iter(body : Body, invariant : Maybe<Formula>);
+
+	nemoTerm ::= Array, ArithExpr;
+	ArithExpr ::= Add, Mul, Sub, Div, Var, Int, Neg, Access;
+	Sub : (e1 : ArithExpr, e2 : ArithExpr);
+	Div : (e1 : ArithExpr, e2 : ArithExpr);
+	Add : (e1 : ArithExpr, e2 : ArithExpr);
+	Mul : (e1 : ArithExpr, e2 : ArithExpr);
+	Neg : (e1 : ArithExpr);
+	Int : (e1 : int);
+	Var : (e1 : string);
+	Access(name : Array, at : nemoTerm);
+
+	Array ::= Upd, Access, Var;
+	Upd(name : Array, at : nemoTerm, to : nemoTerm);
+
+	Formula ::= LNeg, And, Or, Predicate;
+	LNeg : (formula : Formula);
+	And : (l : Formula, r : Formula);
+	Or : (l : Formula, r : Formula);
+
+	Predicate::= False, True, Eq, Neq, Ge, G, Le, L;
+	False();
+	True();
+	Eq : (e1 : ArithExpr, e2 : ArithExpr); 
+	Neq : (e1 : ArithExpr, e2 : ArithExpr);
+	Ge : (e1 : ArithExpr, e2 : ArithExpr); 
+	G : (e1 : ArithExpr, e2 : ArithExpr);  
+	Le : (e1 : ArithExpr, e2 : ArithExpr); 
+	L : (e1 : ArithExpr, e2 : ArithExpr); 
+}
+
+BuildChoice(bs : [flow]) {Choice(bs)}
+BuildIter(bs : [flow]) {Iter(Sequence(concatA(bs)), None())}
+
+specialPegActions = {
+	t = setTreeValues(defaultPegActions.t, [
+		Pair("BuildProg", BuildProg),
+		Pair("BuildIter", BuildIter),
+		Pair("BuildChoice", BuildChoice)]);
+	SemanticActions(t) 
+}
+
+parseNemo(source : string) {parsic(compilePegGrammar("#include nemo.lingo"), source, specialPegActions)}
+
+getTermType(typeMap : Tree<string, Type>, term : nemoTerm) -> Type {
+	binaryOperationType = \e1, e2 -> {
+		e1Type = getTermType(typeMap, e1);
+		e2Type = getTermType(typeMap, e2);
+		if (e1Type == e2Type) {
+			e1Type;
+		} else {
+			UnknownType();
+		}
+	};
+
+	getArrayType = \arr -> switch (arr) {
+		Access(ar, a) : switch (getTermType(typeMap, ar)) {
+			ArrayType(d, c) : c;
+			default : UnknownType();
+		};
+		Upd(ar, a, t) : getTermType(typeMap, ar);
+		Var(e1) : either(lookupTree(typeMap, e1), UnknownType());
+	};
+
+	switch (term) {
+		Sub(e1, e2) : binaryOperationType(e1, e2);
+		Div(e1, e2) : binaryOperationType(e1, e2);
+		Add(e1, e2) : binaryOperationType(e1, e2);
+		Mul(e1, e2) : binaryOperationType(e1, e2);
+		Neg(e1) : getTermType(typeMap, e1);
+		Int(e1) : IntType();
+		Var(e1) : either(lookupTree(typeMap, e1), UnknownType());
+		Access(name, at) : {
+			arrayType = getArrayType(name);
+			atType = getTermType(typeMap, at);
+			switch(arrayType) {
+				ArrayType(d, c) : 
+					if (d == atType) {
+						c;
+					} else {
+						UnknownType();
+					}
+				default : UnknownType();
+			} 
+		};
+		Upd(name, at, to) : {
+			arrayType = getArrayType(name);
+			atType = getTermType(typeMap, at);
+			toType = getTermType(typeMap, to);
+			switch(arrayType) {
+				ArrayType(d, c) : {
+					if (d == atType && c == toType) {
+						arrayType;
+					} else {
+						UnknownType();
+					}
+				}
+				default : UnknownType();
+			}
+		};
+	}
+}
+ 
+getAssignments(body : Body) {
+	switch (body) {
+		Assignment(v, t) : [Assignment(v, t)]; 
+		Sequence(bs) : fold(bs, [], \assignments, b-> concat(assignments, getAssignments(b)));
+		Test(cond) : [];
+		Choice(bs) : fold(bs, [], \assignments, b -> concat(assignments, getAssignments(b)));
+		Iter(b, _) : getAssignments(b);
+	}
+}
+
+isContains2Decl(vars : [Decl]) {
+	fold(vars, false, \res, v -> res || (countA(vars, \elem -> elem.var == v.var)) != 1);
+}
+
+isFormIncorrect(typeMap : Tree<string, Type>, form : Formula) {
+	switch (form) {
+		LNeg(f) : isFormIncorrect(typeMap, f);
+		And(l, r) : isFormIncorrect(typeMap, l) || isFormIncorrect(typeMap, r);
+		Or(l, r) : isFormIncorrect(typeMap, l) || isFormIncorrect(typeMap, r);
+		Eq(e1, e2) : getTermType(typeMap, e1) != getTermType(typeMap, e2); 
+		Neq(e1, e2) : getTermType(typeMap, e1) != getTermType(typeMap, e2);
+		Ge(e1, e2) : getTermType(typeMap, e1) != getTermType(typeMap, e2); 
+		G(e1, e2) : getTermType(typeMap, e1) != getTermType(typeMap, e2);  
+		Le(e1, e2) : getTermType(typeMap, e1) != getTermType(typeMap, e2); 
+		L(e1, e2) : getTermType(typeMap, e1) != getTermType(typeMap, e2); 
+		True() : false;
+		False() : false;
+	}
+}
+
+isTypesIncorrect(typeMap : Tree<string, Type>, body : Body) -> bool {
+	switch (body) {
+		Assignment(v, t) : false; 
+		Sequence(bs) : fold(bs, false, \res, b -> res || isTypesIncorrect(typeMap, b));
+		Test(cond) : isFormIncorrect(typeMap, cond);
+		Choice(bs) : fold(bs, false, \res, b -> res || isTypesIncorrect(typeMap, b));
+		Iter(b, _) : isTypesIncorrect(typeMap, b);
+	}
+}
+
+incorrectAssignmentsTypes(typeMap:Tree<string, Type>, body: Body) -> bool {
+	fold(getAssignments(body), false, \res, as -> 
+		res || (lookupTreeDef(typeMap, as.var.e1, UnknownType()) != getTermType(typeMap, as.expr)))
+}
+
+getTypeMap(vars : [Decl])-> Tree<string, Type> {
+	pairs2tree(map(vars, \vd -> Pair(vd.var.e1, vd.type)))
+}
+
+BuildProg(varsAndProg: [flow]) {
+	vars = elementAt(varsAndProg, 0, []);
+	prog = elementAt(varsAndProg, 1, Sequence([]));
+	typeMap = getTypeMap(vars);
+
+	if (isContains2Decl(vars)) {
+		Error("Double declaration error");
+	} else if (isTypesIncorrect(typeMap, prog)) {
+		Error("Types mismatch or var wasn't declared");
+	} else if (incorrectAssignmentsTypes(typeMap, prog)) {
+		Error("Types in assignment mismatch");
+	} else {
+		nemoAst(vars, prog);
+	}
+}

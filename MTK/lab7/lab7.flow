@@ -1,0 +1,141 @@
+import string;
+import lingo/pegcode/driver;
+
+
+Expr ::= IntConst, Mul, Div, Add, Sub, Neg, Var;
+IntConst(value : int);
+Mul(left : Expr, right : Expr);
+Div(left : Expr, right : Expr);
+Add(left : Expr, right : Expr);
+Sub(left : Expr, right : Expr);
+Neg(arg : Expr);
+Var(name : string);
+
+HighPrior ::= ToMul, ToDiv;
+LowPrior ::= ToAdd, ToSub;
+
+ToMul(arg : Expr);
+ToDiv(arg : Expr);
+ToAdd(arg : Expr);
+ToSub(arg : Expr);
+
+Rational(top : int, bottom : int);
+
+
+grammarOp = compilePegGrammar("#include grammar.lingo");
+
+specialPegActions = {
+    pairs = [Pair("buildHigh", buildHigh), Pair("buildLow", buildLow)];
+    t = setTreeValues(defaultPegActions.t, pairs);
+    SemanticActions(t);
+}
+
+simplify(rat : Rational) -> Rational {
+    gcd = gcd(rat.top, rat.bottom);
+    Rational(rat.top / gcd, rat.bottom / gcd);
+}
+
+
+mulRat(l : Rational, r : Rational) -> Rational {
+    simplify(Rational(l.top * r.top, l.bottom * r.bottom));
+}
+
+divRat(l : Rational, r : Rational) -> Rational {
+    simplify(Rational(l.top * l.bottom, l.bottom * r.top));
+}
+
+addRat(l : Rational, r : Rational) -> Rational {
+    simplify(Rational(l.top * r.bottom + r.top * l.bottom, l.bottom * r.bottom));
+}
+
+subRat(l : Rational, r : Rational) -> Rational {
+    simplify(Rational(l.top * r.bottom - r.top * l.bottom, l.bottom * r.bottom));
+}
+
+negRat(rat : Rational) -> Rational {
+    simplify(Rational(-rat.top, rat.bottom));
+}
+
+int2Rat(val : int) -> Rational {
+    Rational(val, 1);
+}
+
+buildHigh(arr : [flow]) {
+    fold(arr[1], arr[0], \acc, cur -> switch(cur) {
+        ToMul(arg) : Mul(acc, arg);
+        ToDiv(arg) : Div(acc, arg);
+    })
+}
+
+buildLow(arr : [flow]) {
+    fold(arr[1], arr[0], \acc, cur -> switch(cur) {
+        ToAdd(arg) : Add(acc, arg);
+        ToSub(arg) : Sub(acc, arg);
+    })
+}
+
+
+calculate(e : Expr, vars : Tree<string, Rational>) -> Maybe<Rational> {
+    switch(e) {
+        Mul(l, r) : maybeMap2(mulRat)(calculate(l, vars), calculate(r, vars));
+        Div(l, r) : maybeMap2(divRat)(calculate(l, vars), calculate(r, vars));
+        Add(l, r) : maybeMap2(addRat)(calculate(l, vars), calculate(r, vars));
+        Sub(l, r) : maybeMap2(subRat)(calculate(l, vars), calculate(r, vars));
+        Neg(a) : maybeMap(calculate(a, vars), negRat);
+        Var(name) : lookupTree(vars, name);
+        IntConst(c) : Some(int2Rat(c));
+    }
+}
+
+e2s(e: Expr) -> string {
+    switch(e) {
+        IntConst(c) : i2s(c);
+        Mul(l, r) : "(" + e2s(l) + " * " + e2s(r) + ")";
+        Div(l, r) : "(" + e2s(l) + " / " + e2s(r) + ")";
+        Add(l, r) : "(" + e2s(l) + " + " + e2s(r) + ")";
+        Sub(l, r) : "(" + e2s(l) + " - " + e2s(r) + ")";
+        Neg(v) : "(-" + e2s(v) + ")";
+        Var(v) : v;
+    }
+}
+
+r2sSome(r : Rational) -> string {
+    if (r.bottom == 0) {
+        "Divide by zero!"
+    } else if (r.bottom == 1) {
+        i2s(r.top);
+    } else {
+        i2s(r.top) + "/" + i2s(r.bottom);
+    }
+}
+
+r2s(r : Maybe<Rational>) -> string {
+    eitherMap(r, r2sSome, "None");
+}
+
+parse(src : string) -> Expr {
+    parsic(grammarOp, src, specialPegActions);
+}
+
+main() {
+    sources = [ "48 / 6/ 3",
+                " 3 * x / (x * 3) ",
+                "-3 / 3",
+                "2 * x - 5 * 10 / 5 +  (3 * x) / (-4 * x)"];
+    vars = [Pair("x", Rational(5, 1))];
+    tree = setTreeValues(TreeEmpty(), vars);
+    expressions = map(sources, parse);
+    texts = map(expressions, e2s);
+
+    results = [ calculate(expressions[0], tree), 
+                calculate(expressions[1], tree), 
+                calculate(expressions[2], tree),
+                calculate(expressions[3], tree)];
+
+
+    println(expressions);
+    println(strGlue(texts, ", "));
+    println(strGlue(map(results, r2s), ", "));
+
+    quit(0);
+}

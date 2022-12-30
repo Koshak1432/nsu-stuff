@@ -1,0 +1,376 @@
+import string;
+import lingo/pegcode/driver;
+
+Expr ::= IntConst, Mul, Div, Add, Sub, Neg, Var;
+IntConst(value : int);
+Mul(left : Expr, right : Expr);
+Div(left : Expr, right : Expr);
+Add(left : Expr, right : Expr);
+Sub(left : Expr, right : Expr);
+Neg(arg : Expr);
+Var(name : string);
+
+HighPrior ::= ToMul, ToDiv;
+LowPrior ::= ToAdd, ToSub;
+
+ToMul(arg : Expr);
+ToDiv(arg : Expr);
+ToAdd(arg : Expr);
+ToSub(arg : Expr);
+
+
+grammarOp = compilePegGrammar("#include grammar.lingo");
+
+specialPegActions = {
+    pairs = [Pair("buildHigh", buildHigh), Pair("buildLow", buildLow)];
+    t = setTreeValues(defaultPegActions.t, pairs);
+    SemanticActions(t);
+}
+
+parse(src : string) -> Expr {
+    parsic(grammarOp, src, specialPegActions);
+}
+
+buildHigh(arr : [flow]) {
+    fold(arr[1], arr[0], \acc, cur -> switch(cur) {
+        ToMul(arg) : Mul(acc, arg);
+        ToDiv(arg) : Div(acc, arg);
+    })
+}
+
+buildLow(arr : [flow]) {
+    fold(arr[1], arr[0], \acc, cur -> switch(cur) {
+        ToAdd(arg) : Add(acc, arg);
+        ToSub(arg) : Sub(acc, arg);
+    })
+}
+
+e2s(e: Expr) -> string {
+    switch(e) {
+        Mul(l, r) : "(" + e2s(l) + " * " + e2s(r) + ")";
+        Div(l, r) : "(" + e2s(l) + " / " + e2s(r) + ")";
+        Add(l, r) : "(" + e2s(l) + " + " + e2s(r) + ")";
+        Sub(l, r) : "(" + e2s(l) + " - " + e2s(r) + ")";
+        Neg(v) : "-" + e2s(v);
+        Var(v) : v;
+        IntConst(c) : i2s(c);
+    }
+}
+
+maxNotSimplified = 4;
+maxLevel = 100;
+
+RuleExpr(left : Expr, right : Expr);
+
+convertToRule(left : string, right : string) {
+    RuleExpr(parse(left), parse(right));
+}
+
+simplifyExpr(e : Expr, rules : [RuleExpr]) {
+    simplify([e], rules, 0, 0);
+}
+
+simplify(exprs : [Expr], rules : [RuleExpr], level : int, notSimplified : int) {
+    simplified = getSimplifiedExprs(exprs, rules);
+
+    initMin = findMinDiff(exprs);
+    simplifiedMin = findMinDiff(simplified);
+    if (simplifiedMin < initMin) {
+        if (level < maxLevel) {
+            simplify(simplified, rules, level + 1, notSimplified);
+        } else {
+            filter(simplified, \e -> simplifiedMin == difficulty(e));
+        }
+    } else if (simplifiedMin == initMin) {
+        if (level < maxLevel && notSimplified < maxNotSimplified) {
+            simplify(simplified, rules, level + 1, notSimplified + 1);
+        } else {
+            filter(exprs, \e -> initMin == difficulty(e));
+        }
+    } else {
+        filter(exprs, \e -> initMin == difficulty(e));
+    }
+}
+
+findMinDiff(exprs : [Expr]) {
+    fold(exprs, 100000, \min, expr -> {
+        diff = difficulty(expr);
+        if (diff < min) {
+            diff;
+        } else {
+            min;
+        }
+    })
+}
+
+
+getLessDiffExprs(exprs : [Expr], rules : [RuleExpr]) {
+    fold(rules, [], 
+        \byRules, rule -> 
+            concat(byRules, fold(exprs, [], 
+                \byExprs, expr -> {
+                    simplified = trySimplify(expr, rule);
+                    if (contains(byRules, simplified) || contains(byExprs, simplified) ||
+                        difficulty(expr) < difficulty(simplified)) {
+                        byExprs;
+                    } else {
+                        arrayPush(byExprs, simplified);
+                    }
+                })));
+}
+
+MatchingResult(vars : Tree<string, Expr>, match : bool);
+
+trySimplify(e : Expr, rule : RuleExpr) {
+    res = isMatchRule(e, rule.left, makeTree());
+    if (res.match) {
+        simplifyWithVars(rule.right, res.vars);
+    } else {
+        e;
+    }
+}
+
+isMatchRule(e : Expr, rule : Expr, vars : Tree<string, Expr>) -> MatchingResult {
+    switch(rule) {
+        Mul(lr, rr) : {
+            switch(e) {
+                Mul(le, re) : {
+                    res = isMatchRule(le, lr, vars);
+                    if (res.match) {
+                        isMatchRule(re, rr, res.vars);
+                    } else {
+                        res;
+                    }
+                }
+                default : MatchingResult(vars, false);
+            }
+        }
+        Div(lr, rr) : {
+            switch(e) {
+                Div(le, re) : {
+                    res = isMatchRule(le, lr, vars);
+                    if (res.match) {
+                        isMatchRule(re, rr, res.vars);
+                    } else {
+                        res;
+                    }
+                }
+                default : MatchingResult(vars, false);
+            }
+        }
+        Add(lr, rr) : {
+            switch(e) {
+                Add(le, re) : {
+                    res = isMatchRule(le, lr, vars);
+                    if (res.match) {
+                        isMatchRule(re, rr, res.vars);
+                    } else {
+                        res;
+                    }
+                }
+                default : MatchingResult(vars, false);
+            }
+        }
+        Sub(lr, rr) : {
+            switch(e) {
+                Sub(le, re) : {
+                    res = isMatchRule(le, lr, vars);
+                    if (res.match) {
+                        isMatchRule(re, rr, res.vars);
+                    } else {
+                        res;
+                    }
+                }
+                default : MatchingResult(vars, false);
+            }
+        }
+        Neg(rVal) : {
+            switch(e) {
+                Neg(eVal) : isMatchRule(eVal, rVal, vars);
+                default : MatchingResult(vars, false);
+            }
+        }
+        Var(name) : {
+            switch(lookupTree(vars, name)) {
+                Some(val) : MatchingResult(vars, val == e);
+                None() : MatchingResult(setTree(vars, name, e), true);
+            }
+        }
+        IntConst(cr) : {
+            switch(e) {
+                IntConst(ce) : MatchingResult(vars, cr == ce);
+                default : MatchingResult(vars, false);
+            }
+        }
+    }
+}
+
+simplifyWithVars(e : Expr, vars : Tree<string, Expr>) {
+    switch(e) {
+        Mul(l, r) : Mul(simplifyWithVars(l, vars), simplifyWithVars(r, vars));
+        Div(l, r) : Div(simplifyWithVars(l, vars), simplifyWithVars(r, vars));
+        Add(l, r) : Add(simplifyWithVars(l, vars), simplifyWithVars(r, vars));
+        Sub(l, r) : Sub(simplifyWithVars(l, vars), simplifyWithVars(r, vars));
+        Neg(val) : Neg(simplifyWithVars(val, vars));
+        Var(name) : either(lookupTree(vars, name), e);
+        IntConst(c) : e;
+    }
+}
+
+simplifyByRules(e : Expr, rules : [RuleExpr]) {
+    switch(e) {
+        Mul(l, r) : {
+            left = simplifyByRules(l, rules);
+            right = simplifyByRules(r, rules);
+            exprs = fold(left, [], \lArr, lVal -> 
+                concat(lArr, fold(right, [], \rArr, rVal -> arrayPush(rArr, Mul(lVal, rVal)))));
+            getLessDiffExprs(exprs, rules);
+        }
+        Div(l, r) : {
+            left = simplifyByRules(l, rules);
+            right = simplifyByRules(r, rules);
+            exprs = fold(left, [], \lArr, lVal -> 
+                concat(lArr, fold(right, [], \rArr, rVal -> arrayPush(rArr, Div(lVal, rVal)))));
+            getLessDiffExprs(exprs, rules);
+        }
+        Add(l, r) : {
+            left = simplifyByRules(l, rules);
+            right = simplifyByRules(r, rules);
+            exprs = fold(left, [], \lArr, lVal -> 
+                concat(lArr, fold(right, [], \rArr, rVal -> arrayPush(rArr, Add(lVal, rVal)))));
+            getLessDiffExprs(exprs, rules);
+        }
+        Sub(l, r) : {
+            left = simplifyByRules(l, rules);
+            right = simplifyByRules(r, rules);
+            exprs = fold(left, [], \lArr, lVal -> 
+                concat(lArr, fold(right, [], \rArr, rVal -> arrayPush(rArr, Sub(lVal, rVal)))));
+            getLessDiffExprs(exprs, rules);
+        }
+        Neg(val) : {
+            simplified = simplifyByRules(val, rules);
+            getLessDiffExprs(fold(simplified, [], \arr, v -> arrayPush(arr, Neg(v))), rules);
+        }
+        Var(name) : [Var(name)];
+        IntConst(c) : [IntConst(c)];
+    }
+}
+
+getSimplifiedExprs(exprs : [Expr], rules : [RuleExpr]) {
+    allSimplifications = fold(exprs, [], \arr, e -> concat(arr, simplifyByRules(e, rules)));
+    fold(allSimplifications, [], \arr, e -> {
+        if (contains(arr, e)) {
+            arr;
+        } else {
+            arrayPush(arr, e);
+        }
+    });
+}
+
+difficulty(e : Expr) {
+    switch(e) {
+        Mul(l, r) : difficulty(l) + difficulty(r) + 1;
+        Div(l, r) : difficulty(l) + difficulty(r) + 1;
+        Add(l, r) : difficulty(l) + difficulty(r) + 1;
+        Sub(l, r) : difficulty(l) + difficulty(r) + 1;
+        Neg(val) : difficulty(val) + 1;
+        IntConst(c) : 1;
+        Var(name) : 1;
+    }
+}
+
+main() {
+    // 1 набор
+    // rules = [
+    //     convertToRule("(x + 0)", "x"),
+    //     convertToRule("(x * 0)", "0"),
+    //     convertToRule("((x - z) + (y + z))", "(x + y)"),
+    //     convertToRule("(x - 0)", "x"),
+    //     convertToRule("((x + z) + (y - z))", "(x + y)"),
+    //     convertToRule("(x + x)", "(2 * x)"),
+    //     convertToRule("- - x", "x"),
+    //     convertToRule("(x + y)", "(y + x)"),
+    //     convertToRule("(x * y)", "(y * x)"),
+    //     convertToRule("(x - x)", "0"),
+    //     convertToRule("(x + -x)", "0"),
+    //     convertToRule("(-x + x)", "0"),
+    //     convertToRule("(x * 1)", "x"),
+    //     convertToRule("(0 + x)", "x"),
+    //     convertToRule("(0 * x)", "0"),
+    //     convertToRule("(1 * x)", "x"),
+    //     convertToRule("(x * -1)", "-x"),
+    //     convertToRule("(-1 * x)", "-x"),
+    //     convertToRule("(x / x)", "1"),
+    //     convertToRule("(0 / x)", "0"),
+    //     convertToRule("((x * z) + (y * z))", "((x + y) * z)"),
+    //     convertToRule("((x + y) * z)", "((x * z) + (y * z))"),
+    //     convertToRule("((x + y) + z)", "(x + (y + z))"),
+    //     convertToRule("((x * y) * z)", "(x * (y * z))"),
+    //     convertToRule("((x * x) - (y * y))", "((x - y) * (x + y))"),
+    //     convertToRule("((x - y) * (x + y))", "((x * x) - (y * y))"),
+    //     convertToRule("((x - y) * (x - y))", "(((x * x) + (y * y)) - (2 * (x * y)))"),
+    //     convertToRule("(((x * x) + (y * y)) - (2 * (x * y)))", "((x - y) * (x - y))"),
+    //     convertToRule("((x + y) * (x + y))", "(((x * x) + (y * y)) + (2 * (x * y)))"),
+    //     convertToRule("(((x * x) + (y * y)) + (2 * (x * y)))", "((x + y) * (x + y))"),
+    //     convertToRule("(x + (y - z))", "((x + y) - z)"),
+    //     convertToRule("(x / y) * z", "(x * (z / y))"),
+    //     convertToRule("((x + y) - z)", "(x + (y - z))"),
+    //     convertToRule("(x * (z / y))", "(x / y) * z"),
+    // ];
+
+    // 2 набор
+    rules = [
+        convertToRule("((x - z) + (y + z))", "(x + y)"),
+        convertToRule("((x + z) + (y - z))", "(x + y)"),
+        convertToRule("(x + x)", "(2 * x)"),
+        convertToRule("- - x", "x"),
+        convertToRule("(x + y)", "(y + x)"),
+        convertToRule("(x * y)", "(y * x)"),
+        convertToRule("(x + 0)", "x"),
+        convertToRule("(x - 0)", "x"),
+        convertToRule("(x - x)", "0"),
+        convertToRule("(x - x)", "0"),
+        convertToRule("(x + -x)", "0"),
+        convertToRule("(x * 0)", "0"),
+        convertToRule("(x * 1)", "x"),
+        convertToRule("(0 + x)", "x"),
+        convertToRule("(x * -1)", "-x"),
+        convertToRule("(x / x)", "1"),
+        convertToRule("((x * z) + (y * z))", "((x + y) * z)"),
+        convertToRule("((x + y) * z)", "((x * z) + (y * z))"),
+        convertToRule("((x + y) + z)", "(x + (y + z))"),
+        convertToRule("((x * y) * z)", "(x * (y * z))"),
+        convertToRule("((x * x) - (y * y))", "((x - y) * (x + y))"),
+        convertToRule("((x - y) * (x + y))", "((x * x) - (y * y))"),
+        convertToRule("((x - y) * (x - y))", "(((x * x) + (y * y)) - (2 * (x * y)))"),
+        convertToRule("(((x * x) + (y * y)) - (2 * (x * y)))", "((x - y) * (x - y))"),
+        convertToRule("((x + y) * (x + y))", "(((x * x) + (y * y)) + (2 * (x * y)))"),
+        convertToRule("(((x * x) + (y * y)) + (2 * (x * y)))", "((x + y) * (x + y))"),
+        convertToRule("(x + (y - z))", "((x + y) - z)"),
+        convertToRule("(x / y) * z", "(x * (z / y))"),
+        convertToRule("((x + y) - z)", "(x + (y - z))"),
+        convertToRule("(x * (z / y))", "(x / y) * z")
+    ];
+
+    sources = [
+        // "x + 0"
+        // "(a + b) * b",
+        "(y * y - 2 * 2) / (y * y - 2 * 2 * y + 2 * 2) * (y - 2)"
+        // "((x + 1) * (x - 1))",
+        // "x + (y - y)",
+        // "(x*(x*x))+((x*x)*y)"
+    ];
+
+    expressions = map(sources, parse);
+    inputTexts = map(expressions, e2s);
+
+    simplified = map(expressions, \expr -> simplifyExpr(expr, rules));
+    simplifiedTexts = map(simplified, \arr -> e2s(arr[0]));
+    
+    println("Input:");
+    println(inputTexts);
+    println("Simplified:");
+    println(simplifiedTexts);
+    quit(0);
+}
+

@@ -1,0 +1,6 @@
+import string;
+main() {
+    arr = [1, 2, 3, 100500];
+    println(strGlue(map(arr, i2s), ", "));
+    quit(0);
+}

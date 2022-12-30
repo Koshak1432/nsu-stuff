@@ -1,0 +1,67 @@
+import string;
+
+main() {
+    n = 25;
+    println(strGlue(map(fibRec(n), i2s), ", "));
+
+    println(strGlue(map(fibTail(n), i2s), ", "));
+
+    println(strGlue(map(fibRef(n), i2s), ", "));
+
+    quit(0);
+}
+
+fibRec(n : int) -> [int] {
+    current = calcFibRec(n);
+    if (n == 0) {
+        [current];
+    } else {
+        concat(fibRec(n - 1), [current]);
+    }
+}
+
+calcFibRec(n : int) -> int {
+    if (n < 2) {
+        n;
+    } else {
+        calcFibRec(n - 1) + calcFibRec(n - 2);
+    }
+}
+
+fibTail(n : int) -> [int] {
+    current = calcFibTail(n, 0, 1);
+    if (n == 0) {
+        [current];
+    } else {
+        concat(fibTail(n - 1), [current]);
+    }
+}
+
+calcFibTail(n : int, prev : int, cur : int) -> int {
+    if (n == 0) {
+        prev;
+    } else if (n == 1) {
+        cur;
+    } else {
+        calcFibTail(n - 1, cur, prev + cur);
+    }
+}
+
+fibRef(n : int) -> [int] {
+    arr = ref [];
+    fillArray(n, arr);
+    ^arr;
+}
+
+fillArray(n : int, arr : ref [int]) -> ref [int] {
+    current = calcFibTail(n, 0, 1);
+    if (n == 0) {
+        refArrayPush(arr, current);
+    } else {
+        refArrayPush(fillArray(n - 1, arr), current);
+    }
+    arr;
+}
+
+
+
