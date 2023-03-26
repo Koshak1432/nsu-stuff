@@ -5,39 +5,40 @@ DROP TABLE IF EXISTS performance_venue;
 DROP TABLE IF EXISTS estrade;
 DROP TABLE IF EXISTS artist;
 
-CREATE TABLE IF NOT EXISTS building_type(
-	type_id SERIAL PRIMARY KEY,
-	building_id BIGINT UNIQUE REFERENCES building(building_id),
-	name VARCHAR NOT NULL UNIQUE
-);
 
 CREATE TABLE IF NOT EXISTS building(
 	building_id BIGSERIAL PRIMARY KEY,
+	name VARCHAR NOT NULL UNIQUE,
+	type_id INT REFERENCES building_type(type_id)
+);
+
+CREATE TABLE IF NOT EXISTS building_type(
+	type_id SERIAL PRIMARY KEY,
 	name VARCHAR NOT NULL UNIQUE
 );
 
 --concrete types
 CREATE TABLE IF NOT EXISTS theater(
 	theater_id SERIAL PRIMARY KEY,
-	type_id BIGINT UNIQUE REFERENCES building_type(type_id),
+	building_id BIGINT REFERENCES building(building_id),
 	capacity INT NOT NULL CHECK(capacity > 0)
 );
 
 CREATE TABLE IF NOT EXISTS performance_venue(
 	venue_id SERIAL PRIMARY KEY,
-	type_id BIGINT UNIQUE REFERENCES building_type(type_id),
+	building_id BIGINT REFERENCES building(building_id),
 	area INT NOT NULL CHECK(area > 0)
 );
 
 CREATE TABLE IF NOT EXISTS estrade(
 	estrade_id SERIAL PRIMARY KEY,
-	type_id BIGINT UNIQUE REFERENCES building_type(type_id),
-	scene_height_meters INT NOT NULL CHECK(scene_height > 0)
+	building_id BIGINT REFERENCES building(building_id),
+	scene_height_meters INT NOT NULL CHECK(scene_height_meters > 0)
 );
 
 CREATE TABLE IF NOT EXISTS palace_of_culture(
 	palace_id SERIAL PRIMARY KEY,
-	type_id BIGINT UNIQUE REFERENCES building_type(type_id),
+	building_id BIGINT REFERENCES building(building_id),
 	floor_num INT NOT NULL CHECK(floor_num > 0)
 );
 
@@ -69,7 +70,7 @@ CREATE TABLE IF NOT EXISTS impresario(
 );
 
 CREATE TABLE IF NOT EXISTS artist_to_impresario(
-	artist_id BIGINT REFERENCES artist,
+	artist_id BIGINT REFERENCES artist(artist_id),
 	impresario_id BIGINT REFERENCES impresario(impresario_id),
 	PRIMARY KEY(artist_id, impresario_id)
 );
@@ -91,17 +92,19 @@ CREATE TABLE IF NOT EXISTS performance(
 	name VARCHAR NOT NULL UNIQUE,
 	type_id INT REFERENCES performance_type(type_id),
 	organizator_id BIGINT REFERENCES organizator(organizator_id),
-	building_id BIGINT REFERENCES building(building_id)
+	building_id BIGINT REFERENCES building(building_id),
+	performance_date DATE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS contest(
 	contest_id BIGSERIAL PRIMARY KEY,
-	type_id INT REFERENCES performance_type(type_id),
+	performance_id INT REFERENCES performance(performance_id)
 );
 
-CREATE TABLE IF NOT EXISTS places_distribution(
-	distribution_id BIGSERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS contest_places(
+	place_id BIGSERIAL PRIMARY KEY,
 	contest_id BIGINT REFERENCES contest(contest_id),
 	artist_id BIGINT REFERENCES artist(artist_id),
-	place INT NOT NULL
+	place INT NOT NULL,
+	UNIQUE(contest_id, artist_id)
 );
