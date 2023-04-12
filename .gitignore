@@ -12,3 +12,7 @@
 **/*.xml
 **/*.bytecode
 **/*.debug
+**/*.csv
+**/*.pt
+**/*.whl
+**/data/
