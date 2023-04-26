@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS artist;
 CREATE TABLE IF NOT EXISTS building(
 	building_id BIGSERIAL PRIMARY KEY,
 	name VARCHAR NOT NULL UNIQUE,
-	type_id INT REFERENCES building_type(type_id)
+	type_id INT NOT NULL REFERENCES building_type
 );
 
 CREATE TABLE IF NOT EXISTS building_type(
@@ -19,26 +19,22 @@ CREATE TABLE IF NOT EXISTS building_type(
 
 --concrete types
 CREATE TABLE IF NOT EXISTS theater(
-	theater_id SERIAL PRIMARY KEY,
-	building_id BIGINT REFERENCES building(building_id),
+	building_id BIGINT PRIMARY KEY REFERENCES building ON DELETE CASCADE,
 	capacity INT NOT NULL CHECK(capacity > 0)
 );
 
 CREATE TABLE IF NOT EXISTS performance_venue(
-	venue_id SERIAL PRIMARY KEY,
-	building_id BIGINT REFERENCES building(building_id),
+	building_id BIGINT PRIMARY KEY REFERENCES building ON DELETE CASCADE,
 	area INT NOT NULL CHECK(area > 0)
 );
 
 CREATE TABLE IF NOT EXISTS estrade(
-	estrade_id SERIAL PRIMARY KEY,
-	building_id BIGINT REFERENCES building(building_id),
+	building_id BIGINT PRIMARY KEY REFERENCES building ON DELETE CASCADE,
 	scene_height_meters INT NOT NULL CHECK(scene_height_meters > 0)
 );
 
 CREATE TABLE IF NOT EXISTS palace_of_culture(
-	palace_id SERIAL PRIMARY KEY,
-	building_id BIGINT REFERENCES building(building_id),
+	building_id BIGINT PRIMARY KEY REFERENCES building ON DELETE CASCADE,
 	floor_num INT NOT NULL CHECK(floor_num > 0)
 );
 
@@ -57,8 +53,8 @@ CREATE TABLE IF NOT EXISTS artist(
 );
 
 CREATE TABLE IF NOT EXISTS artist_to_genre(
-	artist_id BIGINT REFERENCES artist(artist_id),
-	genre_id INT REFERENCES genre(genre_id),
+	artist_id BIGINT NOT NULL REFERENCES artist ON DELETE CASCADE,
+	genre_id INT REFERENCES genre,
 	PRIMARY KEY(artist_id, genre_id)
 );
 
@@ -70,8 +66,8 @@ CREATE TABLE IF NOT EXISTS impresario(
 );
 
 CREATE TABLE IF NOT EXISTS artist_to_impresario(
-	artist_id BIGINT REFERENCES artist(artist_id),
-	impresario_id BIGINT REFERENCES impresario(impresario_id),
+	artist_id BIGINT NOT NULL REFERENCES artist(artist_id) ON DELETE CASCADE,
+	impresario_id BIGINT NOT NULL REFERENCES impresario(impresario_id) ON DELETE CASCADE,
 	PRIMARY KEY(artist_id, impresario_id)
 );
 
@@ -83,28 +79,30 @@ CREATE TABLE IF NOT EXISTS organizator(
 );
 
 CREATE TABLE IF NOT EXISTS performance_type(
-	type_id SERIAL PRIMARY KEY,
+	type_id BIGSERIAL PRIMARY KEY,
 	name VARCHAR NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS performance(
 	performance_id BIGSERIAL PRIMARY KEY,
-	name VARCHAR NOT NULL UNIQUE,
-	type_id INT REFERENCES performance_type(type_id),
-	organizator_id BIGINT REFERENCES organizator(organizator_id),
-	building_id BIGINT REFERENCES building(building_id),
+	name VARCHAR NOT NULL,
+	type_id BIGINT NOT NULL REFERENCES performance_type(type_id),
+	organizator_id BIGINT NOT NULL REFERENCES organizator(organizator_id),
+	building_id BIGINT NOT NULL REFERENCES building(building_id) ON DELETE CASCADE,
 	performance_date DATE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS contest(
-	contest_id BIGSERIAL PRIMARY KEY,
-	performance_id INT REFERENCES performance(performance_id)
+CREATE TABLE IF NOT EXISTS artist_to_performance(
+	performance_id BIGINT NOT NULL REFERENCES performance(performance_id) ON DELETE CASCADE,
+	artist_id BIGINT NOT NULL REFERENCES artist(artist_id) ON DELETE CASCADE,
+	PRIMARY KEY(performance_id, artist_id)
+)
+
+--????
+CREATE TABLE IF NOT EXISTS contest_place(
+	performance_id BIGINT NOT NULL REFERENCES performance(performance_id) ON DELETE CASCADE,
+	artist_id BIGINT NOT NULL REFERENCES artist(artist_id) ON DELETE CASCADE,
+	place INT NOT NULL CHECK(place > 0),
+	PRIMARY KEY(performance_id, artist_id)
 );
 
-CREATE TABLE IF NOT EXISTS contest_places(
-	place_id BIGSERIAL PRIMARY KEY,
-	contest_id BIGINT REFERENCES contest(contest_id),
-	artist_id BIGINT REFERENCES artist(artist_id),
-	place INT NOT NULL,
-	UNIQUE(contest_id, artist_id)
-);
