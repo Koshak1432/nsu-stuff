@@ -1,6 +1,8 @@
 package brainfuck;
 
-import brainfuck.command.ICommand;
+import brainfuck.commands.ICommand;
+import brainfuck.structures.components.Context;
+import brainfuck.structures.components.Program;
 
 import java.io.*;
 import java.util.Map;
@@ -36,7 +38,7 @@ public class Main {
 
         try (OutputStream oStream = new FileOutputStream(DEFAULT_OUTPUT_NAME)) {
             Context context = new Context(System.in, oStream, ioController,
-                              new Program(commands, props.getProperty(START_LOOP).charAt(0), props.getProperty(END_LOOP).charAt(0)));
+                                          new Program(commands, props.getProperty(START_LOOP).charAt(0), props.getProperty(END_LOOP).charAt(0)));
 
             interpret(factory, context);
         } catch (IllegalArgumentException | IllegalStateException | IOException e) {

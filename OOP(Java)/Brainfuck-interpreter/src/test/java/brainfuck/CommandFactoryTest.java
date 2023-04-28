@@ -1,7 +1,7 @@
 package brainfuck;
 
-import brainfuck.command.CommandDecreaseValue;
-import brainfuck.command.ICommand;
+import brainfuck.commands.CommandDecreaseValue;
+import brainfuck.commands.ICommand;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;

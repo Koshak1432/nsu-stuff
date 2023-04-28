@@ -1,5 +1,7 @@
 package brainfuck;
 
+import brainfuck.structures.components.IPointer;
+import brainfuck.structures.components.Pointer;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 

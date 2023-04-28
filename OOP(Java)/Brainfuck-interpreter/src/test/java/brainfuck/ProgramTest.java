@@ -1,5 +1,7 @@
 package brainfuck;
 
+import brainfuck.structures.components.IProgram;
+import brainfuck.structures.components.Program;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

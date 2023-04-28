@@ -1,4 +1,4 @@
-package brainfuck;
+package brainfuck.structures.cache;
 
 import java.util.HashMap;
 import java.util.Map;

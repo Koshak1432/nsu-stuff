@@ -1,4 +1,6 @@
-package brainfuck;
+package brainfuck.structures.components;
+
+import brainfuck.IIOController;
 
 import java.io.InputStream;
 import java.io.OutputStream;

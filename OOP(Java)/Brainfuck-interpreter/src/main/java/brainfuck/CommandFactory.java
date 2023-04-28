@@ -1,5 +1,8 @@
 package brainfuck;
 
+import brainfuck.structures.cache.Cache;
+import brainfuck.structures.cache.ICache;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

@@ -1,8 +1,11 @@
 package brainfuck.command;
 
-import brainfuck.Context;
+import brainfuck.structures.components.Context;
 import brainfuck.IOController;
-import brainfuck.Program;
+import brainfuck.structures.components.Program;
+import brainfuck.commands.CommandDecreaseValue;
+import brainfuck.commands.CommandIncreaseValue;
+import brainfuck.commands.ICommand;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

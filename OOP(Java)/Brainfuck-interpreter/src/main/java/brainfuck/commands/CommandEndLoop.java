@@ -1,6 +1,6 @@
-package brainfuck.command;
+package brainfuck.commands;
 
-import brainfuck.Context;
+import brainfuck.structures.components.Context;
 
 public class CommandEndLoop implements ICommand {
     @Override

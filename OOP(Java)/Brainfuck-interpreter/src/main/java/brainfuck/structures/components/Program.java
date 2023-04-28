@@ -1,4 +1,4 @@
-package brainfuck;
+package brainfuck.structures.components;
 
 public class Program implements IProgram {
 
