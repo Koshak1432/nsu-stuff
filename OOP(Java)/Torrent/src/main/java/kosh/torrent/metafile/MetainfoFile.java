@@ -1,7 +1,8 @@
-package kosh.torrent;
+package kosh.torrent.metafile;
 
 import com.dampcake.bencode.Bencode;
 import com.dampcake.bencode.Type;
+import kosh.torrent.Util;
 
 import java.io.FileInputStream;
 import java.io.IOException;

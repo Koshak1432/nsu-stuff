@@ -1,4 +1,4 @@
-package kosh.torrent;
+package kosh.torrent.messages;
 
 public class MessagesTypes {
     //DO NOT CHANGE THESE CONSTANTS, IT WILL AFFECT PROTOCOL MESSAGE METHODS!!!

@@ -1,5 +1,7 @@
-package kosh.torrent;
+package kosh.torrent.messages;
 
+
+import kosh.torrent.structures.Peer;
 
 /*
 * Interface which describes receiver of BitTorrent protocol messages

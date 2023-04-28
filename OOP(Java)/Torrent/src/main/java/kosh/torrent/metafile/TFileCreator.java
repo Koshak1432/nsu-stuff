@@ -1,6 +1,7 @@
-package kosh.torrent;
+package kosh.torrent.metafile;
 
 import com.dampcake.bencode.Bencode;
+import kosh.torrent.Util;
 
 import java.io.*;
 import java.nio.ByteBuffer;

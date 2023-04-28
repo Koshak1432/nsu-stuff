@@ -1,4 +1,9 @@
-package kosh.torrent;
+package kosh.torrent.structures;
+
+import kosh.torrent.Util;
+import kosh.torrent.messages.IMessage;
+import kosh.torrent.messages.MessagesTypes;
+import kosh.torrent.messages.ProtocolMessage;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
@@ -75,7 +80,7 @@ public class Peer {
         byte[] begin = Util.convertToByteArr(info.getBlockLen() * blockIdx);
         byte[] lenA = Util.convertToByteArr(len);
         return new ProtocolMessage(MessagesTypes.REQUEST,
-                                  Util.concatByteArrays(Util.concatByteArrays(Util.convertToByteArr(pieceIdx), begin), lenA));
+                                   Util.concatByteArrays(Util.concatByteArrays(Util.convertToByteArr(pieceIdx), begin), lenA));
     }
 
     public void closeConnection() {

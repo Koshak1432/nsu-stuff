@@ -1,4 +1,4 @@
-package kosh.torrent;
+package kosh.torrent.structures;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

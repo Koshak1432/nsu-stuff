@@ -1,4 +1,10 @@
-package kosh.torrent;
+package kosh.torrent.messages;
+
+import kosh.torrent.*;
+import kosh.torrent.managers.DownloadUploadManager;
+import kosh.torrent.structures.Peer;
+import kosh.torrent.structures.PiecesAndBlocksInfo;
+import kosh.torrent.structures.Task;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

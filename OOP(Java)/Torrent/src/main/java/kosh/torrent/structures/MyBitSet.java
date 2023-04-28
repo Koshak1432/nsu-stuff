@@ -1,4 +1,4 @@
-package kosh.torrent;
+package kosh.torrent.structures;
 
 import java.util.BitSet;
 import java.util.HashMap;

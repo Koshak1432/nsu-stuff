@@ -1,4 +1,4 @@
-package kosh.torrent;
+package kosh.torrent.structures;
 
 public enum TaskType {
     SAVE,

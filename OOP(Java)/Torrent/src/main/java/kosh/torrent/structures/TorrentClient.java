@@ -1,4 +1,8 @@
-package kosh.torrent;
+package kosh.torrent.structures;
+
+import kosh.torrent.metafile.MetainfoFile;
+import kosh.torrent.managers.ConnectionManager;
+import kosh.torrent.managers.DownloadUploadManager;
 
 import java.net.InetSocketAddress;
 import java.util.*;

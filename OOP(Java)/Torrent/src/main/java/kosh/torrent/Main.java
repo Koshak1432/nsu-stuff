@@ -1,9 +1,7 @@
 package kosh.torrent;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import kosh.torrent.metafile.MetainfoFile;
+import kosh.torrent.structures.TorrentClient;
 
 public class Main {
 

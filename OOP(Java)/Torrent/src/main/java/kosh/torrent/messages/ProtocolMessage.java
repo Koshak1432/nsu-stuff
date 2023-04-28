@@ -1,4 +1,6 @@
-package kosh.torrent;
+package kosh.torrent.messages;
+
+import kosh.torrent.Util;
 
 /*
  * Class represents all the BitTorrent protocol messages except Handshake

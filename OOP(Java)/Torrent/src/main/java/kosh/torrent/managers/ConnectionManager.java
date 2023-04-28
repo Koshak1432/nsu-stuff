@@ -1,4 +1,11 @@
-package kosh.torrent;
+package kosh.torrent.managers;
+
+import kosh.torrent.*;
+import kosh.torrent.metafile.MetainfoFile;
+import kosh.torrent.messages.*;
+import kosh.torrent.structures.Peer;
+import kosh.torrent.structures.PiecesAndBlocksInfo;
+import kosh.torrent.structures.Task;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

@@ -1,4 +1,12 @@
-package kosh.torrent;
+package kosh.torrent.managers;
+
+import kosh.torrent.metafile.MetainfoFile;
+import kosh.torrent.structures.Peer;
+import kosh.torrent.structures.Task;
+import kosh.torrent.Util;
+import kosh.torrent.messages.IMessage;
+import kosh.torrent.messages.MessagesTypes;
+import kosh.torrent.messages.ProtocolMessage;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

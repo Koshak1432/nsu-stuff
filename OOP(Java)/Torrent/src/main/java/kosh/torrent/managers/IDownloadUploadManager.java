@@ -1,4 +1,8 @@
-package kosh.torrent;
+package kosh.torrent.managers;
+
+import kosh.torrent.structures.Peer;
+import kosh.torrent.structures.Task;
+import kosh.torrent.messages.IMessage;
 
 /*
 * Interface which describes methods of class working with file system

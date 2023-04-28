@@ -1,4 +1,6 @@
-package kosh.torrent;
+package kosh.torrent.messages;
+
+import kosh.torrent.Util;
 
 /*
 * A handshake message in form: <pstrlen><pstr><reserved><info_hash><peer_id>
