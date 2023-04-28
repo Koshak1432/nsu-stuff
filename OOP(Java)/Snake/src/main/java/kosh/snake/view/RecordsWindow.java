@@ -1,10 +1,11 @@
-package kosh.snake;
+package kosh.snake.view;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import kosh.snake.Constants;
 
 import java.io.BufferedReader;
 import java.io.File;

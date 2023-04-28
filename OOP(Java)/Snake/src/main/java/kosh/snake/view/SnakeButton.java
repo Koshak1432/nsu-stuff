@@ -1,4 +1,4 @@
-package kosh.snake;
+package kosh.snake.view;
 
 import javafx.scene.control.Button;
 import javafx.scene.effect.DropShadow;

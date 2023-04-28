@@ -1,4 +1,4 @@
-package kosh.snake;
+package kosh.snake.model;
 
 public interface Publisher {
     void addSubscriber(Subscriber subscriber);

@@ -1,4 +1,8 @@
-package kosh.snake;
+package kosh.snake.model;
+
+import kosh.snake.model.Coordinates;
+import kosh.snake.model.Direction;
+import kosh.snake.model.ICoordinates;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

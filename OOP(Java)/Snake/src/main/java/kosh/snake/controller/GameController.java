@@ -1,8 +1,14 @@
-package kosh.snake;
+package kosh.snake.controller;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import kosh.snake.Constants;
+import kosh.snake.model.Direction;
+import kosh.snake.model.Engine;
+import kosh.snake.view.GameOverWindow;
+import kosh.snake.view.GameWindow;
+import kosh.snake.view.MainMenuWindow;
 
 public class GameController {
 

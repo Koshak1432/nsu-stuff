@@ -1,4 +1,6 @@
-package kosh.snake;
+package kosh.snake.model;
+
+import kosh.snake.*;
 
 import java.io.*;
 import java.util.ArrayList;

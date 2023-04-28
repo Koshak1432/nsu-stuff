@@ -1,4 +1,4 @@
-package kosh.snake;
+package kosh.snake.model;
 
 public interface IField {
     void setGrass(ICoordinates coords);

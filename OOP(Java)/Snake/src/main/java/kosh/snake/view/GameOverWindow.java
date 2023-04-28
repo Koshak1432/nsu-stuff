@@ -1,4 +1,4 @@
-package kosh.snake;
+package kosh.snake.view;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -8,6 +8,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import kosh.snake.Constants;
 
 import java.io.*;
 import java.util.HashMap;

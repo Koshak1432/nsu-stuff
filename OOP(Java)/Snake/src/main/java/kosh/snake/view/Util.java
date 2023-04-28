@@ -1,4 +1,4 @@
-package kosh.snake;
+package kosh.snake.view;
 
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -6,6 +6,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.Pane;
+import kosh.snake.Constants;
 
 import java.util.Map;
 import java.util.Objects;

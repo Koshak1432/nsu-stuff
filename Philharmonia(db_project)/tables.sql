@@ -1,21 +1,14 @@
-DROP TABLE IF EXISTS building_type;
-DROP TABLE IF EXISTS building;
-DROP TABLE IF EXISTS theater;
-DROP TABLE IF EXISTS performance_venue;
-DROP TABLE IF EXISTS estrade;
-DROP TABLE IF EXISTS artist;
-
-
-CREATE TABLE IF NOT EXISTS building(
-	building_id BIGSERIAL PRIMARY KEY,
-	name VARCHAR NOT NULL UNIQUE,
-	type_id INT NOT NULL REFERENCES building_type
-);
-
 CREATE TABLE IF NOT EXISTS building_type(
-	type_id SERIAL PRIMARY KEY,
+	type_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	name VARCHAR NOT NULL UNIQUE
 );
+
+CREATE TABLE IF NOT EXISTS building(
+	building_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	name VARCHAR NOT NULL UNIQUE,
+	type_id BIGINT NOT NULL REFERENCES building_type
+);
+
 
 --concrete types
 CREATE TABLE IF NOT EXISTS theater(
@@ -41,12 +34,12 @@ CREATE TABLE IF NOT EXISTS palace_of_culture(
 
 --artists and genres
 CREATE TABLE IF NOT EXISTS genre(
-	genre_id SERIAL PRIMARY KEY,
+	genre_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	name VARCHAR NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS artist(
-	artist_id BIGSERIAL PRIMARY KEY,
+	artist_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	name VARCHAR NOT NULL,
 	surname VARCHAR NOT NULL,
 	UNIQUE(name, surname)
@@ -54,12 +47,12 @@ CREATE TABLE IF NOT EXISTS artist(
 
 CREATE TABLE IF NOT EXISTS artist_to_genre(
 	artist_id BIGINT NOT NULL REFERENCES artist ON DELETE CASCADE,
-	genre_id INT REFERENCES genre,
+	genre_id BIGINT NOT NULL REFERENCES genre,
 	PRIMARY KEY(artist_id, genre_id)
 );
 
 CREATE TABLE IF NOT EXISTS impresario(
-	impresario_id BIGSERIAL PRIMARY KEY,
+	impresario_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	name VARCHAR NOT NULL,
 	surname VARCHAR NOT NULL,
 	UNIQUE(name, surname)
@@ -72,19 +65,19 @@ CREATE TABLE IF NOT EXISTS artist_to_impresario(
 );
 
 CREATE TABLE IF NOT EXISTS organizator(
-	organizator_id BIGSERIAL PRIMARY KEY,
+	organizator_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	name VARCHAR NOT NULL,
 	surname VARCHAR NOT NULL,
 	UNIQUE(name, surname)
 );
 
 CREATE TABLE IF NOT EXISTS performance_type(
-	type_id BIGSERIAL PRIMARY KEY,
+	type_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	name VARCHAR NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS performance(
-	performance_id BIGSERIAL PRIMARY KEY,
+	performance_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	name VARCHAR NOT NULL,
 	type_id BIGINT NOT NULL REFERENCES performance_type(type_id),
 	organizator_id BIGINT NOT NULL REFERENCES organizator(organizator_id),
@@ -96,9 +89,8 @@ CREATE TABLE IF NOT EXISTS artist_to_performance(
 	performance_id BIGINT NOT NULL REFERENCES performance(performance_id) ON DELETE CASCADE,
 	artist_id BIGINT NOT NULL REFERENCES artist(artist_id) ON DELETE CASCADE,
 	PRIMARY KEY(performance_id, artist_id)
-)
+);
 
---????
 CREATE TABLE IF NOT EXISTS contest_place(
 	performance_id BIGINT NOT NULL REFERENCES performance(performance_id) ON DELETE CASCADE,
 	artist_id BIGINT NOT NULL REFERENCES artist(artist_id) ON DELETE CASCADE,

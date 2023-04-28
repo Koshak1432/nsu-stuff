@@ -1,4 +1,7 @@
-package kosh.snake;
+package kosh.snake.model;
+
+import kosh.snake.model.ICoordinates;
+import kosh.snake.model.IField;
 
 import java.util.List;
 

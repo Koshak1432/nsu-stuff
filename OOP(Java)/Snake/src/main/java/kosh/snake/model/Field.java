@@ -1,4 +1,4 @@
-package kosh.snake;
+package kosh.snake.model;
 
 import java.util.ArrayList;
 import java.util.Random;

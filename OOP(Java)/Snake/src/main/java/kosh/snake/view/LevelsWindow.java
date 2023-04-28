@@ -1,9 +1,11 @@
-package kosh.snake;
+package kosh.snake.view;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import kosh.snake.Constants;
+import kosh.snake.controller.GameController;
 
 import java.util.HashMap;
 import java.util.Map;

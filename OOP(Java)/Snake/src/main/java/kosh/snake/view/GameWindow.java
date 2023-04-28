@@ -1,4 +1,4 @@
-package kosh.snake;
+package kosh.snake.view;
 
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -9,6 +9,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import kosh.snake.Constants;
+import kosh.snake.model.Subscriber;
+import kosh.snake.model.Coordinates;
+import kosh.snake.model.ICoordinates;
+import kosh.snake.model.IField;
 
 import java.io.IOException;
 import java.io.InputStream;

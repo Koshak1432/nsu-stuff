@@ -2,6 +2,7 @@ package kosh.snake;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import kosh.snake.view.MainMenuWindow;
 
 public class Main extends Application {
 

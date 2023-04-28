@@ -1,4 +1,4 @@
-package kosh.snake;
+package kosh.snake.model;
 
 /*
 * Snake's moving direction
