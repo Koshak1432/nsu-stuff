@@ -27,6 +27,29 @@ WHERE id IN
 )
 
 --Получить перечень концертных мероприятий, 
---проведенных в указанном культурном сооружении.
+--проведенных в указанном культурном сооружении. (тут все перформансы в здании)
 SELECT * FROM performance
 WHERE building_id = 7
+
+--Получить список артистов, выступающих более чем в одном жанре с их указанием.
+-- а как жанры ещё найти? отдельным запросом?
+SELECT * FROM artist
+WHERE id IN 
+(
+	SELECT artist_id FROM artist_to_genre AS ag
+	GROUP BY
+		ag.artist_id
+	HAVING
+		COUNT(*) > 1
+)
+
+--отдельный запрос на жанры по артисту
+SELECT * FROM genre
+WHERE id IN
+(
+    SELECT genre_id FROM artist_to_genre
+    WHERE artist_id = :artistId
+)
+
+--Получить список призеров указанного конкурса.
+-- вообще, надо бы чекнуть, что это конкурс

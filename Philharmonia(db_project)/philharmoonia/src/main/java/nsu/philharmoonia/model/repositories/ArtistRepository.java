@@ -12,6 +12,20 @@ import java.util.Collection;
 @Repository
 public interface ArtistRepository extends CrudRepository<Artist, Long> {
 
+    // todo also need to get genres, but this will be in another query?
+    @Query(value = """
+            SELECT * FROM artist
+            WHERE id IN
+            (
+            	SELECT artist_id FROM artist_to_genre AS ag
+            	GROUP BY
+            		ag.artist_id
+            	HAVING
+            		COUNT(*) > 1
+            )
+            """, nativeQuery = true)
+    Collection<Artist> findWithManyGenres();
+
     @Query(value = """
             SELECT * FROM artist
             WHERE id IN
