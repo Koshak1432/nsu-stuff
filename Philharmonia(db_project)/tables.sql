@@ -24,9 +24,8 @@ CREATE TABLE IF NOT EXISTS building_type(
 CREATE TABLE IF NOT EXISTS building(
 	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	name VARCHAR NOT NULL UNIQUE,
-	type_id BIGINT NOT NULL REFERENCES building_type
+	type_id BIGINT NOT NULL REFERENCES building_type ON DELETE CASCADE
 );
-
 
 --concrete types
 CREATE TABLE IF NOT EXISTS theater(
@@ -41,7 +40,7 @@ CREATE TABLE IF NOT EXISTS performance_venue(
 
 CREATE TABLE IF NOT EXISTS estrade(
 	id BIGINT PRIMARY KEY REFERENCES building ON DELETE CASCADE,
-	scene_height_meters INT NOT NULL CHECK(scene_height_meters > 0)
+	scene_height_centimeters INT NOT NULL CHECK(scene_height_centimeters > 0)
 );
 
 CREATE TABLE IF NOT EXISTS palace_of_culture(
@@ -65,7 +64,7 @@ CREATE TABLE IF NOT EXISTS artist(
 
 CREATE TABLE IF NOT EXISTS artist_to_genre(
 	artist_id BIGINT NOT NULL REFERENCES artist ON DELETE CASCADE,
-	genre_id BIGINT NOT NULL REFERENCES genre,
+	genre_id BIGINT NOT NULL REFERENCES genre ON DELETE CASCADE,
 	PRIMARY KEY(artist_id, genre_id)
 );
 
@@ -97,22 +96,23 @@ CREATE TABLE IF NOT EXISTS performance_type(
 CREATE TABLE IF NOT EXISTS performance(
 	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	name VARCHAR NOT NULL,
-	type_id BIGINT NOT NULL REFERENCES performance_type ON DELETE CASCADE,
-	sponsor_id BIGINT NOT NULL REFERENCES sponsor ON DELETE CASCADE,
+	type_id BIGINT NOT NULL REFERENCES performance_type,
+	sponsor_id BIGINT NOT NULL REFERENCES sponsor,
 	building_id BIGINT NOT NULL REFERENCES building ON DELETE CASCADE,
 	performance_date DATE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS artist_to_performance(
-	performance_id BIGINT NOT NULL REFERENCES performance ON DELETE CASCADE,
 	artist_id BIGINT NOT NULL REFERENCES artist ON DELETE CASCADE,
+	performance_id BIGINT NOT NULL REFERENCES performance ON DELETE CASCADE,
 	PRIMARY KEY(performance_id, artist_id)
 );
 
 CREATE TABLE IF NOT EXISTS contest_place(
-	performance_id BIGINT NOT NULL REFERENCES performance ON DELETE CASCADE,
 	artist_id BIGINT NOT NULL REFERENCES artist ON DELETE CASCADE,
+	performance_id BIGINT NOT NULL REFERENCES performance ON DELETE CASCADE,
 	place INT NOT NULL CHECK(place > 0),
-	PRIMARY KEY(performance_id, artist_id)
+	PRIMARY KEY(performance_id, artist_id),
+	UNIQUE(performance_id, place)
 );
 

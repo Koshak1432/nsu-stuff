@@ -12,7 +12,7 @@ import lombok.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "contest_place")
+@Table(name = "contest_place", uniqueConstraints = @UniqueConstraint(columnNames = {"place", "performance_id"}))
 public class ContestPlace {
 
     @ToString.Include

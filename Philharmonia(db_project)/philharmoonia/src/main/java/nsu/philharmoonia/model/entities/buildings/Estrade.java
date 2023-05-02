@@ -25,8 +25,8 @@ public class Estrade {
 
     @NotNull
     @ToString.Include
-    @Column(name = "scene_height_meters")
-    private Integer sceneHeightMeters;
+    @Column(name = "scene_height_centimeters")
+    private Integer sceneHeightCentimeters;
 
     @Override
     public boolean equals(Object o) {
