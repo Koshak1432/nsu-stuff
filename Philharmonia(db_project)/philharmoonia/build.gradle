@@ -1,12 +1,25 @@
 plugins {
     id 'java'
+    id 'application'
     id 'org.springframework.boot' version '3.0.6'
     id 'io.spring.dependency-management' version '1.1.0'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
+
 }
 
 group = 'nsu'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
+
+application {
+    mainModule = 'nsu.philharmoonia'
+    mainClass = 'nsu.philharmoonia.Main'
+}
+
+javafx {
+    version = '17.0.6'
+    modules = ['javafx.controls', 'javafx.fxml']
+}
 
 configurations {
     compileOnly {
@@ -26,6 +39,13 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation('org.controlsfx:controlsfx:11.1.2')
+    implementation('com.dlsc.formsfx:formsfx-core:11.6.0') {
+        exclude(group: 'org.openjfx')
+    }
+    implementation('net.synedra:validatorfx:0.4.0') {
+        exclude(group: 'org.openjfx')
+    }
 }
 
 tasks.named('test') {

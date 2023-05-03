@@ -53,3 +53,19 @@ WHERE id IN
 
 --Получить список призеров указанного конкурса.
 -- вообще, надо бы чекнуть, что это конкурс
+-- тянет призёров, но потом надо отдельным запросом притянуть места
+SELECT * FROM artist
+WHERE id IN
+(
+	SELECT artist_id FROM contest_place
+	WHERE performance_id = :3 AND place <= 3
+)
+
+
+
+--Получить список импресарио определенного жанра.
+SELECT * FROM impresario
+WHERE id IN
+(
+	SELECT *
+)

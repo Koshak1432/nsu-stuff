@@ -24,8 +24,8 @@ public interface ImpresarioRepository extends CrudRepository<Impresario, Long> {
 """, nativeQuery = true)
     Collection<Impresario> findByArtist(@Param("artistId") Long artistId);
 
-    @Query(value = """
-SELECT * from impresario
-            """)
-    Collection<Impresario> findByGenre(@Param("genreId") Long genreId);
+//    @Query(value = """
+//SELECT * from impresario
+//            """)
+//    Collection<Impresario> findByGenre(@Param("genreId") Long genreId);
 }

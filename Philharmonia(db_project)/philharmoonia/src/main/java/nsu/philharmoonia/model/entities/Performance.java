@@ -45,13 +45,15 @@ public class Performance {
     @ToString.Exclude
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "building_id")
     private Building building;
 
+    @Builder.Default
     @ToString.Exclude
     @ManyToMany(mappedBy = "performances", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Artist> artists = new LinkedHashSet<>();
 
+    @Builder.Default
     @ToString.Exclude
     @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ContestPlace> contestPlaces = new LinkedHashSet<>();

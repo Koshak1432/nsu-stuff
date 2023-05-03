@@ -31,10 +31,11 @@ public class Building {
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "type_id")
     @NotNull
     private BuildingType buildingType;
 
+    @Builder.Default
     @ToString.Exclude
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Performance> performances = new LinkedHashSet<>();

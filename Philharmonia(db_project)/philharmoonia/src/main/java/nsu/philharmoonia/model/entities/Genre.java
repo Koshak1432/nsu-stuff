@@ -22,6 +22,7 @@ public class Genre {
     @Column(name = "id")
     private Long id;
 
+    @Builder.Default
     @ToString.Exclude
     @ManyToMany(mappedBy = "genres")
     private Set<Artist> artists = new LinkedHashSet<>();

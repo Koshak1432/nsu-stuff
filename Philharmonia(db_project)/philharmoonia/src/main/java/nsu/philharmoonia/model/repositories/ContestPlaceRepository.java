@@ -9,8 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 
 @Repository
-
 public interface ContestPlaceRepository extends CrudRepository<ContestPlace, ContestPlaceKey> {
 
-    Collection<Artist> find3()
 }

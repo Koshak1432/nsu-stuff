@@ -17,17 +17,22 @@ import java.util.Objects;
 @Entity
 @Table(name = "theater")
 public class Theater {
+    @Id
+    @Column(name = "id")
+    private Long id;
 
     @ToString.Exclude
-    @Id
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
-    @JoinColumn(name = "id", nullable = false)
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "id")
     private Building building;
 
     @Column(name = "capacity")
     @Positive
     @NotNull
     private Integer capacity;
+
+
 
     @Override
     public boolean equals(Object o) {

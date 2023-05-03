@@ -34,7 +34,7 @@ public interface ArtistRepository extends CrudRepository<Artist, Long> {
             	WHERE genre_id = :genreId
             )
             """, nativeQuery = true)
-    Collection<Artist> findByGenre(@Param("genreID") Long genreId);
+    Collection<Artist> findByGenre(@Param("genreId") Long genreId);
 
     @Query(value = """
             SELECT * FROM artist

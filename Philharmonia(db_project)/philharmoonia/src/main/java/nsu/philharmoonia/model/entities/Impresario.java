@@ -23,6 +23,7 @@ public class Impresario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Builder.Default
     @ToString.Exclude
     @ManyToMany(mappedBy = "impresarios", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Artist> artists = new LinkedHashSet<>();

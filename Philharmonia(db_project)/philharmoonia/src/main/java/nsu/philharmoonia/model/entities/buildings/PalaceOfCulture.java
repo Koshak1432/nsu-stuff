@@ -18,9 +18,13 @@ import java.util.Objects;
 @Table(name = "palace_of_culture")
 public class PalaceOfCulture {
     @Id
+    @Column(name = "id")
+    private Long id;
+
+    @MapsId
     @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
-    @JoinColumn(name = "id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "id")
     private Building building;
 
     @NotNull
