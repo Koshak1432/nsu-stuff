@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
+import org.hibernate.Hibernate;
+
+import java.util.Objects;
 
 @Builder
 @AllArgsConstructor
@@ -37,4 +40,20 @@ public class ContestPlace {
     @Column(name = "place")
     private Integer place;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        ContestPlace that = (ContestPlace) o;
+        return getContestPlaceKey() != null && Objects.equals(getContestPlaceKey(), that.getContestPlaceKey());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(contestPlaceKey);
+    }
 }

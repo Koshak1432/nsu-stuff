@@ -38,20 +38,20 @@ public class Impresario {
     @Column(name = "surname")
     private String surname;
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) {
-//            return true;
-//        }
-//        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-//            return false;
-//        }
-//        Impresario that = (Impresario) o;
-//        return getId() != null && Objects.equals(getId(), that.getId());
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return getClass().hashCode();
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        Impresario that = (Impresario) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

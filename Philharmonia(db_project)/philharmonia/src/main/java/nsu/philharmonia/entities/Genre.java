@@ -27,20 +27,20 @@ public class Genre {
     @ManyToMany(mappedBy = "genres")
     private Set<Artist> artists = new LinkedHashSet<>();
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) {
-//            return true;
-//        }
-//        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-//            return false;
-//        }
-//        Genre genre = (Genre) o;
-//        return getId() != null && Objects.equals(getId(), genre.getId());
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return getClass().hashCode();
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        Genre genre = (Genre) o;
+        return getId() != null && Objects.equals(getId(), genre.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

@@ -31,20 +31,20 @@ public class Estrade {
     @Column(name = "scene_height_centimeters")
     private Integer sceneHeightCentimeters;
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) {
-//            return true;
-//        }
-//        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-//            return false;
-//        }
-//        Estrade estrade = (Estrade) o;
-//        return getBuilding() != null && Objects.equals(getBuilding(), estrade.getBuilding());
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return getClass().hashCode();
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        Estrade estrade = (Estrade) o;
+        return getBuilding() != null && Objects.equals(getBuilding(), estrade.getBuilding());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

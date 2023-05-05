@@ -23,22 +23,22 @@ public class ContestPlaceKey implements Serializable {
     @Column(name = "artist_id")
     private Long artistId;
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) {
-//            return true;
-//        }
-//        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-//            return false;
-//        }
-//        ContestPlaceKey that = (ContestPlaceKey) o;
-//        return getPerformanceId() != null && Objects.equals(getPerformanceId(),
-//                                                            that.getPerformanceId()) && getArtistId() != null && Objects.equals(
-//                getArtistId(), that.getArtistId());
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(performanceId, artistId);
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        ContestPlaceKey that = (ContestPlaceKey) o;
+        return getPerformanceId() != null && Objects.equals(getPerformanceId(),
+                                                            that.getPerformanceId()) && getArtistId() != null && Objects.equals(
+                getArtistId(), that.getArtistId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(performanceId, artistId);
+    }
 }

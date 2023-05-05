@@ -31,20 +31,20 @@ public class PerformanceVenue {
     @NotNull
     private Integer area;
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) {
-//            return true;
-//        }
-//        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-//            return false;
-//        }
-//        PerformanceVenue that = (PerformanceVenue) o;
-//        return getBuilding() != null && Objects.equals(getBuilding(), that.getBuilding());
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return getClass().hashCode();
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        PerformanceVenue that = (PerformanceVenue) o;
+        return getBuilding() != null && Objects.equals(getBuilding(), that.getBuilding());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

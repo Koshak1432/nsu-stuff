@@ -3,6 +3,7 @@ package nsu.philharmoonia;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -24,20 +25,21 @@ public class PhilharmooniaApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setScene(new Scene(new StackPane(), 640, 480));
-        primaryStage.setTitle("ALAALALALAL");
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/scene1.fxml"));
+        fxmlLoader.setControllerFactory(context::getBean);
+        Parent root = fxmlLoader.load();
+        primaryStage.setScene(new Scene(root, 640, 480));
 
         primaryStage.show();
     }
 
     public void init() {
-//        SpringApplicationBuilder builder = new SpringApplicationBuilder(
-//                PhilharmooniaApplication.class);
+        SpringApplicationBuilder builder = new SpringApplicationBuilder(
+                PhilharmooniaApplication.class);
 //        builder.application().setWebApplicationType(WebApplicationType.NONE);
-//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/main.fxml"));
-        context = SpringApplication.run(PhilharmooniaApplication.class);
-//        fxmlLoader.setControllerFactory(context::getBean);
-
+        builder.headless(false);
+        String[] args = getParameters().getRaw().toArray(String[]::new);
+        context = builder.run(args);
     }
 
     @Override

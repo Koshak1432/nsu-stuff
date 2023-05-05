@@ -58,20 +58,20 @@ public class Artist {
     @ToString.Exclude
     private Set<ContestPlace> contestPlaces = new LinkedHashSet<>();
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) {
-//            return true;
-//        }
-//        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-//            return false;
-//        }
-//        Artist artist = (Artist) o;
-//        return getId() != null && Objects.equals(getId(), artist.getId());
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return getClass().hashCode();
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        Artist artist = (Artist) o;
+        return getId() != null && Objects.equals(getId(), artist.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
