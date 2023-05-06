@@ -7,13 +7,11 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class SceneController {
+public class StageManager {
     private Stage primaryStage;
     private final SpringFXMLLoader loader;
 
-    // open/close principle is broken :/
-
-    public SceneController(SpringFXMLLoader loader, Stage stage) {
+    public StageManager(SpringFXMLLoader loader, Stage stage) {
         this.loader = loader;
         this.primaryStage = stage;
     }
@@ -45,20 +43,4 @@ public class SceneController {
             return null;
         }
     }
-
-
-//    private void switchToScene(ActionEvent event, String fxml) throws IOException {
-//        root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(fxml)));
-//        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-//        stage.setScene(new Scene(root));
-//        stage.show();
-//    }
-//
-//    public void switchToScene1(ActionEvent event) throws IOException {
-//        switchToScene(event, "/fxml/scene1.fxml");
-//    }
-//
-//    public void switchToScene2(ActionEvent event) throws IOException {
-//        switchToScene(event, "/fxml/scene2.fxml");
-//    }
 }

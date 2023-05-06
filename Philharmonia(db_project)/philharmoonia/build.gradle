@@ -36,6 +36,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-dependencies:3.0.6'
+    implementation 'org.springframework.boot:spring-boot-starter-security:3.0.6'
+
 
     implementation 'org.flywaydb:flyway-core'
 //    compileOnly 'org.projectlombok:lombok'

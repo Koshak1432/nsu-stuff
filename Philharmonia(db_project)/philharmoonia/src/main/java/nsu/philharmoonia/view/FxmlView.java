@@ -1,26 +1,26 @@
 package nsu.philharmoonia.view;
 
 public enum FxmlView {
+    LOGIN {
+        @Override
+        public String getFxmlFile() {
+            return "/fxml/mainScene.fxml";
+        }
+
+        @Override
+        public String getTitle() {
+            return "scene1";
+        }
+    },
     MAIN {
         @Override
         public String getFxmlFile() {
-            return "/fxml/main.fxml";
+            return "/fxml/scene2.fxml";
         }
 
         @Override
         public String getTitle() {
-            return "Main";
-        }
-    },
-    ANOTHER {
-        @Override
-        public String getFxmlFile() {
-            return null;
-        }
-
-        @Override
-        public String getTitle() {
-            return null;
+            return "scene 2";
         }
     };
 

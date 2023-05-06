@@ -16,6 +16,8 @@ module philharmoonia {
     requires spring.data.commons;
     requires spring.data.jpa;
     requires spring.beans;
+    requires spring.security.core;
+    requires spring.security.config;
 
     opens nsu.philharmoonia to javafx.fxml;
     exports nsu.philharmoonia;
