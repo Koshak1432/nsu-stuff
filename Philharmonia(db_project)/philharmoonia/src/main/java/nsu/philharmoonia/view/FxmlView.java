@@ -4,23 +4,23 @@ public enum FxmlView {
     LOGIN {
         @Override
         public String getFxmlFile() {
-            return "/fxml/mainScene.fxml";
+            return "/fxml/login.fxml";
         }
 
         @Override
         public String getTitle() {
-            return "scene1";
+            return "Авторизация";
         }
     },
     MAIN {
         @Override
         public String getFxmlFile() {
-            return "/fxml/scene2.fxml";
+            return "/fxml/mainScene.fxml";
         }
 
         @Override
         public String getTitle() {
-            return "scene 2";
+            return "Система городской филармонии";
         }
     };
 

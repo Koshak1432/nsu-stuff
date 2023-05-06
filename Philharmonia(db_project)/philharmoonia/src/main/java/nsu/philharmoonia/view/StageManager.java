@@ -29,8 +29,8 @@ public class StageManager {
         scene.setRoot(root);
         primaryStage.setScene(scene);
         primaryStage.setTitle(title);
-//        primaryStage.sizeToScene();
-//        primaryStage.centerOnScreen();
+        primaryStage.sizeToScene();
+        primaryStage.centerOnScreen();
         primaryStage.show();
     }
 

@@ -8,18 +8,18 @@
 <?import javafx.scene.layout.VBox?>
 
 
-<FlowPane alignment="CENTER" columnHalignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="169.0" prefWidth="285.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nsu.philharmoonia.controllers">
+<FlowPane alignment="CENTER" columnHalignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="169.0" prefWidth="285.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nsu.philharmoonia.controllers.LoginController">
    <children>
       <VBox alignment="CENTER" prefHeight="110.0" prefWidth="176.0">
          <children>
-            <Label />
+            <Label fx:id="statusLabel" textFill="RED" />
             <TextField fx:id="loginField" promptText="Логин" />
             <TextField fx:id="passwordField" promptText="Пароль">
                <VBox.margin>
                   <Insets bottom="10.0" top="10.0" />
                </VBox.margin>
             </TextField>
-            <Button fx:id="loginButton" mnemonicParsing="false" text="Войти">
+            <Button fx:id="loginButton" mnemonicParsing="false" onAction="#loginButtonPressed" text="Войти">
                <VBox.margin>
                   <Insets />
                </VBox.margin>
