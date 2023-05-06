@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class StageManager {
-    private Stage primaryStage;
+    private final Stage primaryStage;
     private final SpringFXMLLoader loader;
 
     public StageManager(SpringFXMLLoader loader, Stage stage) {
