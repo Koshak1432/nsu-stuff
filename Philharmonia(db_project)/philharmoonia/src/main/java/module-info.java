@@ -15,7 +15,10 @@ module philharmoonia {
     requires org.hibernate.orm.core;
     requires spring.data.commons;
     requires spring.data.jpa;
+    requires spring.beans;
 
     opens nsu.philharmoonia to javafx.fxml;
     exports nsu.philharmoonia;
+    exports nsu.philharmoonia.view;
+    opens nsu.philharmoonia.view to javafx.fxml;
 }

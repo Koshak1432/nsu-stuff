@@ -1,4 +1,4 @@
-package nsu.philharmoonia;
+package nsu.philharmoonia.view;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

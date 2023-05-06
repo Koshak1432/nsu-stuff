@@ -2,14 +2,11 @@ package nsu.philharmoonia;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.WebApplicationType;
+import nsu.philharmoonia.view.FxmlView;
+import nsu.philharmoonia.view.SceneController;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -17,6 +14,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 @SpringBootApplication
 public class PhilharmooniaApplication extends Application {
     private ConfigurableApplicationContext context;
+    private SceneController controller;
 
     public static void main(String[] args) {
 //        SpringApplication.run(PhilharmooniaApplication.class, args);
@@ -25,12 +23,8 @@ public class PhilharmooniaApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/scene1.fxml"));
-        fxmlLoader.setControllerFactory(context::getBean);
-        Parent root = fxmlLoader.load();
-        primaryStage.setScene(new Scene(root, 640, 480));
-
-        primaryStage.show();
+        controller = context.getBean(SceneController.class, primaryStage);
+        controller.switchScene(FxmlView.MAIN);
     }
 
     public void init() {

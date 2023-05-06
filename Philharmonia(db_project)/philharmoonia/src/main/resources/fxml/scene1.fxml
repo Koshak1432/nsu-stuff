@@ -4,7 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nsu.philharmoonia.controllers.SceneController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nsu.philharmoonia.view.SceneController">
    <children>
       <Label layoutX="152.0" layoutY="55.0" text="scene 1" />
       <Button layoutX="274.0" layoutY="200.0" mnemonicParsing="false" onAction="#switchToScene2" text="switch to scene 2" />
