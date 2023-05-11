@@ -45,4 +45,16 @@ public interface ArtistRepository extends CrudRepository<Artist, Long> {
             )
             """, nativeQuery = true)
     Collection<Artist> findByImpresario(@Param("impresarioId") Long impresarioId);
+
+
+    // todo refactor to date since dont take part in performances
+    @Query(value = """
+            SELECT * FROM artist
+            WHERE id NOT IN
+            (
+                SELECT artist_id FROM contest_place JOIN performance p ON p.id = contest_place.performance_id
+                WHERE CURRENT_DATE - performance_date <= :days
+            )
+            """, nativeQuery = true)
+    Collection<Artist> findNotInContestForTime(@Param("days") Long days);
 }
