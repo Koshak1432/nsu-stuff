@@ -1,4 +1,4 @@
-package nsu.philharmoonia.model.services;
+package nsu.philharmoonia.services;
 
 import nsu.philharmoonia.model.entities.Impresario;
 import org.springframework.stereotype.Service;

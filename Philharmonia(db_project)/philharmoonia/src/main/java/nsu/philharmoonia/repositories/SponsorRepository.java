@@ -1,4 +1,4 @@
-package nsu.philharmoonia.model.repositories;
+package nsu.philharmoonia.repositories;
 
 import nsu.philharmoonia.model.entities.Sponsor;
 import org.springframework.data.repository.CrudRepository;

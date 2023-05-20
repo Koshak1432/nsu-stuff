@@ -1,4 +1,4 @@
-package nsu.philharmoonia.model.repositories;
+package nsu.philharmoonia.repositories;
 
 import nsu.philharmoonia.model.entities.PerformanceType;
 import org.springframework.data.repository.CrudRepository;

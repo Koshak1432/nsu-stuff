@@ -1,4 +1,4 @@
-package nsu.philharmoonia.model.repositories.buildings;
+package nsu.philharmoonia.repositories.buildings;
 
 import nsu.philharmoonia.model.entities.buildings.BuildingType;
 import org.springframework.data.repository.CrudRepository;

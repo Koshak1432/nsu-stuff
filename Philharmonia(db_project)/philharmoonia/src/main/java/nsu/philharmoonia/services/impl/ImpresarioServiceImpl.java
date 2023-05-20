@@ -1,9 +1,9 @@
-package nsu.philharmoonia.model.services.impl;
+package nsu.philharmoonia.services.impl;
 
 import nsu.philharmoonia.model.entities.Artist;
 import nsu.philharmoonia.model.entities.Impresario;
-import nsu.philharmoonia.model.repositories.ImpresarioRepository;
-import nsu.philharmoonia.model.services.ImpresarioService;
+import nsu.philharmoonia.repositories.ImpresarioRepository;
+import nsu.philharmoonia.services.ImpresarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

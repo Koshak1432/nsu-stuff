@@ -9,27 +9,25 @@
 <?import javafx.scene.layout.VBox?>
 
 
-<FlowPane alignment="CENTER" columnHalignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="169.0" prefWidth="285.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nsu.philharmoonia.controllers.LoginController">
-   <children>
-      <VBox alignment="CENTER" prefHeight="110.0" prefWidth="176.0">
-         <children>
-            <Label fx:id="statusLabel" textFill="RED" />
-            <TextField fx:id="loginField" promptText="Логин">
-               <VBox.margin>
-                  <Insets bottom="10.0" />
-               </VBox.margin>
-            </TextField>
-            <PasswordField fx:id="passwordField" promptText="Пароль">
-               <VBox.margin>
-                  <Insets bottom="10.0" />
-               </VBox.margin>
-            </PasswordField>
-            <Button fx:id="loginButton" mnemonicParsing="false" onAction="#loginButtonPressed" text="Войти">
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </Button>
-         </children>
-      </VBox>
-   </children>
+<FlowPane alignment="CENTER" columnHalignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+          minWidth="-Infinity" prefHeight="169.0" prefWidth="285.0" xmlns="http://javafx.com/javafx/19"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="nsu.philharmoonia.controllers.LoginController">
+   <VBox alignment="CENTER" prefHeight="110.0" prefWidth="176.0">
+      <Label fx:id="statusLabel" textFill="RED"/>
+      <TextField fx:id="loginField" promptText="Логин">
+         <VBox.margin>
+            <Insets bottom="10.0"/>
+         </VBox.margin>
+      </TextField>
+      <PasswordField fx:id="passwordField" promptText="Пароль">
+         <VBox.margin>
+            <Insets bottom="10.0"/>
+         </VBox.margin>
+      </PasswordField>
+      <Button fx:id="loginButton" mnemonicParsing="false" onAction="#loginButtonPressed" text="Войти">
+         <VBox.margin>
+            <Insets/>
+         </VBox.margin>
+      </Button>
+   </VBox>
 </FlowPane>

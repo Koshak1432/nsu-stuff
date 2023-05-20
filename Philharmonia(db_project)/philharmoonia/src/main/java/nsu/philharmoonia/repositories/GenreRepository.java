@@ -1,4 +1,4 @@
-package nsu.philharmoonia.model.repositories;
+package nsu.philharmoonia.repositories;
 
 import nsu.philharmoonia.model.entities.Genre;
 import org.springframework.data.jpa.repository.Query;
