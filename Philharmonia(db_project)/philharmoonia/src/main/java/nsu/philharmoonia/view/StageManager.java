@@ -17,7 +17,9 @@ public class StageManager {
     }
 
     public void switchScene(FxmlView view) {
+        System.out.println("fxml view: " + view.getTitle() + " " + view.getFxmlFile());
         Parent root = load(view.getFxmlFile());
+        System.out.println("LOADED: " + root);
         show(root, view.getTitle());
     }
 
@@ -39,6 +41,7 @@ public class StageManager {
             return loader.load(fxmlFileName);
         } catch (IOException e) {
             System.err.println("Couldn't load fxml view: " + fxmlFileName);
+            e.printStackTrace();
             Platform.exit();
             return null;
         }
