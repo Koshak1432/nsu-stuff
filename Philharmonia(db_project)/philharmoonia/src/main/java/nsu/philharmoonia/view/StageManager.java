@@ -11,16 +11,23 @@ public class StageManager {
     private final Stage primaryStage;
     private final SpringFXMLLoader loader;
 
+    public Stage getStage() {
+        return primaryStage;
+    }
+
     public StageManager(SpringFXMLLoader loader, Stage stage) {
         this.loader = loader;
         this.primaryStage = stage;
     }
 
     public void switchScene(FxmlView view) {
-        System.out.println("fxml view: " + view.getTitle() + " " + view.getFxmlFile());
         Parent root = load(view.getFxmlFile());
-        System.out.println("LOADED: " + root);
         show(root, view.getTitle());
+    }
+
+    public void showDialog(FxmlView view) {
+        Parent root = load(view.getFxmlFile());
+
     }
 
     private void show(Parent root, String title) {
@@ -40,9 +47,8 @@ public class StageManager {
         try {
             return loader.load(fxmlFileName);
         } catch (IOException e) {
-            System.err.println("Couldn't load fxml view: " + fxmlFileName);
+            System.err.println("Couldn't load fxml: " + fxmlFileName);
             e.printStackTrace();
-            Platform.exit();
             return null;
         }
     }

@@ -22,6 +22,17 @@ public enum FxmlView {
         public String getTitle() {
             return "Система городской филармонии";
         }
+    },
+    ADD_ARTIST_DIALOG {
+        @Override
+        public String getFxmlFile() {
+            return "/fxml/dialogs/addArtistDialog.fxml";
+        }
+
+        @Override
+        public String getTitle() {
+            return "Add artist";
+        }
     };
 
 

@@ -57,4 +57,5 @@ public interface ArtistRepository extends CrudRepository<Artist, Long> {
             )
             """, nativeQuery = true)
     Collection<Artist> findNotInContestForTime(@Param("days") Long days);
+    
 }

@@ -13,19 +13,19 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nsu.philharmoonia.controllers.ArtistsController">
-    <TableView editable="true" layoutX="248.0" layoutY="10.0" prefHeight="330.0" prefWidth="342.0" AnchorPane.bottomAnchor="60.0">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nsu.philharmoonia.controllers.artist.ArtistsController">
+    <TableView fx:id="table" editable="true" layoutX="248.0" layoutY="10.0" prefHeight="330.0" prefWidth="342.0" AnchorPane.bottomAnchor="60.0">
         <columns>
-            <TableColumn prefWidth="75.0" text="ID" />
-            <TableColumn prefWidth="75.0" text="Имя" />
-            <TableColumn prefWidth="75.0" text="Фамилия" />
+            <TableColumn fx:id="idCol" prefWidth="75.0" text="ID" />
+            <TableColumn fx:id="nameCol" prefWidth="75.0" text="Имя" />
+            <TableColumn fx:id="surnameCol" prefWidth="75.0" text="Фамилия" />
         </columns>
       <columnResizePolicy>
          <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
       </columnResizePolicy>
     </TableView>
     <VBox layoutX="14.0" layoutY="29.0" prefHeight="293.0" prefWidth="227.0" AnchorPane.topAnchor="29.0">
-        <Button fx:id="listAllButton" mnemonicParsing="false" text="Посмотреть всех">
+        <Button fx:id="listAllButton" mnemonicParsing="false" onAction="#listAllEntries" text="Посмотреть все">
            <VBox.margin>
                <Insets bottom="10.0" />
            </VBox.margin>
@@ -69,22 +69,22 @@
             </rowConstraints>
             <Label text="С" />
             <Label text="По" GridPane.rowIndex="1" />
-            <DatePicker GridPane.columnIndex="1" />
-            <DatePicker GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <DatePicker fx:id="dateSince" GridPane.columnIndex="1" />
+            <DatePicker fx:id="dateTo" GridPane.columnIndex="1" GridPane.rowIndex="1" />
         </GridPane>
     </VBox>
     <HBox alignment="TOP_CENTER" layoutX="256.0" layoutY="350.0" prefHeight="26.0" prefWidth="335.0">
-        <Button fx:id="addEntryButton" mnemonicParsing="false" text="Добавить">
+        <Button fx:id="addEntryButton" mnemonicParsing="false" onAction="#addArtist" text="Добавить">
            <HBox.margin>
                <Insets right="10.0" />
            </HBox.margin>
         </Button>
-        <Button fx:id="updateEntryButton" mnemonicParsing="false" text="Обновить">
+        <Button fx:id="updateEntryButton" mnemonicParsing="false" onAction="#updateArtist" text="Обновить">
            <HBox.margin>
                <Insets right="10.0" />
            </HBox.margin>
         </Button>
-        <Button fx:id="deleteEntryButton" mnemonicParsing="false" text="Удалить" />
+        <Button fx:id="deleteEntryButton" mnemonicParsing="false" onAction="#deleteArtist" text="Удалить" />
     </HBox>
 
 </AnchorPane>
