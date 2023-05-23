@@ -22,7 +22,8 @@ public class PhilharmooniaApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         controller = context.getBean(StageManager.class, primaryStage);
-        controller.switchScene(FxmlView.LOGIN);
+//        controller.switchScene(FxmlView.LOGIN);
+        controller.switchScene(FxmlView.MAIN);
     }
 
     public void init() {

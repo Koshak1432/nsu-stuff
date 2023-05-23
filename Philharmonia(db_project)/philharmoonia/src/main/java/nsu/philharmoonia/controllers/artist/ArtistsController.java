@@ -99,38 +99,47 @@ public class ArtistsController {
         table.setItems(observableList);
     }
 
-    @FXML
-    public void addArtist() {
-
-        //call dialog
-        //then fetch data from it
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/dialogs/addArtistDialog.fxml"));
+    private DialogPane getPane(FXMLLoader loader) {
         try {
-            DialogPane artistDialogPane = loader.load();
-            AddArtistController controller = loader.getController();
-            Dialog<ButtonType> dialog = new Dialog<>();
-            dialog.setDialogPane(artistDialogPane);
-            dialog.setTitle("Add artist title");
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            Optional<ButtonType> clickedButton = dialog.showAndWait();
-            if (clickedButton.isPresent()) {
-                if (clickedButton.get() == ButtonType.OK) {
-                    // todo validation in service??
-                    System.out.println("adding artist");
-                    Artist artistFromDialog = controller.getArtist();
-
-                    artistService.saveArtist(artistFromDialog);
-                }
-            }
-
+            return loader.load();
         } catch (IOException e) {
             System.err.println("COULDN'T load add artist dialog");
             e.printStackTrace();
+            return null;
+        }
+    }
+
+    Optional<ButtonType> showDialog(DialogPane dialogPane) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setDialogPane(dialogPane);
+        dialog.setTitle("Add artist title");
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        return dialog.showAndWait();
+    }
+
+    @FXML
+    public void addArtist() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/dialogs/addArtistDialog.fxml"));
+        DialogPane dialogPane = getPane(loader);
+        if (dialogPane == null) {
+            return;
+        }
+        Optional<ButtonType> clickedButton = showDialog(dialogPane);
+        AddArtistController controller = loader.getController();
+        if (clickedButton.isPresent()) {
+            if (clickedButton.get() == ButtonType.OK) {
+                // todo validation in service??
+                System.out.println("adding artist");
+                Artist artistFromDialog = controller.getArtist();
+                artistService.saveArtist(artistFromDialog);
+            }
         }
     }
 
     @FXML
     public void updateArtist() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/dialogs/updateArtistDialog.fxml"));
+
 
     }
 
