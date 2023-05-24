@@ -14,7 +14,7 @@ import java.io.Serializable;
 @ToString
 @Entity
 @Table(name = "sponsor", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "surname"})})
-public class Sponsor implements Serializable {
+public class Sponsor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -29,5 +29,4 @@ public class Sponsor implements Serializable {
     @ToString.Include
     @Column(name = "surname")
     private String surname;
-
 }

@@ -20,7 +20,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "performance")
-public class Performance implements Serializable {
+public class Performance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

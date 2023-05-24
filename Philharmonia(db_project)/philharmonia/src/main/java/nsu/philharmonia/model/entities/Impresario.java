@@ -18,7 +18,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "impresario", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "surname"})})
-public class Impresario implements Serializable {
+public class Impresario {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

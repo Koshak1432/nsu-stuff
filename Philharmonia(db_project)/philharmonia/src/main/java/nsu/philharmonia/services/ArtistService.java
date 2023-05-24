@@ -8,6 +8,6 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface ArtistService {
-    ResponseEntity<List<Artist>> getAll();
+    ResponseEntity<List<ArtistDTO>> getAll();
     ResponseEntity<ArtistDTO> getArtistById(Long id) throws NotFoundException;
 }

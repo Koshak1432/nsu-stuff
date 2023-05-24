@@ -1,19 +1,19 @@
 package nsu.philharmonia.model.dto;
 
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.Set;
 
-// todo maybe need segregation
 @RequiredArgsConstructor
 @Setter
 @Getter
-public class ArtistDTO {
+public class ImpresarioDTO {
     private Long id;
     private String name;
     private String surname;
-    private Set<GenreDTO> genres;
+    private Set<ArtistDTO> artists;
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ArtistServiceImpl implements ArtistService {
@@ -25,12 +26,13 @@ public class ArtistServiceImpl implements ArtistService {
         this.mapper = mapper;
     }
 
-
     @Override
-    public ResponseEntity<List<Artist>> getAll() {
+    public ResponseEntity<List<ArtistDTO>> getAll() {
         List<Artist> artists = (List<Artist>) artistRepository.findAll();
-        System.out.println(artists);
-        return new ResponseEntity<>(artists, HttpStatus.OK);
+        List<ArtistDTO> artistDTOS = artists.stream()
+                .map(artist -> mapper.map(artist, ArtistDTO.class))
+                .toList();
+        return new ResponseEntity<>(artistDTOS, HttpStatus.OK);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package nsu.philharmonia.model.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -17,11 +18,15 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "genre")
-public class Genre implements Serializable {
+public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
+    @NotBlank
+    @Column(name = "name")
+    private String name;
 
     @Builder.Default
     @ToString.Exclude
