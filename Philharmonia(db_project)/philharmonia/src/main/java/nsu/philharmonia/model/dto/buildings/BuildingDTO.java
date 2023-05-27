@@ -10,8 +10,5 @@ import lombok.Setter;
 public class BuildingDTO {
     private Long id;
     private String name;
-    private BuildingTypeDTO type;
+    private String typeName;
 }
-// todo remove type, need here type name only
-// map(building, buildingDTO): building.getType().getName(), buildingDTO::setTypeName()
-// что-то такое

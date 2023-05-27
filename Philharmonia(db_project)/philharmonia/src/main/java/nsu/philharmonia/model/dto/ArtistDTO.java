@@ -7,7 +7,6 @@ import lombok.*;
 
 import java.util.Set;
 
-// todo maybe need segregation
 @RequiredArgsConstructor
 @Setter
 @Getter
