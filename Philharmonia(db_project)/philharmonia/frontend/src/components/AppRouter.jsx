@@ -5,7 +5,6 @@ import {AuthContext} from "./context/AuthContext";
 
 const AppRouter = () => {
     const {isAuth, isLoading} = useContext(AuthContext);
-    console.log(false);
 
     if (isLoading) {
         return (

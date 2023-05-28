@@ -2,10 +2,9 @@ import React, {useContext} from 'react';
 import {Link} from "react-router-dom";
 import cl from './Navbar.module.css';
 import {AuthContext} from "../../context/AuthContext";
-import MyButton from "../button/MyButton";
 
 const Navbar = () => {
-    const {isAuth, setIsAuth} = useContext(AuthContext);
+    const {setIsAuth} = useContext(AuthContext);
     const logout = () => {
         setIsAuth(false);
         localStorage.removeItem("auth");
