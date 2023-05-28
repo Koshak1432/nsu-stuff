@@ -25,7 +25,6 @@ function Artists() {
 
     return (
         <div className="App">
-
             <MyButton onClick={() => setVisible(true)}>открыть модальное окно</MyButton>
             <ModalWindow visible={modalActive} setVisible={setVisible}>
                 <form>
