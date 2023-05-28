@@ -11,11 +11,11 @@ const Navbar = () => {
         localStorage.removeItem("auth");
     }
 
-
     return (
         <div className={cl.navbar}>
-            <MyButton onClick={logout}>Выйти</MyButton>
             <div>
+                <Link className={cl.link} to={"/login"}>Войти</Link>
+                <Link className={cl.link} to={"/logout"} onClick={logout}>Выйти</Link>
                 <Link className={cl.link} to={"/about"}>О сайте</Link>
                 <Link className={cl.link} to={"/artists"}>Артисты</Link>
                 <Link className={cl.link} to={"/impresarios"}>Импресарио</Link>

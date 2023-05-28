@@ -4,13 +4,12 @@
     padding: 0;
 }
 
-
 .navbar {
     height: 50px;
     width: 100vw;
     display: flex;
     align-items: center;
-    padding: 0 15px;
+    padding: 0 10px;
     background-color: darkseagreen;
 }
 
@@ -21,7 +20,7 @@
     text-decoration: none;
     padding: 3px 5px;
     margin-right: 5px;
-    margin-left: 10px;
+    margin-left: 5px;
     border: 2px solid black;
 }
 
