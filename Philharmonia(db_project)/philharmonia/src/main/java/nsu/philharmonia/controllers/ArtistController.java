@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping(Constants.BASE_API_PATH)
+@RequestMapping(Constants.BASE_API_PATH + "/artists")
 @Validated
 public class ArtistController {
     private final ArtistService artistService;
@@ -27,13 +27,18 @@ public class ArtistController {
         this.artistService = artistService;
     }
 
-    @GetMapping("/artists")
+    @GetMapping()
     public ResponseEntity<List<ArtistDTO>> getAllArtists() {
         return artistService.getAll();
     }
 
-    @GetMapping("/artist/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ArtistDTO> getArtist(@PathVariable("id") @Positive(message = "Artist id must be positive") Long id) throws NotFoundException {
         return artistService.getArtistById(id);
+    }
+
+    @PostMapping
+    public ResponseEntity<ArtistDTO> postArtist(@RequestBody ArtistDTO artistDTO) {
+        return artistService.addArtist(artistDTO);
     }
 }

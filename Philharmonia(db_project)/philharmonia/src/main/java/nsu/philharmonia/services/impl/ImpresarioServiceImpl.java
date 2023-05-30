@@ -32,4 +32,13 @@ public class ImpresarioServiceImpl implements ImpresarioService {
         return new ResponseEntity<>(impresarioDTOS, HttpStatus.OK);
 
     }
+
+    @Override
+    public ResponseEntity<List<ImpresarioDTO>> findByArtistId(Long id) {
+        List<Impresario> impresarios = (List<Impresario>) impresarioRepository.findByArtist(id);
+        List<ImpresarioDTO> impresarioDTOS = impresarios.stream()
+                .map(impresario -> mapper.map(impresario, ImpresarioDTO.class))
+                .toList();
+        return new ResponseEntity<>(impresarioDTOS, HttpStatus.OK);
+    }
 }

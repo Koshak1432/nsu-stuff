@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ImpresarioService {
     ResponseEntity<List<ImpresarioDTO>> getAll();
+
+    ResponseEntity<List<ImpresarioDTO>> findByArtistId(Long id);
 }

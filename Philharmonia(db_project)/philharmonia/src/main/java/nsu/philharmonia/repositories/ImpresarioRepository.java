@@ -11,12 +11,11 @@ import java.util.Collection;
 @Repository
 public interface ImpresarioRepository extends CrudRepository<Impresario, Long> {
 
-
     @Query(value = """
         SELECT * FROM impresario
         WHERE id IN
         (
-            SELECT artist_id FROM artist_to_impresario
+            SELECT impresario_id FROM artist_to_impresario
             WHERE artist_id = :artistId
         )
 """, nativeQuery = true)

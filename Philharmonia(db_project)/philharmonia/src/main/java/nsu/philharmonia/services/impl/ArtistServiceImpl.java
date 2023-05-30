@@ -42,6 +42,13 @@ public class ArtistServiceImpl implements ArtistService {
         return new ResponseEntity<>(artistDTO, HttpStatus.OK);
     }
 
+    @Override
+    public ResponseEntity<ArtistDTO> addArtist(ArtistDTO artistDTO) {
+        Artist artist = mapper.map(artistDTO, Artist.class);
+        artistRepository.save(artist);
+        return new ResponseEntity<>(artistDTO, HttpStatus.OK);
+    }
+
     private Artist findArtist(Long id) throws NotFoundException {
         Optional<Artist> artistOptional = artistRepository.findById(id);
         if (artistOptional.isEmpty()) {
