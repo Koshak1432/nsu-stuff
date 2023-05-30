@@ -41,4 +41,14 @@ public class ArtistController {
     public ResponseEntity<ArtistDTO> postArtist(@RequestBody ArtistDTO artistDTO) {
         return artistService.addArtist(artistDTO);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateArtist(@RequestBody ArtistDTO artistDTO) throws NotFoundException {
+        return artistService.updateArtist(artistDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteArtist(@PathVariable("id") @Positive Long id) {
+        return artistService.deleteArtist(id);
+    }
 }

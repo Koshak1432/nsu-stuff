@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import MyButton from "../components/UI/button/MyButton";
 import ModalWindow from "../components/UI/modal/ModalWindow";
-import {getAll} from "../services/ArtistService";
+import {deleteArtist, getAll, postArtist, updateArtist} from "../services/ArtistService";
 import AddArtistForm from "../components/forms/AddArtistForm";
 import {getImpresariosByArtistId} from "../services/ImpresarioService";
 
@@ -35,10 +35,6 @@ function Artists() {
 
     useEffect( () => {
         let mounted = true;
-        // getAll().then(artists => artists?.map(artist => {
-        //     setArtist(artist);
-        //     // console.log(artist);
-        // }));
         getAll().then(artists => {
             if (mounted) {
                 setArtists(artists);
@@ -51,13 +47,21 @@ function Artists() {
     }, [artists]);
 
     const createArtist = (newArtist) => {
-        setArtists([...artists, newArtist]);
-        console.log(artists);
+        postArtist(newArtist).then(response => console.log(response));
     }
 
     const onRowClick = (id) => {
         getImpresariosByArtistId(id).then(impresarios => setImpresarios(impresarios));
     }
+
+    const handleUpdateArtist = (updArtist) => {
+        updateArtist(updArtist);
+    }
+
+    const handleDeleteArtist = (id) => {
+        deleteArtist(id);
+    }
+
 
     return (
         <div className="App">
@@ -84,6 +88,7 @@ function Artists() {
                             <th>ID</th>
                             <th>Имя</th>
                             <th>Фамилия</th>
+                            <th>Действия</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -92,6 +97,10 @@ function Artists() {
                                 <td>{artist.id}</td>
                                 <td>{artist.name}</td>
                                 <td>{artist.surname}</td>
+                                <td>
+                                    <MyButton onClick={() => updateArtist(artist.id)}>Обновить</MyButton>
+                                    <MyButton onClick={() => deleteArtist(artist.id).then(response => console.log(response))}>Удалить</MyButton>
+                                </td>
                             </tr>
                         ))
                         }

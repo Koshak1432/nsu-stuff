@@ -6,3 +6,21 @@ export async function getAll() {
     const response = await axios.get(ARTIST_BASE_API_URL).catch(error => console.error(error));
     return response.data;
 }
+
+export async function postArtist(newArtist) {
+    const response = await axios.post(ARTIST_BASE_API_URL, newArtist).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function updateArtist(updArtist) {
+    const path = ARTIST_BASE_API_URL + "/" + updArtist.id;
+    const response = await axios.post(path, updArtist).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function deleteArtist(id) {
+    const path = ARTIST_BASE_API_URL + "/" + id;
+
+    const response = await axios.delete(path, id).catch(error => console.error(error));
+    return response.data;
+}

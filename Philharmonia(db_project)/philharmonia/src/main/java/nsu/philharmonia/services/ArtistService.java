@@ -11,4 +11,10 @@ public interface ArtistService {
     ResponseEntity<List<ArtistDTO>> getAll();
     ResponseEntity<ArtistDTO> getArtistById(Long id) throws NotFoundException;
     ResponseEntity<ArtistDTO> addArtist(ArtistDTO artistDTO);
+
+    ResponseEntity<Void> updateArtist(ArtistDTO artistDTO) throws NotFoundException;
+
+    ResponseEntity<Void> deleteArtist(Long id);
+
+
 }

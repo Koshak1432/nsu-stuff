@@ -29,9 +29,7 @@ public class ArtistServiceImpl implements ArtistService {
     @Override
     public ResponseEntity<List<ArtistDTO>> getAll() {
         List<Artist> artists = (List<Artist>) artistRepository.findAll();
-        List<ArtistDTO> artistDTOS = artists.stream()
-                .map(artist -> mapper.map(artist, ArtistDTO.class))
-                .toList();
+        List<ArtistDTO> artistDTOS = artists.stream().map(artist -> mapper.map(artist, ArtistDTO.class)).toList();
         return new ResponseEntity<>(artistDTOS, HttpStatus.OK);
     }
 
@@ -47,6 +45,23 @@ public class ArtistServiceImpl implements ArtistService {
         Artist artist = mapper.map(artistDTO, Artist.class);
         artistRepository.save(artist);
         return new ResponseEntity<>(artistDTO, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Void> updateArtist(ArtistDTO artistDTO) throws NotFoundException {
+        Artist artist = artistRepository.findById(artistDTO.getId()).orElseThrow( () ->
+                new NotFoundException("Not found artist to update"));
+        artist.setName(artistDTO.getName());
+        artist.setSurname(artistDTO.getSurname());
+        //todo update properly other
+        artistRepository.save(artist);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteArtist(Long id) {
+        artistRepository.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private Artist findArtist(Long id) throws NotFoundException {

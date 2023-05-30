@@ -6,9 +6,7 @@ const clearArtist = {
     id: 0,
     name: '',
     surname: '',
-    genres: [{
-        name: ''
-    }]
+    genres: []
 }
 const AddArtistForm = ({setClose, create}) => {
     const [artist, setArtist] = useState(clearArtist);
