@@ -9,6 +9,5 @@ export async function getAll() {
 export async function getImpresariosByArtistId(id) {
     const path = IMPRESARIO_BASE_API_URL + "/artists/" + id;
     const response = await axios.get(path).catch(error => console.error(error));
-    console.log(response);
     return response.data;
 }

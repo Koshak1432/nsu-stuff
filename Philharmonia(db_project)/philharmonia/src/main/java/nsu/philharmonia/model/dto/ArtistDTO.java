@@ -15,4 +15,5 @@ public class ArtistDTO {
     private String name;
     private String surname;
     private Set<GenreDTO> genres;
+
 }

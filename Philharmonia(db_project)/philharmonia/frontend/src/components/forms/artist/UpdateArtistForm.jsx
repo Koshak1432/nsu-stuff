@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
-import MyInput from "../UI/input/MyInput";
-import MyButton from "../UI/button/MyButton";
+import React, {useEffect, useState} from 'react';
+import MyInput from "../../UI/input/MyInput";
+import MyButton from "../../UI/button/MyButton";
 
 const clearArtist = {
     id: 0,
@@ -8,13 +8,21 @@ const clearArtist = {
     surname: '',
     genres: []
 }
-const AddArtistForm = ({setClose, create}) => {
+const AddArtistForm = ({setClose, update, initialArtist}) => {
     const [artist, setArtist] = useState(clearArtist);
 
-    const addNew = (event) => {
+    useEffect(() => {
+        if (initialArtist) {
+            setArtist(initialArtist);
+            console.log(initialArtist);
+        }
+    }, [initialArtist]);
+
+
+    const updateArtist = (event) => {
         event.preventDefault(); //to disable button submit type in form
         console.log(artist);
-        create(artist); // function that will add artist to the server
+        update(artist); // function that will add artist to the server
         // validate and send to server?
         setClose();
         setArtist(clearArtist);
@@ -22,6 +30,7 @@ const AddArtistForm = ({setClose, create}) => {
 
     return (
         <form>
+            <h2>Добавление/обновление артиста</h2>
             <MyInput
                 type={"text"}
                 placeholder={"Имя"}
@@ -35,7 +44,7 @@ const AddArtistForm = ({setClose, create}) => {
                 onChange={e => setArtist({...artist, surname: e.target.value})}
 
             />
-            <MyButton onClick={addNew}>Создать артиста</MyButton>
+            <MyButton onClick={updateArtist}>Обновить</MyButton>
         </form>
     );
 };

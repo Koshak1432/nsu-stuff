@@ -7,6 +7,18 @@ export async function getAll() {
     return response.data;
 }
 
+export async function getArtistById(id) {
+    const path = ARTIST_BASE_API_URL + "/" + id;
+    const response = await axios.get(path).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function getArtistByContestId(id) {
+    const path = ARTIST_BASE_API_URL + "/" + id;
+    const response = await axios.get(path).catch(error => console.error(error));
+    return response.data;
+}
+
 export async function postArtist(newArtist) {
     const response = await axios.post(ARTIST_BASE_API_URL, newArtist).catch(error => console.error(error));
     return response.data;
@@ -14,7 +26,7 @@ export async function postArtist(newArtist) {
 
 export async function updateArtist(updArtist) {
     const path = ARTIST_BASE_API_URL + "/" + updArtist.id;
-    const response = await axios.post(path, updArtist).catch(error => console.error(error));
+    const response = await axios.put(path, updArtist).catch(error => console.error(error));
     return response.data;
 }
 

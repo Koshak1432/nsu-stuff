@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ArtistServiceImpl implements ArtistService {
@@ -41,6 +41,7 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<ArtistDTO> addArtist(ArtistDTO artistDTO) {
         Artist artist = mapper.map(artistDTO, Artist.class);
         artistRepository.save(artist);
@@ -48,9 +49,14 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<Void> updateArtist(ArtistDTO artistDTO) throws NotFoundException {
-        Artist artist = artistRepository.findById(artistDTO.getId()).orElseThrow( () ->
-                new NotFoundException("Not found artist to update"));
+        Artist artist = artistRepository.findById(artistDTO.getId()).orElseThrow(
+                () -> new NotFoundException("Not found artist to update"));
+        System.out.println(
+                "updating artist: name: " + artist.getName() + "\nsurname: " + artist.getSurname() + "\ngenres: " + artist.getGenres()
+                        + "\nimpresarios: " + artist.getImpresarios() + "\nperformances: " + artist.getPerformances()
+                        + "\ncontestPlaces: " + artist.getContestPlaces());
         artist.setName(artistDTO.getName());
         artist.setSurname(artistDTO.getSurname());
         //todo update properly other

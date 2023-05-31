@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import MyButton from "../components/UI/button/MyButton";
 import ModalWindow from "../components/UI/modal/ModalWindow";
 import {deleteArtist, getAll, postArtist, updateArtist} from "../services/ArtistService";
-import AddArtistForm from "../components/forms/AddArtistForm";
+import AddArtistForm from "../components/forms/artist/AddArtistForm";
 import {getImpresariosByArtistId} from "../services/ImpresarioService";
+import UpdateArtistForm from "../components/forms/artist/UpdateArtistForm";
 
 
 function Artists() {
@@ -12,9 +13,11 @@ function Artists() {
         multigenreModal: false,
         genreModal: false,
         impresarioModal: false,
+        updateModal: false,
     }
 
     const [artists, setArtists] = useState([]);
+    const [artist, setArtist] = useState({});
     const [impresarios, setImpresarios] = useState([]);
     const [modals, setModals] = useState(clearModals);
 
@@ -31,46 +34,50 @@ function Artists() {
         impresarioModal: function () {
             return () => setModals({...modals, impresarioModal: false});
         },
+        updateModal: function () {
+            return () => setModals({...modals, updateModal: false});
+        },
     }
 
-    useEffect( () => {
+
+    // const timeToRefresh = () => {
+    const refresh = () => {
         let mounted = true;
         getAll().then(artists => {
             if (mounted) {
                 setArtists(artists);
             }
         });
+        return () => mounted = false;
+    }
 
-        return () => {
-            mounted = false;
-        }
-    }, [artists]);
+    useEffect(() => {
+        refresh();
+    }, []);
 
     const createArtist = (newArtist) => {
-        postArtist(newArtist).then(response => console.log(response));
+        postArtist(newArtist).then(response => console.log(response)).then(refresh);
     }
 
-    const onRowClick = (id) => {
-        getImpresariosByArtistId(id).then(impresarios => setImpresarios(impresarios));
+    const onRowClick = (artistInRow) => {
+        getImpresariosByArtistId(artistInRow.id).then(impresarios => setImpresarios(impresarios));
+        setArtist(artistInRow);
     }
 
-    const handleUpdateArtist = (updArtist) => {
-        updateArtist(updArtist);
-    }
-
-    const handleDeleteArtist = (id) => {
-        deleteArtist(id);
+    const handleUpdateArtist = (artistToUpd) => {
+        setModals({...modals, updateModal: true});
     }
 
 
     return (
         <div className="App">
             <MyButton onClick={() => setModals({...modals, addModal: true})}>Добавить артиста</MyButton>
-            <MyButton onClick={() => setModals({...modals, multigenreModal: true})}>Найти многожанровых артистов</MyButton>
+            <MyButton onClick={() => setModals({...modals, multigenreModal: true})}>Найти многожанровых
+                артистов</MyButton>
             <MyButton onClick={() => setModals({...modals, genreModal: true})}>Найти артистов по жанру</MyButton>
-            <MyButton onClick={() => setModals({...modals, impresarioModal: true})}>Найти артистов по импресарио</MyButton>
+            <MyButton onClick={() => setModals({...modals, impresarioModal: true})}>Найти артистов по
+                импресарио</MyButton>
             <ModalWindow visible={modals.addModal} setClose={modalsClose.addModal()}>
-                <h1>Добавить артиста</h1>
                 <AddArtistForm create={createArtist} setClose={modalsClose.addModal()}/>
             </ModalWindow>
             <ModalWindow visible={modals.genreModal} setClose={modalsClose.genreModal()}>
@@ -80,30 +87,40 @@ function Artists() {
                 <AddArtistForm create={createArtist} setClose={modalsClose.impresarioModal()}/>
             </ModalWindow>
 
+            <ModalWindow visible={modals.updateModal} setClose={modalsClose.updateModal()}>
+                <UpdateArtistForm initialArtist={artist} update={updateArtist} setClose={modalsClose.updateModal()}/>
+            </ModalWindow>
+
             <div>
                 <h2>Артисты</h2>
                 <table className={"table"}>
                     <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Имя</th>
-                            <th>Фамилия</th>
-                            <th>Действия</th>
-                        </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Имя</th>
+                        <th>Фамилия</th>
+                        <th>Жанры</th>
+                        <th>Действия</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {artists.map(artist => (
-                            <tr key={artist.id} onClick={() => onRowClick(artist.id)}>
+                    {
+                        artists.map(artist => (
+                            <tr key={artist.id} onClick={() => onRowClick(artist)}>
                                 <td>{artist.id}</td>
                                 <td>{artist.name}</td>
                                 <td>{artist.surname}</td>
+                                <td>{artist.genres.map(g => {
+                                    return <li>{g.name}</li>
+                                })
+                                }</td>
                                 <td>
-                                    <MyButton onClick={() => updateArtist(artist.id)}>Обновить</MyButton>
-                                    <MyButton onClick={() => deleteArtist(artist.id).then(response => console.log(response))}>Удалить</MyButton>
+                                    <MyButton onClick={() => handleUpdateArtist(artist)}>Обновить</MyButton>
+                                    <MyButton onClick={() => deleteArtist(artist.id).then(refresh)}>Удалить</MyButton>
                                 </td>
                             </tr>
                         ))
-                        }
+                    }
                     </tbody>
                 </table>
             </div>
