@@ -1,7 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import MyButton from "../components/UI/button/MyButton";
-import {deleteArtist} from "../services/ArtistService";
-import {getAllImpresarios, getArtistsByImpresarioId, getImpresariosByArtistId} from "../services/ImpresarioService";
+import {getAllImpresarios, getArtistsByImpresarioId} from "../services/ImpresarioService";
 
 const Impresarios = () => {
 
@@ -14,7 +12,6 @@ const Impresarios = () => {
             setArtists(artists);
             console.log(artists);
         });
-        // setArtist(impresarioInRow);
     }
 
     useEffect(() => {

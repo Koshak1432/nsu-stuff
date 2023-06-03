@@ -8,4 +8,6 @@ import java.util.List;
 public interface GenreService {
 
     ResponseEntity<List<GenreDTO>> getByArtistId(Long artistId);
+
+    ResponseEntity<List<GenreDTO>> getAll();
 }

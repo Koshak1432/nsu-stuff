@@ -30,4 +30,11 @@ public class GenreServiceImpl implements GenreService {
         List<GenreDTO> genreDTOS = genres.stream().map(genre -> mapper.map(genre, GenreDTO.class)).toList();
         return new ResponseEntity<>(genreDTOS, HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<List<GenreDTO>> getAll() {
+        List<Genre> genres = (List<Genre>) genreRepository.findAll();
+        List<GenreDTO> genreDTOS = genres.stream().map(genre -> mapper.map(genre, GenreDTO.class)).toList();
+        return new ResponseEntity<>(genreDTOS, HttpStatus.OK);
+    }
 }

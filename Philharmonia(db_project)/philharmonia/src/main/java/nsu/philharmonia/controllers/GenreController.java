@@ -29,6 +29,11 @@ public class GenreController {
         return genreService.getByArtistId(id);
     }
 
+    @GetMapping
+    public ResponseEntity<List<GenreDTO>> getAll() {
+        return genreService.getAll();
+    }
+
     //todo getByImpresarioId
 
 }

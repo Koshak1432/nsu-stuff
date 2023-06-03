@@ -15,12 +15,17 @@ const Navbar = () => {
             <div>
                 <Link className={cl.link} to={"/login"}>Войти</Link>
                 <Link className={cl.link} to={"/logout"} onClick={logout}>Выйти</Link>
-                <Link className={cl.link} to={"/about"}>О сайте</Link>
+                <Link className={cl.link} to={"/genres"}>Жанры</Link>
                 <Link className={cl.link} to={"/artists"}>Артисты</Link>
                 <Link className={cl.link} to={"/impresarios"}>Импресарио</Link>
-                <Link className={cl.link} to={"/buildings"}>Сооружения</Link>
                 <Link className={cl.link} to={"/performances"}>Выступления</Link>
                 <Link className={cl.link} to={"/contests"}>Конкурсы</Link>
+                <Link className={cl.link} to={"/sponsors"}>Спонсоры</Link>
+                <Link className={cl.link} to={"/buildings"}>Сооружения</Link>
+                <Link className={cl.link} to={"/theaters"}>Театры</Link>
+                <Link className={cl.link} to={"/venues"}>Площади</Link>
+                <Link className={cl.link} to={"/palaces"}>Дворцы культуры</Link>
+                <Link className={cl.link} to={"/estrades"}>Эстрады</Link>
             </div>
         </div>
     );

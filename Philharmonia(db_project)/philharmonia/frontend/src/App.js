@@ -1,6 +1,6 @@
 import {BrowserRouter} from 'react-router-dom'
 import Navbar from "./components/UI/navbar/Navbar";
-import AppRouter from "./components/AppRouter";
+import AppRouter from "./components/router/AppRouter";
 import {AuthContext} from "./components/context/AuthContext";
 import {useEffect, useState} from "react";
 

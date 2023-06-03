@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import MyButton from "../components/UI/button/MyButton";
 import ModalWindow from "../components/UI/modal/ModalWindow";
-import {deleteArtist, getAll, postArtist, updateArtist} from "../services/ArtistService";
+import {deleteArtist, getAllArtists, postArtist, updateArtist} from "../services/ArtistService";
 import AddArtistForm from "../components/forms/artist/AddArtistForm";
 import {getImpresariosByArtistId} from "../services/ImpresarioService";
 import UpdateArtistForm from "../components/forms/artist/UpdateArtistForm";
@@ -38,7 +38,7 @@ function Artists() {
 
     const refresh = () => {
         let mounted = true;
-        getAll().then(artists => {
+        getAllArtists().then(artists => {
             if (mounted) {
                 setArtists(artists);
                 console.log(artists);
