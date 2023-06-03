@@ -25,9 +25,6 @@ function Artists() {
         addModal: function () {
             return () => setModals({...modals, addModal: false});
         },
-        multigenreModal: function () {
-            return () => setModals({...modals, multigenreModal: false});
-        },
         genreModal: function () {
             return () => setModals({...modals, genreModal: false});
         },
@@ -39,13 +36,12 @@ function Artists() {
         },
     }
 
-
-    // const timeToRefresh = () => {
     const refresh = () => {
         let mounted = true;
         getAll().then(artists => {
             if (mounted) {
                 setArtists(artists);
+                console.log(artists);
             }
         });
         return () => mounted = false;
@@ -72,7 +68,7 @@ function Artists() {
     return (
         <div className="App">
             <MyButton onClick={() => setModals({...modals, addModal: true})}>Добавить артиста</MyButton>
-            <MyButton onClick={() => setModals({...modals, multigenreModal: true})}>Найти многожанровых
+            <MyButton onClick={() => console.log("todo")}>Найти многожанровых
                 артистов</MyButton>
             <MyButton onClick={() => setModals({...modals, genreModal: true})}>Найти артистов по жанру</MyButton>
             <MyButton onClick={() => setModals({...modals, impresarioModal: true})}>Найти артистов по
@@ -111,7 +107,7 @@ function Artists() {
                                 <td>{artist.name}</td>
                                 <td>{artist.surname}</td>
                                 <td>{artist.genres.map(g => {
-                                    return <li>{g.name}</li>
+                                    return <li key={g.name}>{g.name}</li>
                                 })
                                 }</td>
                                 <td>

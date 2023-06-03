@@ -8,7 +8,7 @@ const clearArtist = {
     surname: '',
     genres: []
 }
-const AddArtistForm = ({setClose, update, initialArtist}) => {
+const UpdateArtistForm = ({setClose, update, initialArtist}) => {
     const [artist, setArtist] = useState(clearArtist);
 
     useEffect(() => {
@@ -42,11 +42,10 @@ const AddArtistForm = ({setClose, update, initialArtist}) => {
                 placeholder={"Фамилия"}
                 value={artist.surname}
                 onChange={e => setArtist({...artist, surname: e.target.value})}
-
             />
             <MyButton onClick={updateArtist}>Обновить</MyButton>
         </form>
     );
 };
 
-export default AddArtistForm;
+export default UpdateArtistForm;

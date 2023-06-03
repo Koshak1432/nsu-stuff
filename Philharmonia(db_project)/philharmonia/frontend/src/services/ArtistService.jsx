@@ -36,3 +36,4 @@ export async function deleteArtist(id) {
     const response = await axios.delete(path, id).catch(error => console.error(error));
     return response.data;
 }
+

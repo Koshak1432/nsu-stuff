@@ -15,5 +15,9 @@ public class ArtistDTO {
     private String name;
     private String surname;
     private Set<GenreDTO> genres;
-
+    @JsonBackReference
+    private Set<ImpresarioDTO> impresarios;
+    @JsonBackReference
+    private Set<PerformanceDTO> performances;
+    private Set<ContestPlaceDTO> contests;
 }

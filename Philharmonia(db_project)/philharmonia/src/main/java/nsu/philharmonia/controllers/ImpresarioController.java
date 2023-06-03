@@ -3,7 +3,9 @@ package nsu.philharmonia.controllers;
 
 import jakarta.validation.constraints.Positive;
 import nsu.philharmonia.config.Constants;
+import nsu.philharmonia.model.dto.ArtistDTO;
 import nsu.philharmonia.model.dto.ImpresarioDTO;
+import nsu.philharmonia.model.exceptions.NotFoundException;
 import nsu.philharmonia.services.ImpresarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +32,14 @@ public class ImpresarioController {
         return impresarioService.getAll();
     }
 
-    @GetMapping("/artists/{id}")
+    @GetMapping("/by-artist/{id}")
     public ResponseEntity<List<ImpresarioDTO>> getByArtistId(@PathVariable("id") @Positive Long id) {
-        return impresarioService.findByArtistId(id);
+        return impresarioService.getByArtistId(id);
+    }
+
+    @GetMapping("/{id}/artists")
+    public ResponseEntity<List<ArtistDTO>> getArtistsByImpresarioId(@PathVariable("id") @Positive Long id) throws
+            NotFoundException {
+        return impresarioService.getArtistsByImpresarioId(id);
     }
 }
