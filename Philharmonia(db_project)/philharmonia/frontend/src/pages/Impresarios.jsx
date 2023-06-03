@@ -18,7 +18,8 @@ const Impresarios = () => {
         getAllImpresarios().then(impresarios => {
             setImpresarios(impresarios);
             console.log(impresarios);
-    })}, [])
+        })
+    }, [])
 
 
     return (
@@ -47,32 +48,37 @@ const Impresarios = () => {
                 </table>
             </div>
 
-            <h2>Артисты</h2>
-            <table className={"table"}>
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Имя</th>
-                    <th>Фамилия</th>
-                    <th>Жанры</th>
-                </tr>
-                </thead>
-                <tbody>
-                {
-                    artists.map(artist => (
-                        <tr key={artist.id}>
-                            <td>{artist.id}</td>
-                            <td>{artist.name}</td>
-                            <td>{artist.surname}</td>
-                            <td>{artist.genres.map(g => {
-                                return <li key={g.name}>{g.name}</li>
-                            })
-                            }</td>
+            {artists.length > 0 &&
+                <div>
+                    <h2>Артисты</h2>
+                    <table className={"table"}>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Имя</th>
+                            <th>Фамилия</th>
+                            <th>Жанры</th>
                         </tr>
-                    ))
-                }
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody>
+                        {
+                            artists.map(artist => (
+                                <tr key={artist.id}>
+                                    <td>{artist.id}</td>
+                                    <td>{artist.name}</td>
+                                    <td>{artist.surname}</td>
+                                    <td>{artist.genres.map(g => {
+                                        return <li key={g.name}>{g.name}</li>
+                                    })
+                                    }</td>
+                                </tr>
+                            ))
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
         </div>
     );
 };

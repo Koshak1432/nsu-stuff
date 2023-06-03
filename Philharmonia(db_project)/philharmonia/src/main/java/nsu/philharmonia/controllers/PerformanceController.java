@@ -2,6 +2,7 @@ package nsu.philharmonia.controllers;
 
 import jakarta.validation.constraints.Positive;
 import nsu.philharmonia.config.Constants;
+import nsu.philharmonia.model.dto.ContestPlaceDTO;
 import nsu.philharmonia.model.dto.PerformanceDTO;
 import nsu.philharmonia.model.exceptions.NotFoundException;
 import nsu.philharmonia.services.PerformanceService;
@@ -30,9 +31,14 @@ public class PerformanceController {
         return performanceService.getAll();
     }
 
-    @GetMapping("/performance/{id}")
-    public ResponseEntity<PerformanceDTO> getAllPerformances(@PathVariable("id") @Positive Long id) throws
+    @GetMapping("/performances/{id}")
+    public ResponseEntity<PerformanceDTO> getById(@PathVariable("id") @Positive Long id) throws
             NotFoundException {
         return performanceService.getById(id);
+    }
+
+    @GetMapping("/contests")
+    public ResponseEntity<List<ContestPlaceDTO>> getAllContests() {
+        return performanceService.getAllContests();
     }
 }

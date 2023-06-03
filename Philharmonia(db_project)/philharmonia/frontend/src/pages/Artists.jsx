@@ -121,28 +121,30 @@ function Artists() {
                 </table>
             </div>
 
-            <div>
-                <h2>Импресарио</h2>
-                <table className={"table"}>
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Имя</th>
-                        <th>Фамилия</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {impresarios.map(impresario => (
-                        <tr key={impresario.id}>
-                            <td>{impresario.id}</td>
-                            <td>{impresario.name}</td>
-                            <td>{impresario.surname}</td>
+            {impresarios.length > 0 &&
+                <div>
+                    <h2>Импресарио</h2>
+                    <table className={"table"}>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Имя</th>
+                            <th>Фамилия</th>
                         </tr>
-                    ))
-                    }
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                        {impresarios.map(impresario => (
+                            <tr key={impresario.id}>
+                                <td>{impresario.id}</td>
+                                <td>{impresario.name}</td>
+                                <td>{impresario.surname}</td>
+                            </tr>
+                        ))
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
 
         </div>
 

@@ -18,6 +18,4 @@ public class PerformanceDTO {
     private String typeName;
     private SponsorDTO sponsor;
     private BuildingDTO building;
-    @JsonManagedReference
-    private Set<ArtistDTO> artists;
 }

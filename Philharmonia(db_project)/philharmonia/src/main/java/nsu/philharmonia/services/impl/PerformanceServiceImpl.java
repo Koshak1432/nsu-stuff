@@ -1,8 +1,11 @@
 package nsu.philharmonia.services.impl;
 
+import nsu.philharmonia.model.dto.ContestPlaceDTO;
 import nsu.philharmonia.model.dto.PerformanceDTO;
+import nsu.philharmonia.model.entities.ContestPlace;
 import nsu.philharmonia.model.entities.Performance;
 import nsu.philharmonia.model.exceptions.NotFoundException;
+import nsu.philharmonia.repositories.ContestPlaceRepository;
 import nsu.philharmonia.repositories.PerformanceRepository;
 import nsu.philharmonia.services.PerformanceService;
 import org.modelmapper.ModelMapper;
@@ -17,19 +20,30 @@ import java.util.Optional;
 @Service
 public class PerformanceServiceImpl implements PerformanceService {
     private PerformanceRepository performanceRepository;
+    private ContestPlaceRepository contestRepository;
     private ModelMapper mapper;
 
+    @Override
+    public ResponseEntity<List<ContestPlaceDTO>> getAllContests() {
+        List<ContestPlace> contestPlaces = (List<ContestPlace>) contestRepository.findAll();
+        List<ContestPlaceDTO> contestPlaceDTOS = contestPlaces.stream().map(
+                contest -> mapper.map(contest, ContestPlaceDTO.class)).toList();
+        return new ResponseEntity<>(contestPlaceDTOS, HttpStatus.OK);
+    }
+
     @Autowired
-    public PerformanceServiceImpl(PerformanceRepository performanceRepository, ModelMapper mapper) {
+    public PerformanceServiceImpl(PerformanceRepository performanceRepository, ModelMapper mapper,
+                                  ContestPlaceRepository contestRepository) {
         this.performanceRepository = performanceRepository;
         this.mapper = mapper;
+        this.contestRepository = contestRepository;
     }
+
     @Override
     public ResponseEntity<List<PerformanceDTO>> getAll() {
         List<Performance> performances = (List<Performance>) performanceRepository.findAll();
-        List<PerformanceDTO> performanceDTOS = performances.stream()
-                .map(p -> mapper.map(p, PerformanceDTO.class))
-                .toList();
+        List<PerformanceDTO> performanceDTOS = performances.stream().map(
+                p -> mapper.map(p, PerformanceDTO.class)).toList();
         return new ResponseEntity<>(performanceDTOS, HttpStatus.OK);
     }
 

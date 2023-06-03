@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {getAllImpresarios} from "../services/ImpresarioService";
-import {getAllSponsors} from "../services/Sponsors";
+import {getAllSponsors} from "../services/SponsorService";
 
 const Sponsors = () => {
 
