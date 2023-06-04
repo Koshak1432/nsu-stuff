@@ -17,7 +17,7 @@ const CreateModal = ({open, columns, onClose, onSubmit}) => {
 
     return (
         <Dialog open={open}>
-            <DialogTitle textAlign="center">Добавить новый жанр</DialogTitle>
+            <DialogTitle textAlign="center">Добавить</DialogTitle>
             <DialogContent>
                 <form onSubmit={(e) => e.preventDefault()}>
                     <Stack
@@ -27,18 +27,8 @@ const CreateModal = ({open, columns, onClose, onSubmit}) => {
                             gap: '1.5rem',
                         }}
                     >
-                        {/*{columns.filter((col, i) => i > 0).map(col => (*/}
-                        {/*    <TextField*/}
-                        {/*        key={column.accessorKey}*/}
-                        {/*        label={column.header}*/}
-                        {/*        name={column.accessorKey}*/}
-                        {/*        onChange={(e) =>*/}
-                        {/*            setValues({...values, [e.target.name]: e.target.value})*/}
-                        {/*        }*/}
-                        {/*    />*/}
-                        {/*))}*/}
                         {columns.map((column, i) => (
-                            i !== 0 && <TextField
+                            i > 0 && <TextField
                                 key={column.accessorKey}
                                 label={column.header}
                                 name={column.accessorKey}
@@ -53,7 +43,7 @@ const CreateModal = ({open, columns, onClose, onSubmit}) => {
             <DialogActions sx={{p: '1.25rem'}}>
                 <Button onClick={onClose}>Отмена</Button>
                 <Button color="secondary" onClick={handleSubmit} variant="contained">
-                    Добавить жанр
+                    Добавить
                 </Button>
             </DialogActions>
         </Dialog>

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,6 +23,24 @@ public class SponsorServiceImpl implements SponsorService {
     public SponsorServiceImpl(SponsorRepository sponsorRepository, ModelMapper mapper) {
         this.sponsorRepository = sponsorRepository;
         this.mapper = mapper;
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<SponsorDTO> saveSponsor(SponsorDTO sponsor) {
+        Sponsor saved = sponsorRepository.findById(sponsor.getId()).map(s -> {
+            s.setName(sponsor.getName());
+            s.setSurname(sponsor.getSurname());
+            return sponsorRepository.save(s);
+        }).orElseGet(() -> sponsorRepository.save(mapper.map(sponsor, Sponsor.class)));
+        return new ResponseEntity<>(mapper.map(saved, SponsorDTO.class), HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Void> deleteSponsor(Long id) {
+        sponsorRepository.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override

@@ -17,3 +17,19 @@ export async function getArtistsByImpresarioId(id) {
     const response = await axios.get(path).catch(error => console.error(error));
     return response.data;
 }
+
+export async function addImpresario(impresario) {
+    const response = await axios.post(IMPRESARIO_BASE_API_URL, impresario).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function updateImpresario(impresario) {
+    const response = await axios.put(IMPRESARIO_BASE_API_URL, impresario).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function deleteImpresario(id) {
+    const path = IMPRESARIO_BASE_API_URL + "/" + id;
+    const response = await axios.delete(path).catch(error => console.error(error));
+    return response.data;
+}

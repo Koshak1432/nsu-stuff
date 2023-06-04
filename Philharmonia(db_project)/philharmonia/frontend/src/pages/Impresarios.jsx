@@ -1,84 +1,115 @@
-import React, {useEffect, useState} from 'react';
-import {getAllImpresarios, getArtistsByImpresarioId} from "../services/ImpresarioService";
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {addImpresario, deleteImpresario, getAllImpresarios, updateImpresario} from "../services/ImpresarioService";
+import {Box, Button, IconButton, Tooltip} from "@mui/material";
+import {Delete, Edit} from "@mui/icons-material";
+import {MaterialReactTable} from "material-react-table";
+import CreateModal from "../components/UI/CreateModal";
 
 const Impresarios = () => {
+    const columns = useMemo(() => [
+        {
+            header: "ID",
+            accessorKey: "id",
+            enableEditing: false,
+        },
+        {
+            header: "Имя",
+            accessorKey: "name",
+        },
+        {
+            header: "Фамилия",
+            accessorKey: "surname",
+        }
+    ], []);
 
+    const [createModalOpen, setCreateModalOpen] = useState(false);
     const [impresarios, setImpresarios] = useState([]);
-    const [artists, setArtists] = useState([]);
+    const [validationErrors, setValidationErrors] = useState({});
 
 
-    const onRowClick = (impresarioInRow) => {
-        getArtistsByImpresarioId(impresarioInRow.id).then(artists => {
-            setArtists(artists);
-            console.log(artists);
-        });
-    }
+    const handleCreateNewRow = (values) => {
+        addImpresario({...values, id: 0}).then(() => refreshData());
+    };
 
-    useEffect(() => {
+    const handleSaveRowEdits = async ({exitEditingMode, row, values}) => {
+        if (!Object.keys(validationErrors).length) {
+            impresarios[row.index] = values;
+            console.log(values);
+            updateImpresario(values).then(() => refreshData());
+            exitEditingMode(); //required to exit editing mode and close modal
+        }
+    };
+
+    const handleDeleteRow = useCallback(
+        (row) => {
+            if (!confirm(`Are you sure you want to delete ${row.getValue("name")} ${row.getValue("surname")}`)) {
+                return;
+            }
+            deleteImpresario(row.getValue("id")).then(() => refreshData());
+        },
+        [],
+    );
+
+    const handleCancelRowEdits = () => {
+        setValidationErrors({});
+    };
+
+    const refreshData = () => {
         getAllImpresarios().then(impresarios => {
             setImpresarios(impresarios);
             console.log(impresarios);
         })
+    };
+    useEffect(() => {
+        refreshData();
     }, [])
-
 
     return (
         <div>
             <div>
-                <h2>Импресарио</h2>
-                <table className={"table"}>
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Имя</th>
-                        <th>Фамилия</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {
-                        impresarios.map(impresario => (
-                            <tr key={impresario.id} onClick={() => onRowClick(impresario)}>
-                                <td>{impresario.id}</td>
-                                <td>{impresario.name}</td>
-                                <td>{impresario.surname}</td>
-                            </tr>
-                        ))
-                    }
-                    </tbody>
-                </table>
+                <MaterialReactTable
+                    displayColumnDefOptions={{
+                        'mrt-row-actions': {
+                            size: 60,
+                        },
+                    }}
+                    columns={columns}
+                    data={impresarios}
+                    editingMode={"modal"}
+                    enableEditing={true}
+                    onEditingRowSave={handleSaveRowEdits}
+                    onEditingRowCancel={handleCancelRowEdits}
+                    renderRowActions={({row, table}) => (
+                        <Box sx={{display: 'flex', gap: '1rem'}}>
+                            <Tooltip arrow placement="left" title="Edit">
+                                <IconButton onClick={() => table.setEditingRow(row)}>
+                                    <Edit/>
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip arrow placement="right" title="Delete">
+                                <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+                                    <Delete/>
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
+                    )}
+                    renderTopToolbarCustomActions={() => (
+                        <Button
+                            color="secondary"
+                            onClick={() => setCreateModalOpen(true)}
+                            variant="contained"
+                        >
+                            Добавить импресарио
+                        </Button>
+                    )}
+                />
             </div>
-
-            {artists.length > 0 &&
-                <div>
-                    <h2>Артисты</h2>
-                    <table className={"table"}>
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Имя</th>
-                            <th>Фамилия</th>
-                            <th>Жанры</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {
-                            artists.map(artist => (
-                                <tr key={artist.id}>
-                                    <td>{artist.id}</td>
-                                    <td>{artist.name}</td>
-                                    <td>{artist.surname}</td>
-                                    <td>{artist.genres.map(g => {
-                                        return <li key={g.name}>{g.name}</li>
-                                    })
-                                    }</td>
-                                </tr>
-                            ))
-                        }
-                        </tbody>
-                    </table>
-                </div>
-            }
-
+            <CreateModal
+                columns={columns}
+                open={createModalOpen}
+                onClose={() => setCreateModalOpen(false)}
+                onSubmit={handleCreateNewRow}
+            />
         </div>
     );
 };

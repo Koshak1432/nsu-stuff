@@ -19,15 +19,11 @@ public class GenreServiceImpl implements GenreService {
     private final GenreRepository genreRepository;
     private final ModelMapper mapper;
 
-//    @Override
-//    public ResponseEntity<GenreDTO> addGenre(GenreDTO genreDTO) {
-//        Optional<Genre> genreOptional = genreRepository.findByName(genreDTO.getName());
-//        Genre genre = genreOptional.orElseGet(Genre::new);
-//        genre.setName(genreDTO.getName());
-//        Genre saved = genreRepository.save(genre);
-//        return new ResponseEntity<>(mapper.map(saved, GenreDTO.class), HttpStatus.OK);
-//    }
-
+    @Autowired
+    public GenreServiceImpl(GenreRepository genreRepository, ModelMapper mapper) {
+        this.genreRepository = genreRepository;
+        this.mapper = mapper;
+    }
 
     @Override
     @Transactional
@@ -44,13 +40,6 @@ public class GenreServiceImpl implements GenreService {
             return genreRepository.save(g);
         }).orElseGet(() -> genreRepository.save(mapper.map(genre, Genre.class)));
         return new ResponseEntity<>(mapper.map(saved, GenreDTO.class), HttpStatus.OK);
-    }
-
-
-    @Autowired
-    public GenreServiceImpl(GenreRepository genreRepository, ModelMapper mapper) {
-        this.genreRepository = genreRepository;
-        this.mapper = mapper;
     }
 
     @Override

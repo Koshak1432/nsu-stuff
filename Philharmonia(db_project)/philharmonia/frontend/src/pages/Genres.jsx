@@ -25,7 +25,6 @@ const Genres = () => {
 
 
     const handleCreateNewRow = (values) => {
-        //todo here is post request and then update table
         addGenre({id: 0, name: values.name}).then(() => refreshData());
     };
 
@@ -41,7 +40,6 @@ const Genres = () => {
             genres[row.index] = values;
             console.log(values);
             updateGenre(values).then(() => refreshData());
-            //todo send/receive api updates here, then refetch or update local table data for re-render
             exitEditingMode(); //required to exit editing mode and close modal
         }
     };
@@ -52,9 +50,6 @@ const Genres = () => {
                 return;
             }
             deleteGenre(row.getValue("id")).then(() => refreshData());
-            //todo send api delete request here, then refetch or update local table data for re-render
-            // genres.splice(row.index, 1);
-            // setGenres([...genres]);
         },
         [],
     );
@@ -65,10 +60,7 @@ const Genres = () => {
 
 
     useEffect(() => {
-        getAllGenres().then(genres => {
-            setGenres(genres);
-            console.log(genres);
-        })
+        refreshData();
     }, [])
 
 
@@ -113,7 +105,6 @@ const Genres = () => {
                 />
             </div>
             <CreateModal
-                // columns={columns.filter((cols, i) => i > 0)}
                 columns={columns}
                 open={createModalOpen}
                 onClose={() => setCreateModalOpen(false)}

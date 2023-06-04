@@ -15,6 +15,5 @@ public class ImpresarioDTO {
     private Long id;
     private String name;
     private String surname;
-    @JsonManagedReference
-    private Set<ArtistDTO> artists;
+//    private Set<ArtistDTO> artists;
 }

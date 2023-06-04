@@ -13,4 +13,7 @@ public interface ImpresarioService {
     ResponseEntity<List<ImpresarioDTO>> getByArtistId(Long id);
 
     ResponseEntity<List<ArtistDTO>> getArtistsByImpresarioId(Long id) throws NotFoundException;
+
+    ResponseEntity<ImpresarioDTO> addImpresario(ImpresarioDTO impresario);
+    ResponseEntity<Void> deleteImpresario(Long id);
 }

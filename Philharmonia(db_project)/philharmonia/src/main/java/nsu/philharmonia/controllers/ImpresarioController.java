@@ -42,4 +42,20 @@ public class ImpresarioController {
             NotFoundException {
         return impresarioService.getArtistsByImpresarioId(id);
     }
+
+    @PostMapping
+    public ResponseEntity<ImpresarioDTO> addImpresario(@RequestBody ImpresarioDTO impresario) {
+        return impresarioService.addImpresario(impresario);
+    }
+
+    @PutMapping
+    public ResponseEntity<ImpresarioDTO> updateImpresario(@RequestBody ImpresarioDTO impresario) {
+        return impresarioService.addImpresario(impresario);
+        //todo maybe update
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteImpresario(@PathVariable("id") @Positive Long id) {
+        return impresarioService.deleteImpresario(id);
+    }
 }

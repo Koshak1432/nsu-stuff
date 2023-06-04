@@ -9,5 +9,7 @@ public interface SponsorService {
 
     ResponseEntity<List<SponsorDTO>> getAll();
 
+    ResponseEntity<SponsorDTO> saveSponsor(SponsorDTO sponsor);
+    ResponseEntity<Void> deleteSponsor(Long id);
 
 }

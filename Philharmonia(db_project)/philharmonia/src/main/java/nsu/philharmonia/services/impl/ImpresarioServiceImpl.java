@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,25 @@ public class ImpresarioServiceImpl implements ImpresarioService {
         this.impresarioRepository = impresarioRepository;
         this.mapper = modelMapper;
     }
+
+    @Override
+    @Transactional
+    public ResponseEntity<ImpresarioDTO> addImpresario(ImpresarioDTO impresario) {
+        Impresario saved = impresarioRepository.findById(impresario.getId()).map(i -> {
+            i.setName(impresario.getName());
+            i.setSurname(impresario.getSurname());
+            return impresarioRepository.save(i);
+        }).orElseGet(() -> impresarioRepository.save(mapper.map(impresario, Impresario.class)));
+        return new ResponseEntity<>(mapper.map(saved, ImpresarioDTO.class), HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Void> deleteImpresario(Long id) {
+        impresarioRepository.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @Override
     public ResponseEntity<List<ImpresarioDTO>> getAll() {
         List<Impresario> impresarios = (List<Impresario>) impresarioRepository.findAll();
