@@ -27,8 +27,8 @@ const CreateModal = ({open, columns, onClose, onSubmit}) => {
                             gap: '1.5rem',
                         }}
                     >
-                        {columns.map((column, i) => (
-                            i > 0 && <TextField
+                        {columns.map(column => (
+                            <TextField
                                 key={column.accessorKey}
                                 label={column.header}
                                 name={column.accessorKey}
