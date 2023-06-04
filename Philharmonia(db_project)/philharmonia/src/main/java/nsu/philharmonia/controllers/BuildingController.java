@@ -44,19 +44,10 @@ public class BuildingController {
         return buildingService.deleteBuilding(id);
     }
 
-    @GetMapping("/estrades")
-    public ResponseEntity<List<EstradeDTO>> getEstrades() {
-        return buildingService.getEstrades();
-    }
 
     @GetMapping("/theaters")
     public ResponseEntity<List<TheaterDTO>> getTheaters() {
         return buildingService.getTheaters();
-    }
-
-    @GetMapping("/venues")
-    public ResponseEntity<List<PerformanceVenueDTO>> getVenues() {
-        return buildingService.getPerformanceVenues();
     }
 
     @GetMapping("/palaces")

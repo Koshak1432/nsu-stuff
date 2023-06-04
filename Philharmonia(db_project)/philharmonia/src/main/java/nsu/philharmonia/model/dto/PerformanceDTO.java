@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import nsu.philharmonia.model.dto.buildings.BuildingDTO;
 
+import java.util.Date;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -18,4 +19,5 @@ public class PerformanceDTO {
     private String typeName;
     private SponsorDTO sponsor;
     private BuildingDTO building;
+    private Date performanceDate;
 }

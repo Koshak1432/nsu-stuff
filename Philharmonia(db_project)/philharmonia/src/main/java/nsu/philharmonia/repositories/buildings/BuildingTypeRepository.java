@@ -1,6 +1,5 @@
 package nsu.philharmonia.repositories.buildings;
 
-import nsu.philharmonia.model.entities.buildings.Building;
 import nsu.philharmonia.model.entities.buildings.BuildingType;
 import org.springframework.data.repository.CrudRepository;
 

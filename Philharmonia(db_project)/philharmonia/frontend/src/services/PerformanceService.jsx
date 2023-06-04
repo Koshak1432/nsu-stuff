@@ -24,6 +24,22 @@ export async function getAllContests() {
     return response.data;
 }
 
+export async function addPerformance(performance) {
+    const response = await axios.post(PERFORMANCE_BASE_API_URL, performance).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function updatePerformance(performance) {
+    const response = await axios.put(PERFORMANCE_BASE_API_URL, performance).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function deletePerformance(id) {
+    const path = PERFORMANCE_BASE_API_URL + "/" + id;
+    const response = await axios.delete(path).catch(error => console.error(error));
+    return response.data;
+}
+
 
 //todo imlement in server
 export async function getContestById(id) {

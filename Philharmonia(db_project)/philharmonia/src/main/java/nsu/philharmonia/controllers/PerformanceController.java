@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Positive;
 import nsu.philharmonia.config.Constants;
 import nsu.philharmonia.model.dto.ContestPlaceDTO;
 import nsu.philharmonia.model.dto.PerformanceDTO;
+import nsu.philharmonia.model.exceptions.InvalidInputException;
 import nsu.philharmonia.model.exceptions.NotFoundException;
 import nsu.philharmonia.services.PerformanceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,23 @@ public class PerformanceController {
     public ResponseEntity<PerformanceDTO> getById(@PathVariable("id") @Positive Long id) throws
             NotFoundException {
         return performanceService.getById(id);
+    }
+
+    @PostMapping
+    public ResponseEntity<PerformanceDTO> addPerformance(@RequestBody PerformanceDTO performance) throws
+            InvalidInputException {
+        return performanceService.savePerformance(performance);
+    }
+
+    @PutMapping
+    public ResponseEntity<PerformanceDTO> updatePerformance(@RequestBody PerformanceDTO performance) throws
+            InvalidInputException {
+        return performanceService.savePerformance(performance);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePerformance(@PathVariable("id") @Positive Long id) {
+        return performanceService.deletePerformance(id);
     }
 
     @GetMapping("/contests/distribution")

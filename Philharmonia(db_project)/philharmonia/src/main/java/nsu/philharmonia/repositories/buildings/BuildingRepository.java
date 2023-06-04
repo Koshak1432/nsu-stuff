@@ -11,14 +11,5 @@ import java.util.Optional;
 
 @Repository
 public interface BuildingRepository extends CrudRepository<Building, Long> {
-
-//    @Query(value = """
-//            SELECT * FROM building_type
-//            WHERE building_type.name = :name
-//            """, nativeQuery = true)
-//    Optional<BuildingType> findBuildingTypeByName(@Param("name") String name);
-
-    @Query("SELECT new BuildingType(type.id, type.name) FROM BuildingType type where type.name = :name")
-    Optional<BuildingType> findBuildingTypeByName(@Param("name") String name);
-
+    Optional<Building> findBuildingByName(String name);
 }

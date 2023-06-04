@@ -1,11 +1,17 @@
 package nsu.philharmonia.services.impl;
 
-import nsu.philharmonia.model.dto.GenreDTO;
-import nsu.philharmonia.model.dto.buildings.*;
-import nsu.philharmonia.model.entities.Genre;
-import nsu.philharmonia.model.entities.buildings.*;
+import nsu.philharmonia.model.dto.buildings.BuildingDTO;
+import nsu.philharmonia.model.dto.buildings.PalaceOfCultureDTO;
+import nsu.philharmonia.model.dto.buildings.TheaterDTO;
+import nsu.philharmonia.model.entities.buildings.Building;
+import nsu.philharmonia.model.entities.buildings.BuildingType;
+import nsu.philharmonia.model.entities.buildings.PalaceOfCulture;
+import nsu.philharmonia.model.entities.buildings.Theater;
 import nsu.philharmonia.model.exceptions.InvalidInputException;
-import nsu.philharmonia.repositories.buildings.*;
+import nsu.philharmonia.repositories.buildings.BuildingRepository;
+import nsu.philharmonia.repositories.buildings.BuildingTypeRepository;
+import nsu.philharmonia.repositories.buildings.PalaceOfCultureRepository;
+import nsu.philharmonia.repositories.buildings.TheaterRepository;
 import nsu.philharmonia.services.BuildingService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,21 +26,16 @@ public class BuildingServiceImpl implements BuildingService {
 
     private final BuildingRepository buildingRepository;
     private final BuildingTypeRepository buildingTypeRepository;
-    private final EstradeRepository estradeRepository;
     private final PalaceOfCultureRepository palaceOfCultureRepository;
-    private final PerformanceVenueRepository performanceVenueRepository;
     private final TheaterRepository theaterRepository;
     private final ModelMapper mapper;
 
     @Autowired
-    public BuildingServiceImpl(BuildingRepository buildingRepository, EstradeRepository estradeRepository,
-                               PalaceOfCultureRepository palaceOfCultureRepository,
-                               PerformanceVenueRepository performanceVenueRepository,
-                               TheaterRepository theaterRepository, BuildingTypeRepository buildingTypeRepository, ModelMapper mapper) {
+    public BuildingServiceImpl(BuildingRepository buildingRepository,
+                               PalaceOfCultureRepository palaceOfCultureRepository, TheaterRepository theaterRepository,
+                               BuildingTypeRepository buildingTypeRepository, ModelMapper mapper) {
         this.buildingRepository = buildingRepository;
-        this.estradeRepository = estradeRepository;
         this.palaceOfCultureRepository = palaceOfCultureRepository;
-        this.performanceVenueRepository = performanceVenueRepository;
         this.theaterRepository = theaterRepository;
         this.buildingTypeRepository = buildingTypeRepository;
         this.mapper = mapper;
@@ -50,9 +51,9 @@ public class BuildingServiceImpl implements BuildingService {
             b.setBuildingType(type);
             return buildingRepository.save(b);
         }).orElseGet(() -> {
-            Building readyToMap = mapper.map(building, Building.class);
-            readyToMap.setBuildingType(type);
-            return buildingRepository.save(readyToMap);
+            Building newBuilding = mapper.map(building, Building.class);
+            newBuilding.setBuildingType(type);
+            return buildingRepository.save(newBuilding);
         });
         return new ResponseEntity<>(mapper.map(saved, BuildingDTO.class), HttpStatus.OK);
     }
@@ -70,12 +71,6 @@ public class BuildingServiceImpl implements BuildingService {
         return new ResponseEntity<>(buildingDTOS, HttpStatus.OK);
     }
 
-    @Override
-    public ResponseEntity<List<EstradeDTO>> getEstrades() {
-        List<Estrade> estrades = (List<Estrade>) estradeRepository.findAll();
-        List<EstradeDTO> estradeDTOS = estrades.stream().map(e -> mapper.map(e, EstradeDTO.class)).toList();
-        return new ResponseEntity<>(estradeDTOS, HttpStatus.OK);
-    }
 
     @Override
     public ResponseEntity<List<TheaterDTO>> getTheaters() {
@@ -90,13 +85,5 @@ public class BuildingServiceImpl implements BuildingService {
         List<PalaceOfCultureDTO> palaceOfCultureDTOS = palacesOfCulture.stream().map(
                 e -> mapper.map(e, PalaceOfCultureDTO.class)).toList();
         return new ResponseEntity<>(palaceOfCultureDTOS, HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<List<PerformanceVenueDTO>> getPerformanceVenues() {
-        List<PerformanceVenue> performanceVenues = (List<PerformanceVenue>) performanceVenueRepository.findAll();
-        List<PerformanceVenueDTO> performanceVenueDTOS = performanceVenues.stream().map(
-                e -> mapper.map(e, PerformanceVenueDTO.class)).toList();
-        return new ResponseEntity<>(performanceVenueDTOS, HttpStatus.OK);
     }
 }

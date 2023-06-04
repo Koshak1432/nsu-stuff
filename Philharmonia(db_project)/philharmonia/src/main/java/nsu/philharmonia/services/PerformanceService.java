@@ -2,6 +2,7 @@ package nsu.philharmonia.services;
 
 import nsu.philharmonia.model.dto.ContestPlaceDTO;
 import nsu.philharmonia.model.dto.PerformanceDTO;
+import nsu.philharmonia.model.exceptions.InvalidInputException;
 import nsu.philharmonia.model.exceptions.NotFoundException;
 import org.springframework.http.ResponseEntity;
 
@@ -16,4 +17,7 @@ public interface PerformanceService {
 
     ResponseEntity<List<ContestPlaceDTO>> getDistribution();
     ResponseEntity<List<ContestPlaceDTO>> getDistributionByContestId(Long id);
+
+    ResponseEntity<PerformanceDTO> savePerformance(PerformanceDTO performance) throws InvalidInputException;
+    ResponseEntity<Void> deletePerformance(Long id);
 }

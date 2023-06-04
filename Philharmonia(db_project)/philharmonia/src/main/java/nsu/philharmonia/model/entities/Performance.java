@@ -8,6 +8,7 @@ import nsu.philharmonia.model.entities.buildings.Building;
 import org.hibernate.Hibernate;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -58,6 +59,10 @@ public class Performance {
     @ToString.Exclude
     @OneToMany(mappedBy = "performance", orphanRemoval = true)
     private Set<ContestPlace> contestPlaces = new LinkedHashSet<>();
+
+    @Column(name = "performance_date")
+    @Temporal(TemporalType.DATE)
+    private Date performanceDate;
 
     @Override
     public boolean equals(Object o) {

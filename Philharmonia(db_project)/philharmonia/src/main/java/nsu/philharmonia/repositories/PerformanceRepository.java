@@ -23,6 +23,10 @@ public interface PerformanceRepository extends CrudRepository<Performance, Long>
 
     List<Performance> findPerformancesByPerformanceTypeName(String name);
 
+    @Query(value = """
+""")
+    List<PerformanceType> findPerformanceTypeByName(String name);
+
 
 
 
