@@ -24,8 +24,6 @@ const Contests = () => {
             setDistribution(distribution);
             console.log(distribution);
         })
-
-
     }
 
     //todo как-то надо артистов и выступление соотнести, подтянуть по составному ключу артистов и выступления

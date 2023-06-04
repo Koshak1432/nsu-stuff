@@ -22,8 +22,8 @@ const Impresarios = () => {
         }
     ], []);
 
-    const [createModalOpen, setCreateModalOpen] = useState(false);
     const [impresarios, setImpresarios] = useState([]);
+    const [createModalOpen, setCreateModalOpen] = useState(false);
     const [validationErrors, setValidationErrors] = useState({});
 
 

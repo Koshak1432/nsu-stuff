@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {addBuilding, deleteBuilding, getAllBuildings, updateBuilding} from "../../services/BuildingService";
-import {Box, Button, IconButton, Tooltip} from "@mui/material";
+import {Box, Button, IconButton, Tooltip, Typography} from "@mui/material";
 import {Delete, Edit} from "@mui/icons-material";
 import {MaterialReactTable} from "material-react-table";
 import CreateModal from "../../components/UI/CreateModal";
@@ -26,6 +26,7 @@ const Buildings = () => {
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [buildings, setBuildings] = useState([]);
     const [validationErrors, setValidationErrors] = useState({});
+    const [specificTypes, setSpecificTypes] = useState([]);
 
     const handleCreateNewRow = (values) => {
         addBuilding({...values, id: 0}).then(() => refreshData());
@@ -60,6 +61,8 @@ const Buildings = () => {
             console.log(buildings);
         })
     };
+
+
     useEffect(() => {
         refreshData();
     }, [])
@@ -68,6 +71,7 @@ const Buildings = () => {
     return (
         <div>
             <div>
+                <h2>Сооружения</h2>
                 <MaterialReactTable
                     displayColumnDefOptions={{
                         'mrt-row-actions': {
@@ -102,6 +106,18 @@ const Buildings = () => {
                         >
                             Добавить сооружение
                         </Button>
+                    )}
+                    renderDetailPanel={({ row }) => (
+                        <Box
+                            sx={{
+                                display: 'grid',
+                                margin: 'auto',
+                                gridTemplateColumns: '1fr 1fr',
+                                width: '100%',
+                            }}
+                        >
+                            <div>{row.index}</div>
+                        </Box>
                     )}
                 />
             </div>

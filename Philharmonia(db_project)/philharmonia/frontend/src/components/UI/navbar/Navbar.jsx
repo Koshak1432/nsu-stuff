@@ -23,9 +23,7 @@ const Navbar = () => {
                 <Link className={cl.link} to={"/sponsors"}>Спонсоры</Link>
                 <Link className={cl.link} to={"/buildings"}>Сооружения</Link>
                 <Link className={cl.link} to={"/theaters"}>Театры</Link>
-                <Link className={cl.link} to={"/venues"}>Площади</Link>
                 <Link className={cl.link} to={"/palaces"}>Дворцы культуры</Link>
-                <Link className={cl.link} to={"/estrades"}>Эстрады</Link>
             </div>
         </div>
     );

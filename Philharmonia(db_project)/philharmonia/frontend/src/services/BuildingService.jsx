@@ -24,3 +24,9 @@ export async function deleteBuilding(id) {
     const response = await axios.delete(path).catch(error => console.error(error));
     return response.data;
 }
+
+export async function getTheater(id) {
+    const path = BUILDING_BASE_API_URL + "/theaters/" + id;
+    const response = await axios.delete(path).catch(error => console.error(error));
+    return response.data;
+}
