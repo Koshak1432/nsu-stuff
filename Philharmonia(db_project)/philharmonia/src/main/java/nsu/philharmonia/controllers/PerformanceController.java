@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping(Constants.BASE_API_PATH)
+@RequestMapping(Constants.BASE_API_PATH + "/performances")
 @Validated
 public class PerformanceController {
 
@@ -26,19 +26,29 @@ public class PerformanceController {
         this.performanceService = performanceService;
     }
 
-    @GetMapping("/performances")
+    @GetMapping
     public ResponseEntity<List<PerformanceDTO>> getAllPerformances() {
         return performanceService.getAll();
     }
 
-    @GetMapping("/performances/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<PerformanceDTO> getById(@PathVariable("id") @Positive Long id) throws
             NotFoundException {
         return performanceService.getById(id);
     }
 
+    @GetMapping("/contests/distribution")
+    public ResponseEntity<List<ContestPlaceDTO>> getDistribution() {
+        return performanceService.getDistribution();
+    }
+
+    @GetMapping("/contests/distribution/{id}")
+    public ResponseEntity<List<ContestPlaceDTO>> getDistributionByContestId(@PathVariable("id") @Positive Long id) {
+        return performanceService.getDistributionByContestId(id);
+    }
+
     @GetMapping("/contests")
-    public ResponseEntity<List<ContestPlaceDTO>> getAllContests() {
+    public ResponseEntity<List<PerformanceDTO>> getAllContests() {
         return performanceService.getAllContests();
     }
 }

@@ -4,6 +4,7 @@ import nsu.philharmonia.model.dto.ContestPlaceDTO;
 import nsu.philharmonia.model.dto.PerformanceDTO;
 import nsu.philharmonia.model.entities.ContestPlace;
 import nsu.philharmonia.model.entities.Performance;
+import nsu.philharmonia.model.entities.PerformanceType;
 import nsu.philharmonia.model.exceptions.NotFoundException;
 import nsu.philharmonia.repositories.ContestPlaceRepository;
 import nsu.philharmonia.repositories.PerformanceRepository;
@@ -20,12 +21,28 @@ import java.util.Optional;
 @Service
 public class PerformanceServiceImpl implements PerformanceService {
     private PerformanceRepository performanceRepository;
-    private ContestPlaceRepository contestRepository;
+    private ContestPlaceRepository distributionRepository;
     private ModelMapper mapper;
 
     @Override
-    public ResponseEntity<List<ContestPlaceDTO>> getAllContests() {
-        List<ContestPlace> contestPlaces = (List<ContestPlace>) contestRepository.findAll();
+    public ResponseEntity<List<PerformanceDTO>> getAllContests() {
+        List<Performance> contests = performanceRepository.findPerformancesByPerformanceTypeName("конкурс");
+        List<PerformanceDTO> contestDTOS = contests.stream().map(
+                contest -> mapper.map(contest, PerformanceDTO.class)).toList();
+        return new ResponseEntity<>(contestDTOS, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<List<ContestPlaceDTO>> getDistribution() {
+        List<ContestPlace> contestPlaces = (List<ContestPlace>) distributionRepository.findAll();
+        List<ContestPlaceDTO> contestPlaceDTOS = contestPlaces.stream().map(
+                contest -> mapper.map(contest, ContestPlaceDTO.class)).toList();
+        return new ResponseEntity<>(contestPlaceDTOS, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<List<ContestPlaceDTO>> getDistributionByContestId(Long id) {
+        List<ContestPlace> contestPlaces = (List<ContestPlace>) distributionRepository.findContestPlaceByPerformanceId(id);
         List<ContestPlaceDTO> contestPlaceDTOS = contestPlaces.stream().map(
                 contest -> mapper.map(contest, ContestPlaceDTO.class)).toList();
         return new ResponseEntity<>(contestPlaceDTOS, HttpStatus.OK);
@@ -33,10 +50,10 @@ public class PerformanceServiceImpl implements PerformanceService {
 
     @Autowired
     public PerformanceServiceImpl(PerformanceRepository performanceRepository, ModelMapper mapper,
-                                  ContestPlaceRepository contestRepository) {
+                                  ContestPlaceRepository distributionRepository) {
         this.performanceRepository = performanceRepository;
         this.mapper = mapper;
-        this.contestRepository = contestRepository;
+        this.distributionRepository = distributionRepository;
     }
 
     @Override

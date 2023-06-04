@@ -2,12 +2,14 @@ package nsu.philharmonia.repositories;
 
 import nsu.philharmonia.model.entities.Artist;
 import nsu.philharmonia.model.entities.Performance;
+import nsu.philharmonia.model.entities.PerformanceType;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.List;
 
 @Repository
 public interface PerformanceRepository extends CrudRepository<Performance, Long> {
@@ -17,7 +19,11 @@ public interface PerformanceRepository extends CrudRepository<Performance, Long>
             SELECT * FROM performance
             WHERE building_id = :buildingId
             """, nativeQuery = true)
-    Collection<Performance> findByBuilding(@Param("buildingId") Long buildingId);
+    List<Performance> findByBuilding(@Param("buildingId") Long buildingId);
+
+    List<Performance> findPerformancesByPerformanceTypeName(String name);
+
+
 
 
     // todo потом надо притянуть места в другом запросе
@@ -30,6 +36,6 @@ public interface PerformanceRepository extends CrudRepository<Performance, Long>
             	ORDER BY place
             )
             """, nativeQuery = true)
-    Collection<Artist> findTop3InContest(@Param("contestId") Long contestId);
+    List<Artist> findTop3InContest(@Param("contestId") Long contestId);
 
 }

@@ -12,5 +12,8 @@ public interface PerformanceService {
 
     ResponseEntity<PerformanceDTO> getById(Long id) throws NotFoundException;
 
-    ResponseEntity<List<ContestPlaceDTO>> getAllContests();
+    ResponseEntity<List<PerformanceDTO>> getAllContests();
+
+    ResponseEntity<List<ContestPlaceDTO>> getDistribution();
+    ResponseEntity<List<ContestPlaceDTO>> getDistributionByContestId(Long id);
 }
