@@ -10,4 +10,7 @@ public interface GenreService {
     ResponseEntity<List<GenreDTO>> getByArtistId(Long artistId);
 
     ResponseEntity<List<GenreDTO>> getAll();
+    ResponseEntity<GenreDTO> saveGenre(GenreDTO genre);
+
+    ResponseEntity<Void> deleteGenre(Long id);
 }

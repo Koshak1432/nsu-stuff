@@ -9,14 +9,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class GenreServiceImpl implements GenreService {
-
     private final GenreRepository genreRepository;
     private final ModelMapper mapper;
+
+//    @Override
+//    public ResponseEntity<GenreDTO> addGenre(GenreDTO genreDTO) {
+//        Optional<Genre> genreOptional = genreRepository.findByName(genreDTO.getName());
+//        Genre genre = genreOptional.orElseGet(Genre::new);
+//        genre.setName(genreDTO.getName());
+//        Genre saved = genreRepository.save(genre);
+//        return new ResponseEntity<>(mapper.map(saved, GenreDTO.class), HttpStatus.OK);
+//    }
+
+
+    @Override
+    @Transactional
+    public ResponseEntity<Void> deleteGenre(Long id) {
+        genreRepository.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<GenreDTO> saveGenre(GenreDTO genre) {
+        Genre saved = genreRepository.findById(genre.getId()).map(g -> {
+            g.setName(genre.getName());
+            return genreRepository.save(g);
+        }).orElseGet(() -> genreRepository.save(mapper.map(genre, Genre.class)));
+        return new ResponseEntity<>(mapper.map(saved, GenreDTO.class), HttpStatus.OK);
+    }
+
 
     @Autowired
     public GenreServiceImpl(GenreRepository genreRepository, ModelMapper mapper) {
