@@ -26,7 +26,7 @@ public class Impresario {
 
     @Builder.Default
     @ToString.Exclude
-    @ManyToMany(mappedBy = "impresarios", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "impresarios")
     private Set<Artist> artists = new LinkedHashSet<>();
 
     @NotBlank

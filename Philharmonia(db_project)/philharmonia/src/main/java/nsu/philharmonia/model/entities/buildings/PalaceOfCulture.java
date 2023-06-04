@@ -23,7 +23,7 @@ public class PalaceOfCulture {
 
     @MapsId
     @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "id")
     private Building building;
 

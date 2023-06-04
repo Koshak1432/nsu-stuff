@@ -1,6 +1,7 @@
 package nsu.philharmonia.controllers;
 
 import nsu.philharmonia.model.exceptions.ErrorResponse;
+import nsu.philharmonia.model.exceptions.InvalidInputException;
 import nsu.philharmonia.model.exceptions.NotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,5 +25,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({NotFoundException.class})
     protected ResponseEntity<Object> handleNotFound(Exception e) {
         return new ResponseEntity<>(new ErrorResponse(404, e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({InvalidInputException.class})
+    protected ResponseEntity<Object> handleInvalidInput(Exception e) {
+        System.out.println("INVALID INPUT: e");
+        return new ResponseEntity<>(new ErrorResponse(400, e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 }

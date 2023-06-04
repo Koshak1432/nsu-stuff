@@ -34,26 +34,26 @@ public class Artist {
 
     @ToString.Exclude
     @Builder.Default
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany
     @JoinTable(name = "artist_to_genre", joinColumns = @JoinColumn(name = "artist_id"), inverseJoinColumns =
     @JoinColumn(name = "genre_id"))
     private Set<Genre> genres = new LinkedHashSet<>();
 
     @Builder.Default
     @ToString.Exclude
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany
     @JoinTable(name = "artist_to_impresario", joinColumns = @JoinColumn(name = "artist_id"), inverseJoinColumns =
     @JoinColumn(name = "impresario_id"))
     private Set<Impresario> impresarios = new LinkedHashSet<>();
 
     @Builder.Default
     @ToString.Exclude
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany
     @JoinTable(name = "artist_to_performance", joinColumns = @JoinColumn(name = "artist_id"), inverseJoinColumns = @JoinColumn(name =
             "performance_id"))
     private Set<Performance> performances = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "artist", orphanRemoval = true)
     @Builder.Default
     @ToString.Exclude
     private Set<ContestPlace> contestPlaces = new LinkedHashSet<>();

@@ -23,7 +23,7 @@ public class PerformanceVenue {
 
     @ToString.Exclude
     @MapsId
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "id")
     private Building building;
 

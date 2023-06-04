@@ -30,14 +30,14 @@ public class Building {
     private String name;
 
     @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id")
     @NotNull
     private BuildingType buildingType;
 
     @Builder.Default
     @ToString.Exclude
-    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "building", orphanRemoval = true)
     private Set<Performance> performances = new LinkedHashSet<>();
 
     @Override

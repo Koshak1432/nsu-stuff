@@ -33,30 +33,30 @@ public class Performance {
 
     @ToString.Exclude
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id")
     private PerformanceType performanceType;
 
     @ToString.Exclude
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sponsor_id")
     private Sponsor sponsor;
 
     @ToString.Exclude
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "building_id")
     private Building building;
 
     @Builder.Default
     @ToString.Exclude
-    @ManyToMany(mappedBy = "performances", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "performances")
     private Set<Artist> artists = new LinkedHashSet<>();
 
     @Builder.Default
     @ToString.Exclude
-    @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "performance", orphanRemoval = true)
     private Set<ContestPlace> contestPlaces = new LinkedHashSet<>();
 
     @Override

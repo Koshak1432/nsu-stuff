@@ -45,7 +45,7 @@ public class SponsorController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> addSponsor(@PathVariable("id") @Positive Long id) {
+    public ResponseEntity<Void> deleteSponsor(@PathVariable("id") @Positive Long id) {
         return sponsorService.deleteSponsor(id);
     }
 }

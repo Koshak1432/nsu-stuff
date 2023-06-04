@@ -1,15 +1,14 @@
 package nsu.philharmonia.controllers;
 
+import jakarta.validation.constraints.Positive;
 import nsu.philharmonia.config.Constants;
 import nsu.philharmonia.model.dto.buildings.*;
+import nsu.philharmonia.model.exceptions.InvalidInputException;
 import nsu.philharmonia.services.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,6 +27,21 @@ public class BuildingController {
     @GetMapping
     public ResponseEntity<List<BuildingDTO>> getAll() {
         return buildingService.getAll();
+    }
+
+    @PostMapping
+    public ResponseEntity<BuildingDTO> addBuilding(@RequestBody BuildingDTO building) throws InvalidInputException {
+        return buildingService.saveBuilding(building);
+    }
+
+    @PutMapping
+    public ResponseEntity<BuildingDTO> updateBuilding(@RequestBody BuildingDTO building) throws InvalidInputException {
+        return buildingService.saveBuilding(building);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBuilding(@PathVariable("id") @Positive Long id) {
+        return buildingService.deleteBuilding(id);
     }
 
     @GetMapping("/estrades")
