@@ -4,6 +4,7 @@ package nsu.philharmonia.controllers;
 import jakarta.validation.constraints.Positive;
 import nsu.philharmonia.config.Constants;
 import nsu.philharmonia.model.dto.ArtistDTO;
+import nsu.philharmonia.model.dto.ArtistToImpresarioDTO;
 import nsu.philharmonia.model.dto.ImpresarioDTO;
 import nsu.philharmonia.model.exceptions.NotFoundException;
 import nsu.philharmonia.services.ImpresarioService;
@@ -57,5 +58,10 @@ public class ImpresarioController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteImpresario(@PathVariable("id") @Positive Long id) {
         return impresarioService.deleteImpresario(id);
+    }
+
+    @GetMapping("/distribution")
+    public ResponseEntity<List<ArtistToImpresarioDTO>> getArtistToImpresario() {
+        return impresarioService.getArtistToImpresario();
     }
 }

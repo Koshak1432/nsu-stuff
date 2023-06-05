@@ -1,9 +1,9 @@
 package nsu.philharmonia.services.impl;
 
-import nsu.philharmonia.model.dto.ArtistDTO;
-import nsu.philharmonia.model.dto.ImpresarioDTO;
+import nsu.philharmonia.model.dto.*;
 import nsu.philharmonia.model.entities.Artist;
 import nsu.philharmonia.model.entities.Impresario;
+import nsu.philharmonia.model.entities.Performance;
 import nsu.philharmonia.model.exceptions.NotFoundException;
 import nsu.philharmonia.repositories.ImpresarioRepository;
 import nsu.philharmonia.services.ImpresarioService;
@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -28,6 +29,25 @@ public class ImpresarioServiceImpl implements ImpresarioService {
     public ImpresarioServiceImpl(ImpresarioRepository impresarioRepository, ModelMapper modelMapper) {
         this.impresarioRepository = impresarioRepository;
         this.mapper = modelMapper;
+    }
+
+
+    @Override
+    @Transactional
+    public ResponseEntity<List<ArtistToImpresarioDTO>> getArtistToImpresario() {
+        List<Impresario> impresarios = (List<Impresario>) impresarioRepository.findAll();
+        List<ArtistToImpresarioDTO> distribution = new ArrayList<>();
+        for (Impresario impresario : impresarios) {
+            for (Artist a : impresario.getArtists()) {
+                System.out.println("impresarios: " + a.getImpresarios().toString());
+                System.out.println("artists: " + impresario.getArtists().toString());
+                ArtistToImpresarioDTO dto = new ArtistToImpresarioDTO();
+                dto.setArtist(mapper.map(a, ArtistDTO.class));
+                dto.setImpresario(mapper.map(impresario, ImpresarioDTO.class));
+                distribution.add(dto);
+            }
+        }
+        return new ResponseEntity<>(distribution, HttpStatus.OK);
     }
 
     @Override

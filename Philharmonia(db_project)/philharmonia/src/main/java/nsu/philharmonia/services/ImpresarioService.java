@@ -1,6 +1,7 @@
 package nsu.philharmonia.services;
 
 import nsu.philharmonia.model.dto.ArtistDTO;
+import nsu.philharmonia.model.dto.ArtistToImpresarioDTO;
 import nsu.philharmonia.model.dto.ImpresarioDTO;
 import nsu.philharmonia.model.exceptions.NotFoundException;
 import org.springframework.http.ResponseEntity;
@@ -16,4 +17,6 @@ public interface ImpresarioService {
 
     ResponseEntity<ImpresarioDTO> addImpresario(ImpresarioDTO impresario);
     ResponseEntity<Void> deleteImpresario(Long id);
+
+    ResponseEntity<List<ArtistToImpresarioDTO>> getArtistToImpresario();
 }

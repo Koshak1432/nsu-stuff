@@ -33,3 +33,16 @@ export async function deleteImpresario(id) {
     const response = await axios.delete(path).catch(error => console.error(error));
     return response.data;
 }
+
+export async function addArtistToImpresario(pair) {
+    const path = IMPRESARIO_BASE_API_URL + "/distribution"
+    const response = await axios.post(path, pair).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function getArtistToImpresario() {
+    const path = IMPRESARIO_BASE_API_URL + "/distribution"
+    const response = await axios.get(path).catch(error => console.error(error));
+    return response.data;
+}
+
