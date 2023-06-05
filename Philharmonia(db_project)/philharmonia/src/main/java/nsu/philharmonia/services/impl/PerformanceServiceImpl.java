@@ -1,16 +1,11 @@
 package nsu.philharmonia.services.impl;
 
-import nsu.philharmonia.model.dto.ContestPlaceDTO;
-import nsu.philharmonia.model.dto.GenreDTO;
-import nsu.philharmonia.model.dto.PerformanceDTO;
+import nsu.philharmonia.model.dto.*;
 import nsu.philharmonia.model.entities.*;
 import nsu.philharmonia.model.entities.buildings.Building;
 import nsu.philharmonia.model.exceptions.InvalidInputException;
 import nsu.philharmonia.model.exceptions.NotFoundException;
-import nsu.philharmonia.repositories.ContestPlaceRepository;
-import nsu.philharmonia.repositories.PerformanceRepository;
-import nsu.philharmonia.repositories.PerformanceTypeRepository;
-import nsu.philharmonia.repositories.SponsorRepository;
+import nsu.philharmonia.repositories.*;
 import nsu.philharmonia.repositories.buildings.BuildingRepository;
 import nsu.philharmonia.services.PerformanceService;
 import org.modelmapper.ModelMapper;
@@ -20,16 +15,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class PerformanceServiceImpl implements PerformanceService {
     private final PerformanceRepository performanceRepository;
-    private final ContestPlaceRepository distributionRepository;
+    private final ContestPlaceRepository contestDistributionRepository;
     private final PerformanceTypeRepository performanceTypeRepository;
     private final SponsorRepository sponsorRepository;
     private final BuildingRepository buildingRepository;
+    private final ArtistRepository artistRepository;
     private final ModelMapper mapper;
 
     @Override
@@ -38,6 +36,98 @@ public class PerformanceServiceImpl implements PerformanceService {
         List<PerformanceDTO> contestDTOS = contests.stream().map(
                 contest -> mapper.map(contest, PerformanceDTO.class)).toList();
         return new ResponseEntity<>(contestDTOS, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Void> deletePerformanceDistribution(PerformanceDistributionDTO distribution) throws
+            InvalidInputException {
+        Performance performance = performanceRepository.findByName(distribution.getPerformance().getName()).orElseThrow(
+                () -> new InvalidInputException("Invalid performance name"));
+        Artist artist = artistRepository.findByName(distribution.getArtist().getName()).orElseThrow(
+                () -> new InvalidInputException("Invalid artist name"));
+
+        Set<Artist> artists = performance.getArtists();
+        Set<Performance> performances = artist.getPerformances();
+        artists.remove(artist);
+        performances.remove(performance);
+        artist.setPerformances(performances);
+        performance.setArtists(artists);
+        artistRepository.save(artist);
+        performanceRepository.save(performance);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Void> savePerformanceDistribution(PerformanceDistributionDTO distribution) throws
+            InvalidInputException {
+        Performance performance = performanceRepository.findByName(distribution.getPerformance().getName()).orElseThrow(
+                () -> new InvalidInputException("Invalid performance name"));
+        Artist artist = artistRepository.findByName(distribution.getArtist().getName()).orElseThrow(
+                () -> new InvalidInputException("Invalid artist name"));
+
+        Set<Performance> performances = artist.getPerformances();
+        if (! performances.contains(performance)) {
+            performances.add(performance);
+            artist.setPerformances(performances);
+        }
+        Set<Artist> artists = performance.getArtists();
+        if (! artists.contains(artist)) {
+            artists.add(artist);
+            performance.setArtists(artists);
+        }
+        artistRepository.save(artist);
+        performanceRepository.save(performance);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<List<PerformanceDistributionDTO>> getPerformanceDistribution() {
+        List<Artist> artists = (List<Artist>) artistRepository.findAll();
+        List<PerformanceDistributionDTO> distribution = new ArrayList<>();
+        for (Artist artist : artists) {
+            for (Performance performance : artist.getPerformances()) {
+                PerformanceDistributionDTO perf = new PerformanceDistributionDTO();
+                perf.setArtist(mapper.map(artist, ArtistDTO.class));
+                perf.setPerformance(mapper.map(performance, PerformanceDTO.class));
+                IdKeyDTO key = new IdKeyDTO();
+                key.setPerformanceId(performance.getId());
+                key.setArtistId(artist.getId());
+                perf.setId(key);
+                distribution.add(perf);
+            }
+        }
+        return new ResponseEntity<>(distribution, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteContestDistribution(IdKeyDTO key) {
+        ContestPlaceKey k = mapper.map(key, ContestPlaceKey.class);
+        System.out.println("KEY1: performance: " + key.getPerformanceId() + ", artist: " + key.getArtistId());
+        System.out.println("KEY:" + k);
+        contestDistributionRepository.deleteById(k);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<ContestPlaceDTO> saveContestDistribution(ContestPlaceDTO contestPlace) throws
+            InvalidInputException {
+        Performance performance = performanceRepository.findByName(contestPlace.getPerformance().getName()).orElseThrow(
+                () -> new InvalidInputException("Invalid performance name"));
+        Artist artist = artistRepository.findByName(contestPlace.getArtist().getName()).orElseThrow(
+                () -> new InvalidInputException("Invalid artist name"));
+
+        ContestPlace place = contestDistributionRepository.findContestPlaceByArtistAndPerformance(artist,
+                                                                                                  performance).orElseGet(
+                ContestPlace::new);
+        ContestPlaceKey key = new ContestPlaceKey(performance.getId(), artist.getId());
+        place.setContestPlaceKey(key);
+        place.setArtist(artist);
+        place.setPlace(contestPlace.getPlace());
+        place.setPerformance(performance);
+        ContestPlace saved = contestDistributionRepository.save(place);
+        return new ResponseEntity<>(mapper.map(saved, ContestPlaceDTO.class), HttpStatus.OK);
     }
 
     @Override
@@ -76,8 +166,8 @@ public class PerformanceServiceImpl implements PerformanceService {
     }
 
     @Override
-    public ResponseEntity<List<ContestPlaceDTO>> getDistribution() {
-        List<ContestPlace> contestPlaces = (List<ContestPlace>) distributionRepository.findAll();
+    public ResponseEntity<List<ContestPlaceDTO>> getContestDistribution() {
+        List<ContestPlace> contestPlaces = (List<ContestPlace>) contestDistributionRepository.findAll();
         List<ContestPlaceDTO> contestPlaceDTOS = contestPlaces.stream().map(
                 contest -> mapper.map(contest, ContestPlaceDTO.class)).toList();
         return new ResponseEntity<>(contestPlaceDTOS, HttpStatus.OK);
@@ -85,8 +175,7 @@ public class PerformanceServiceImpl implements PerformanceService {
 
     @Override
     public ResponseEntity<List<ContestPlaceDTO>> getDistributionByContestId(Long id) {
-        List<ContestPlace> contestPlaces = (List<ContestPlace>) distributionRepository.findContestPlaceByPerformanceId(
-                id);
+        List<ContestPlace> contestPlaces = contestDistributionRepository.findContestPlaceByPerformanceId(id);
         List<ContestPlaceDTO> contestPlaceDTOS = contestPlaces.stream().map(
                 contest -> mapper.map(contest, ContestPlaceDTO.class)).toList();
         return new ResponseEntity<>(contestPlaceDTOS, HttpStatus.OK);
@@ -94,15 +183,17 @@ public class PerformanceServiceImpl implements PerformanceService {
 
     @Autowired
     public PerformanceServiceImpl(PerformanceRepository performanceRepository, ModelMapper mapper,
-                                  ContestPlaceRepository distributionRepository,
+                                  ContestPlaceRepository contestDistributionRepository,
                                   PerformanceTypeRepository performanceTypeRepository,
-                                  SponsorRepository sponsorRepository, BuildingRepository buildingRepository) {
+                                  SponsorRepository sponsorRepository, BuildingRepository buildingRepository,
+                                  ArtistRepository artistRepository) {
         this.performanceRepository = performanceRepository;
         this.mapper = mapper;
-        this.distributionRepository = distributionRepository;
+        this.contestDistributionRepository = contestDistributionRepository;
         this.performanceTypeRepository = performanceTypeRepository;
         this.sponsorRepository = sponsorRepository;
         this.buildingRepository = buildingRepository;
+        this.artistRepository = artistRepository;
     }
 
     @Override

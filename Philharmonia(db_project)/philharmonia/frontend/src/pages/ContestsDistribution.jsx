@@ -13,13 +13,18 @@ import CreateModal from "../components/UI/CreateModal";
 const ContestsDistribution = () => {
     const columns = useMemo(() => [
         {
-            header: "ID артиста",
-            accessorKey: "id.artistId",
+            header: "Имя",
+            accessorKey: "artist.name",
             enableEditing: false,
         },
         {
-            header: "ID конкурса",
-            accessorKey: "id.performanceId",
+            header: "Фамилия",
+            accessorKey: "artist.surname",
+            enableEditing: false,
+        },
+        {
+            header: "Конкурс",
+            accessorKey: "performance.name",
             enableEditing: false,
         },
         {
@@ -34,24 +39,47 @@ const ContestsDistribution = () => {
 
 
     const handleCreateNewRow = (values) => {
-        addContestDistribution({...values, id: 0}).then(() => refreshData());
+        const data = {
+            id: {},
+            artist: {
+                name: values["artist.name"],
+                surname: values["artist.surname"],
+            },
+            performance: {
+                name: values["performance.name"],
+            },
+            place: values.place,
+        };
+        console.log(data);
+        addContestDistribution(data).then(() => refreshData());
     };
 
     const handleSaveRowEdits = async ({exitEditingMode, row, values}) => {
         if (!Object.keys(validationErrors).length) {
-            distribution[row.index] = values;
-            console.log(values);
-            updateContestDistribution(values).then(() => refreshData());
+            const data = {
+                id: {},
+                artist: {
+                    name: values["artist.name"],
+                    surname: values["artist.surname"],
+                },
+                performance: {
+                    name: values["performance.name"],
+                },
+                place: values.place,
+            };
+            console.log(data);
+            updateContestDistribution(data).then(() => refreshData());
             exitEditingMode(); //required to exit editing mode and close modal
         }
     };
 
     const handleDeleteRow = useCallback(
         (row) => {
-            if (!confirm(`Are you sure you want to delete ${row.getValue("name")} ${row.getValue("surname")}`)) {
+            if (!confirm(`Are you sure?`)) {
                 return;
             }
-            deleteContestDistribution(row.getValue("id")).then(() => refreshData());
+            const data = distribution[row.index].id;
+            deleteContestDistribution(data).then(() => refreshData());
         },
         [],
     );

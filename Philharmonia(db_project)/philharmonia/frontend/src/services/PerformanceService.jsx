@@ -14,6 +14,8 @@ export async function getContestsDistribution() {
     return response.data;
 }
 
+
+
 export async function getContestDistributionById(id) {
     const path = CONTEST_BASE_API_URL + "/distribution/" + id;
     const response = await axios.get(path).catch(error => console.error(error));
@@ -53,8 +55,28 @@ export async function updateContestDistribution(distribution) {
     return response.data;
 }
 
-export async function deleteContestDistribution(id) {
+export async function deleteContestDistribution(key) {
     const path = CONTEST_BASE_API_URL + "/distribution";
+    console.log(key);
+    const response = await axios.delete(path, key).catch(error => console.error(error));
+    return response.data;
+}
+
+
+export async function getPerformanceDistribution() {
+    const path = PERFORMANCE_BASE_API_URL + "/distribution"
+    const response = await axios.get(path).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function addPerformanceDistribution(distribution) {
+    const path = PERFORMANCE_BASE_API_URL + "/distribution";
+    const response = await axios.post(path, distribution).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function deletePerformanceDistribution(id) {
+    const path = PERFORMANCE_BASE_API_URL + "/distribution";
     const response = await axios.delete(path, id).catch(error => console.error(error));
     return response.data;
 }

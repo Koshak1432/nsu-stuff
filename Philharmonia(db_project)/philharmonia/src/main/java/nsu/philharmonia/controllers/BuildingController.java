@@ -50,6 +50,11 @@ public class BuildingController {
         return buildingService.getTheaters();
     }
 
+    @PostMapping("/theaters")
+    public ResponseEntity<Void> addTheater(@RequestBody TheaterDTO theater) {
+        return buildingService.addTheater();
+    }
+
     @GetMapping("/palaces")
     public ResponseEntity<List<PalaceOfCultureDTO>> getPalaces() {
         return buildingService.getPalacesOfCulture();

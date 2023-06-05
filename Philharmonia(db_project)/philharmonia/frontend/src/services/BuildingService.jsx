@@ -27,6 +27,24 @@ export async function deleteBuilding(id) {
 
 export async function getTheater(id) {
     const path = BUILDING_BASE_API_URL + "/theaters/" + id;
-    const response = await axios.delete(path).catch(error => console.error(error));
+    const response = await axios.get(path).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function getAllTheaters() {
+    const path = BUILDING_BASE_API_URL + "/theaters";
+    const response = await axios.get(path).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function addTheater(theater) {
+    const path = BUILDING_BASE_API_URL + "/theaters";
+    const response = await axios.post(path, theater).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function updateTheater(theater) {
+    const path = BUILDING_BASE_API_URL + "/theaters";
+    const response = await axios.put(path, theater).catch(error => console.error(error));
     return response.data;
 }

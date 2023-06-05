@@ -1,26 +1,27 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {
-    addContestDistribution,
-    deleteContestDistribution,
-    getContestsDistribution,
-    updateContestDistribution
-} from "../services/PerformanceService";
 import {MaterialReactTable} from "material-react-table";
 import {Box, Button, IconButton, Tooltip} from "@mui/material";
 import {Delete, Edit} from "@mui/icons-material";
 import CreateModal from "../components/UI/CreateModal";
+import {
+    addPerformanceDistribution,
+    deletePerformanceDistribution,
+    getPerformanceDistribution
+} from "../services/PerformanceService";
 
 const PerformancesDistribution = () => {
     const columns = useMemo(() => [
         {
-            header: "ID артиста",
-            accessorKey: "id.artistId",
-            enableEditing: false,
+            header: "Имя",
+            accessorKey: "artist.name",
         },
         {
-            header: "ID выступления",
-            accessorKey: "id.performanceId",
-            enableEditing: false,
+            header: "Фамилия",
+            accessorKey: "artist.surname",
+        },
+        {
+            header: "Выступление",
+            accessorKey: "performance.name",
         }
     ], []);
 
@@ -30,31 +31,40 @@ const PerformancesDistribution = () => {
 
 
     const handleCreateNewRow = (values) => {
-        addPermormanceDistribution({...values, id: 0}).then(() => refreshData());
-    };
-
-    const handleSaveRowEdits = async ({exitEditingMode, row, values}) => {
-        if (!Object.keys(validationErrors).length) {
-            distribution[row.index] = values;
-            console.log(values);
-            updatePerformanceDistribution(values).then(() => refreshData());
-            exitEditingMode(); //required to exit editing mode and close modal
-        }
+        console.log(values);
+        const data = {
+            id: {},
+            artist: {
+                name: values["artist.name"],
+                surname: values["artist.surname"],
+            },
+            performance: {
+                name: values["performance.name"],
+            },
+        };
+        addPerformanceDistribution(data).then(() => refreshData());
     };
 
     const handleDeleteRow = useCallback(
         (row) => {
-            if (!confirm(`Are you sure you want to delete ${row.getValue("name")} ${row.getValue("surname")}`)) {
+            if (!confirm(`Are you sure?`)) {
                 return;
             }
-            deletePerformanceDistribution(row.getValue("id")).then(() => refreshData());
+            const data = {
+                id: {},
+                artist: {
+                    name: distribution[row.index]["artist.name"],
+                    surname: distribution[row.index]["artist.surname"],
+                },
+                performance: {
+                    name: distribution[row.index]["performance.name"],
+                },
+            };
+            console.log(data);
+            deletePerformanceDistribution(data).then(() => refreshData());
         },
         [],
     );
-
-    const handleCancelRowEdits = () => {
-        setValidationErrors({});
-    };
 
     const refreshData = () => {
         getPerformanceDistribution().then(distribution => {
@@ -62,6 +72,7 @@ const PerformancesDistribution = () => {
             console.log(distribution);
         })
     };
+
     useEffect(() => {
         refreshData();
     }, [])
@@ -77,8 +88,7 @@ const PerformancesDistribution = () => {
                     }}
                     columns={columns}
                     data={distribution}
-                    onEditingRowSave={handleSaveRowEdits}
-                    onEditingRowCancel={handleCancelRowEdits}
+                    enableEditing={true}
                     renderRowActions={({row, table}) => (
                         <Box sx={{display: 'flex', gap: '1rem'}}>
                             <Tooltip arrow placement="right" title="Delete">

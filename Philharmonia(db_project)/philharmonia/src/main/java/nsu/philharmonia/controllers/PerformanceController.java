@@ -2,8 +2,7 @@ package nsu.philharmonia.controllers;
 
 import jakarta.validation.constraints.Positive;
 import nsu.philharmonia.config.Constants;
-import nsu.philharmonia.model.dto.ContestPlaceDTO;
-import nsu.philharmonia.model.dto.PerformanceDTO;
+import nsu.philharmonia.model.dto.*;
 import nsu.philharmonia.model.exceptions.InvalidInputException;
 import nsu.philharmonia.model.exceptions.NotFoundException;
 import nsu.philharmonia.services.PerformanceService;
@@ -50,14 +49,40 @@ public class PerformanceController {
         return performanceService.savePerformance(performance);
     }
 
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePerformance(@PathVariable("id") @Positive Long id) {
         return performanceService.deletePerformance(id);
     }
 
+
+    // contests
+    @GetMapping("/contests")
+    public ResponseEntity<List<PerformanceDTO>> getAllContests() {
+        return performanceService.getAllContests();
+    }
+
+
     @GetMapping("/contests/distribution")
-    public ResponseEntity<List<ContestPlaceDTO>> getDistribution() {
-        return performanceService.getDistribution();
+    public ResponseEntity<List<ContestPlaceDTO>> getContestsDistribution() {
+        return performanceService.getContestDistribution();
+    }
+
+    @PostMapping("/contests/distribution")
+    public ResponseEntity<ContestPlaceDTO> addContestDistribution(@RequestBody ContestPlaceDTO contestPlace) throws
+            InvalidInputException {
+        return performanceService.saveContestDistribution(contestPlace);
+    }
+
+    @PutMapping("/contests/distribution")
+    public ResponseEntity<ContestPlaceDTO> updateContestDistribution(@RequestBody ContestPlaceDTO contestPlace) throws
+            InvalidInputException {
+        return performanceService.saveContestDistribution(contestPlace);
+    }
+
+    @DeleteMapping("/contests/distribution")
+    public ResponseEntity<Void> deleteContestDistribution(@RequestBody IdKeyDTO key) {
+        return performanceService.deleteContestDistribution(key);
     }
 
     @GetMapping("/contests/distribution/{id}")
@@ -65,8 +90,25 @@ public class PerformanceController {
         return performanceService.getDistributionByContestId(id);
     }
 
-    @GetMapping("/contests")
-    public ResponseEntity<List<PerformanceDTO>> getAllContests() {
-        return performanceService.getAllContests();
+
+    // performance disctr
+    @GetMapping("/distribution")
+    public ResponseEntity<List<PerformanceDistributionDTO>> getPerformancesDistribution() {
+        return performanceService.getPerformanceDistribution();
     }
+
+    @PostMapping("/distribution")
+    public ResponseEntity<Void> addPerformanceDistribution(@RequestBody PerformanceDistributionDTO distribution) throws
+            InvalidInputException {
+        return performanceService.savePerformanceDistribution(distribution);
+    }
+
+    @DeleteMapping("/distribution")
+    public ResponseEntity<Void> deletePerformanceDistribution(@RequestBody PerformanceDistributionDTO distribution) throws
+            InvalidInputException {
+        return performanceService.deletePerformanceDistribution(distribution);
+    }
+
+
+
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ArtistRepository extends CrudRepository<Artist, Long> {
@@ -57,4 +58,7 @@ public interface ArtistRepository extends CrudRepository<Artist, Long> {
             )
             """, nativeQuery = true)
     Collection<Artist> findNotInContestForTime(@Param("days") Long days);
+
+
+    Optional<Artist> findByName(String name);
 }

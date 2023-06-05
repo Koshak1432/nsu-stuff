@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class IdKeyDTO {
-    private Long artistId;
     private Long performanceId;
+    private Long artistId;
 }

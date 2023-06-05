@@ -1,5 +1,7 @@
 package nsu.philharmonia.model.dto;
 
+
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -7,9 +9,8 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Setter
 @Getter
-public class ContestPlaceDTO {
-    private IdKeyDTO id;
+public class PerformanceDistributionDTO {
     private ArtistDTO artist;
     private PerformanceDTO performance;
-    private Integer place;
+    private IdKeyDTO id;
 }
