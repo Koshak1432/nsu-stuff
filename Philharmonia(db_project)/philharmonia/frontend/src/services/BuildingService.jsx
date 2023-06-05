@@ -48,3 +48,26 @@ export async function updateTheater(theater) {
     const response = await axios.put(path, theater).catch(error => console.error(error));
     return response.data;
 }
+
+export async function getAllPalaces() {
+    const path = BUILDING_BASE_API_URL + "/palaces";
+    const response = await axios.get(path).catch(error => console.error(error));
+    return response.data;
+}
+export async function addPalace(palace) {
+    const path = BUILDING_BASE_API_URL + "/palaces";
+    const response = await axios.post(path, palace).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function updatePalace(palace) {
+    const path = BUILDING_BASE_API_URL + "/palaces";
+    const response = await axios.put(path, palace).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function getAllTypes() {
+    const path = BUILDING_BASE_API_URL + "/types";
+    const response = await axios.get(path).catch(error => console.error(error));
+    return response.data;
+}

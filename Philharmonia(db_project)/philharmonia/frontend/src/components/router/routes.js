@@ -12,6 +12,7 @@ import Genres from "../../pages/Genres";
 import PerformancesDistribution from "../../pages/PerformancesDistribution";
 import ArtistToGenres from "../../pages/ArtistToGenres";
 import ArtistToImpresario from "../../pages/ArtistToImpresario";
+import BuildingTypes from "../../pages/buildings/BuildingTypes";
 
 
 export const privateRoutes = [
@@ -30,6 +31,7 @@ export const privateRoutes = [
     {path: "/performances/distribution", element: <PerformancesDistribution/>, exact: true},
     {path: "/artists/distribution", element: <ArtistToGenres/>, exact: true},
     {path: "/impresarios/distribution", element: <ArtistToImpresario/>, exact: true},
+    {path: "/buildings/types", element: <BuildingTypes/>, exact: true},
 ]
 
 export const publicRoutes = [

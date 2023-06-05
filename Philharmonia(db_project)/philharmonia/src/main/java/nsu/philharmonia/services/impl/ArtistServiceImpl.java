@@ -93,13 +93,8 @@ public class ArtistServiceImpl implements ArtistService {
     public ResponseEntity<Void> updateArtist(ArtistDTO artistDTO) throws NotFoundException {
         Artist artist = artistRepository.findById(artistDTO.getId()).orElseThrow(
                 () -> new NotFoundException("Not found artist to update"));
-        System.out.println(
-                "updating artist: name: " + artist.getName() + "\nsurname: " + artist.getSurname() + "\ngenres: " + artist.getGenres()
-                        + "\nimpresarios: " + artist.getImpresarios() + "\nperformances: " + artist.getPerformances()
-                        + "\ncontestPlaces: " + artist.getContestPlaces());
         artist.setName(artistDTO.getName());
         artist.setSurname(artistDTO.getSurname());
-        //todo update properly other
         artistRepository.save(artist);
         return new ResponseEntity<>(HttpStatus.OK);
     }

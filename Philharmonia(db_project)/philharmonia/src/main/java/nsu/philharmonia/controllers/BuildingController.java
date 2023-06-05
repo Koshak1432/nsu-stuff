@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Positive;
 import nsu.philharmonia.config.Constants;
 import nsu.philharmonia.model.dto.buildings.*;
 import nsu.philharmonia.model.exceptions.InvalidInputException;
+import nsu.philharmonia.model.exceptions.NotFoundException;
 import nsu.philharmonia.services.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -63,5 +64,20 @@ public class BuildingController {
     @GetMapping("/palaces")
     public ResponseEntity<List<PalaceOfCultureDTO>> getPalaces() {
         return buildingService.getPalacesOfCulture();
+    }
+
+    @PostMapping("/palaces")
+    public ResponseEntity<Void> addPalace(@RequestBody PalaceOfCultureDTO palace) {
+        return buildingService.savePalace(palace);
+    }
+
+    @PutMapping("/palaces")
+    public ResponseEntity<Void> updatePalace(@RequestBody PalaceOfCultureDTO palace) throws NotFoundException {
+        return buildingService.updatePalace(palace);
+    }
+
+    @GetMapping("/types")
+    public ResponseEntity<List<BuildingTypeDTO>> getTypes() {
+        return buildingService.getBuildingTypes();
     }
 }

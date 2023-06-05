@@ -1,6 +1,7 @@
 package nsu.philharmonia.services.impl;
 
 import nsu.philharmonia.model.dto.buildings.BuildingDTO;
+import nsu.philharmonia.model.dto.buildings.BuildingTypeDTO;
 import nsu.philharmonia.model.dto.buildings.PalaceOfCultureDTO;
 import nsu.philharmonia.model.dto.buildings.TheaterDTO;
 import nsu.philharmonia.model.entities.buildings.Building;
@@ -8,6 +9,7 @@ import nsu.philharmonia.model.entities.buildings.BuildingType;
 import nsu.philharmonia.model.entities.buildings.PalaceOfCulture;
 import nsu.philharmonia.model.entities.buildings.Theater;
 import nsu.philharmonia.model.exceptions.InvalidInputException;
+import nsu.philharmonia.model.exceptions.NotFoundException;
 import nsu.philharmonia.repositories.buildings.BuildingRepository;
 import nsu.philharmonia.repositories.buildings.BuildingTypeRepository;
 import nsu.philharmonia.repositories.buildings.PalaceOfCultureRepository;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -41,14 +44,56 @@ public class BuildingServiceImpl implements BuildingService {
         this.mapper = mapper;
     }
 
+
     @Override
-    public ResponseEntity<Void> saveTheater(TheaterDTO theater) {
-        Theater theater1 = mapper.map(theater, Theater.class);
-        theaterRepository.save(theater1);
+    public ResponseEntity<List<BuildingTypeDTO>> getBuildingTypes() {
+        List<BuildingType> types = (List<BuildingType>) buildingTypeRepository.findAll();
+        List<BuildingTypeDTO> dtos = types.stream().map(
+                (element) -> mapper.map(element, BuildingTypeDTO.class)).toList();
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Void> updatePalace(PalaceOfCultureDTO palace) throws NotFoundException {
+        PalaceOfCulture palaceOfCulture = palaceOfCultureRepository.findById(
+                mapper.map(palace.getBuilding(), Building.class)).orElseThrow(
+                () -> new NotFoundException("Not found palace"));
+        palaceOfCulture.setFloorNum(palace.getFloorNum());
+        palaceOfCultureRepository.save(palaceOfCulture);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
+    @Transactional
+    public ResponseEntity<Void> savePalace(PalaceOfCultureDTO palaceDto) {
+//        PalaceOfCulture saved = palaceOfCultureRepository.findByBuildingName(palace.getBuilding().getName()).map(p
+//        -> {
+//            p.setFloorNum(palace.getFloorNum());
+//            p.getBuilding().setBuildingType(buildingTypeRepository.findByName("дворец культуры").get());
+//            return palaceOfCultureRepository.save(p);
+//        }).orElseGet(() -> palaceOfCultureRepository.save(mapper.map(palace, PalaceOfCulture.class)));
+//        return new ResponseEntity<>(HttpStatus.OK);
+//        PalaceOfCulture palaceOfCulture = mapper.map(palaceDto, PalaceOfCulture.class);
+//        palaceOfCulture.
+//        palaceOfCultureRepository.save(palaceOfCulture);
+//        return new ResponseEntity<>(HttpStatus.OK);
+        return null;
+    }
+
+
+    @Override
+    @Transactional
+    public ResponseEntity<Void> saveTheater(TheaterDTO theater) {
+        Theater saved = theaterRepository.findByBuildingName(theater.getBuilding().getName()).map(t -> {
+            t.setCapacity(theater.getCapacity());
+            t.getBuilding().setBuildingType(buildingTypeRepository.findByName("театр").get());
+            return theaterRepository.save(t);
+        }).orElseGet(() -> theaterRepository.save(mapper.map(theater, Theater.class)));
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
     public ResponseEntity<BuildingDTO> saveBuilding(BuildingDTO building) throws InvalidInputException {
         BuildingType type = buildingTypeRepository.findByName(building.getTypeName()).orElseThrow(
                 () -> new InvalidInputException("Invalid building type name"));
@@ -66,6 +111,7 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<Void> deleteBuilding(Long id) {
         buildingRepository.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
