@@ -42,6 +42,13 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
+    public ResponseEntity<Void> saveTheater(TheaterDTO theater) {
+        Theater theater1 = mapper.map(theater, Theater.class);
+        theaterRepository.save(theater1);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<BuildingDTO> saveBuilding(BuildingDTO building) throws InvalidInputException {
         BuildingType type = buildingTypeRepository.findByName(building.getTypeName()).orElseThrow(
                 () -> new InvalidInputException("Invalid building type name"));
@@ -65,12 +72,11 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
-    public ResponseEntity<List<BuildingDTO>> getAll() {
+    public ResponseEntity<List<BuildingDTO>> getAllBuildings() {
         List<Building> buildings = (List<Building>) buildingRepository.findAll();
         List<BuildingDTO> buildingDTOS = buildings.stream().map(b -> mapper.map(b, BuildingDTO.class)).toList();
         return new ResponseEntity<>(buildingDTOS, HttpStatus.OK);
     }
-
 
     @Override
     public ResponseEntity<List<TheaterDTO>> getTheaters() {

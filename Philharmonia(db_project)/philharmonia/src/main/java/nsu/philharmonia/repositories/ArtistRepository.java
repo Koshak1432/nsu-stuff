@@ -13,6 +13,7 @@ import java.util.Optional;
 @Repository
 public interface ArtistRepository extends CrudRepository<Artist, Long> {
 
+    Optional<Artist> findArtistByNameAndSurname(String name, String surname);
     // todo also need to get genres, but this will be in another query?
     @Query(value = """
             SELECT * FROM artist

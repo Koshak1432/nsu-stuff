@@ -1,7 +1,8 @@
 package nsu.philharmonia.services;
 
 import nsu.philharmonia.model.dto.ArtistDTO;
-import nsu.philharmonia.model.entities.Artist;
+import nsu.philharmonia.model.dto.ArtistToGenreDTO;
+import nsu.philharmonia.model.exceptions.InvalidInputException;
 import nsu.philharmonia.model.exceptions.NotFoundException;
 import org.springframework.http.ResponseEntity;
 
@@ -16,5 +17,7 @@ public interface ArtistService {
 
     ResponseEntity<Void> deleteArtist(Long id);
 
+    ResponseEntity<Void> saveArtistToGenre(ArtistToGenreDTO dto) throws InvalidInputException;
 
+    ResponseEntity<List<ArtistToGenreDTO>> getArtistToGenres();
 }

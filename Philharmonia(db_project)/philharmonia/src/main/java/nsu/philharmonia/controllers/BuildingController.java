@@ -26,7 +26,7 @@ public class BuildingController {
 
     @GetMapping
     public ResponseEntity<List<BuildingDTO>> getAll() {
-        return buildingService.getAll();
+        return buildingService.getAllBuildings();
     }
 
     @PostMapping
@@ -52,7 +52,12 @@ public class BuildingController {
 
     @PostMapping("/theaters")
     public ResponseEntity<Void> addTheater(@RequestBody TheaterDTO theater) {
-        return buildingService.addTheater();
+        return buildingService.saveTheater(theater);
+    }
+
+    @PutMapping("/theaters")
+    public ResponseEntity<Void> updateTheater(@RequestBody TheaterDTO theater) {
+        return buildingService.saveTheater(theater);
     }
 
     @GetMapping("/palaces")

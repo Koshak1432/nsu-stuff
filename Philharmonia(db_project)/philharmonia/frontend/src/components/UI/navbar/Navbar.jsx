@@ -17,7 +17,9 @@ const Navbar = () => {
                 <Link className={cl.link} to={"/logout"} onClick={logout}>Выйти</Link>
                 <Link className={cl.link} to={"/genres"}>Жанры</Link>
                 <Link className={cl.link} to={"/artists"}>Артисты</Link>
+                <Link className={cl.link} to={"/artists/distribution"}>Артисты-жанры</Link>
                 <Link className={cl.link} to={"/impresarios"}>Импресарио</Link>
+                <Link className={cl.link} to={"/impresarios/distribution"}>Артисты-импресарио</Link>
                 <Link className={cl.link} to={"/performances"}>Выступления</Link>
                 <Link className={cl.link} to={"/performances/distribution"}>Распределение выступлений</Link>
                 <Link className={cl.link} to={"/contests/distribution"}>Распределение конкурсов</Link>

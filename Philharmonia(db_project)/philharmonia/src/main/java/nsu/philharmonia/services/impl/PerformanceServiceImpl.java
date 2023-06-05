@@ -67,15 +67,11 @@ public class PerformanceServiceImpl implements PerformanceService {
                 () -> new InvalidInputException("Invalid artist name"));
 
         Set<Performance> performances = artist.getPerformances();
-        if (! performances.contains(performance)) {
-            performances.add(performance);
-            artist.setPerformances(performances);
-        }
+        performances.add(performance);
+        artist.setPerformances(performances);
         Set<Artist> artists = performance.getArtists();
-        if (! artists.contains(artist)) {
-            artists.add(artist);
-            performance.setArtists(artists);
-        }
+        artists.add(artist);
+        performance.setArtists(artists);
         artistRepository.save(artist);
         performanceRepository.save(performance);
         return new ResponseEntity<>(HttpStatus.OK);

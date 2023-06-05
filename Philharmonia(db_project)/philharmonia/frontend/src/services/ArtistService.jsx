@@ -37,3 +37,23 @@ export async function deleteArtist(id) {
     return response.data;
 }
 
+// artist to genres
+export async function addArtistToGenre(pair) {
+    const path = ARTIST_BASE_API_URL + "/distribution";
+    const response = await axios.post(path, pair).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function getArtistToGenres() {
+    const path = ARTIST_BASE_API_URL + "/distribution";
+    const response = await axios.get(path).catch(error => console.error(error));
+    return response.data;
+}
+
+export async function deleteArtistToGenre(pair) {
+    const path = ARTIST_BASE_API_URL + "/distribution";
+    const response = await axios.delete(path, pair).catch(error => console.error(error));
+    return response.data;
+}
+
+

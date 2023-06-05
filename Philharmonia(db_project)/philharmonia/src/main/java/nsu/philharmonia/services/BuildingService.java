@@ -7,11 +7,13 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface BuildingService {
-    ResponseEntity<List<BuildingDTO>> getAll();
+    ResponseEntity<List<BuildingDTO>> getAllBuildings();
 
     ResponseEntity<List<TheaterDTO>> getTheaters();
     ResponseEntity<List<PalaceOfCultureDTO>> getPalacesOfCulture();
 
     ResponseEntity<BuildingDTO> saveBuilding(BuildingDTO building) throws InvalidInputException;
     ResponseEntity<Void> deleteBuilding(Long id);
+
+    ResponseEntity<Void> saveTheater(TheaterDTO theater);
 }

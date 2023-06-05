@@ -1,10 +1,10 @@
 package nsu.philharmonia.controllers;
 
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import nsu.philharmonia.config.Constants;
 import nsu.philharmonia.model.dto.ArtistDTO;
-import nsu.philharmonia.model.entities.Artist;
+import nsu.philharmonia.model.dto.ArtistToGenreDTO;
+import nsu.philharmonia.model.exceptions.InvalidInputException;
 import nsu.philharmonia.model.exceptions.NotFoundException;
 import nsu.philharmonia.services.ArtistService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,5 +50,15 @@ public class ArtistController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteArtist(@PathVariable("id") @Positive Long id) {
         return artistService.deleteArtist(id);
+    }
+
+    @GetMapping("/distribution")
+    public ResponseEntity<List<ArtistToGenreDTO>> getArtistToGenres() {
+        return artistService.getArtistToGenres();
+    }
+
+    @PostMapping("/distribution")
+    public ResponseEntity<Void> addArtistToGenres(@RequestBody ArtistToGenreDTO dto) throws InvalidInputException {
+        return artistService.saveArtistToGenre(dto);
     }
 }
