@@ -14,10 +14,10 @@ class Program
             positiveCount += worker.RunExperiment();
         }
         watch.Stop();
-        var elapsedSeconds = watch.ElapsedMilliseconds / 1000;
+        var elapsedSeconds = watch.ElapsedMilliseconds;
         var ratio = positiveCount / Constants.NumExperiments;
         Console.WriteLine("RES RATIO: " + ratio);
-        Console.WriteLine("TIME ELAPSED: " + elapsedSeconds);
+        Console.WriteLine("TIME ELAPSED MS: " + elapsedSeconds);
     }
     
 }
