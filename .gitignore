@@ -17,3 +17,4 @@
 **/*.whl
 **/data/
 **/MNIST/
+**/*.sln
