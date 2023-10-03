@@ -1,9 +1,9 @@
 ﻿using CardsLib;
 
-namespace ColiseumProblem;
+namespace ColiseumProblem.GodAndAssistant;
 
 // add interface
-public class MasterAssistant
+public class GodAssistant : IGodAssistant
 {
     private static Random _random = new Random();
 
