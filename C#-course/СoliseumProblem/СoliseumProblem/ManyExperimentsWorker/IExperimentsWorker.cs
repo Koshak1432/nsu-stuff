@@ -1,4 +1,4 @@
-﻿namespace ColiseumProblem.ExperimentsWorker;
+﻿namespace ColiseumProblem.ManyExperimentsWorker;
 
 public interface IExperimentsWorker
 {

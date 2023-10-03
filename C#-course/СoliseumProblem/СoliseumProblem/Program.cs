@@ -1,19 +1,31 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using ColiseumProblem.GodAndAssistant;
+using ColiseumProblem.ManyExperimentsWorker;
+using ColiseumProblem.OneExperimentWorker;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using StrategiesLib;
+
 namespace ColiseumProblem;
 
 class Program
 {
     private static void Main(string[] args)
     {
-        
+        CreateHostBuilder(args).Build().Run();
     }
 
-    // public static IHostBuilder CreateHostBuilder(string[] args)
-    // {
-    //     return Host.CreateDefaultBuilder(args).ConfigureServices((hostContext, services) =>
-    //     {
-    //     }
-    // }
+    private static IHostBuilder CreateHostBuilder(string[] args)
+    {
+        return Host.CreateDefaultBuilder(args)
+            .ConfigureServices((hostContext, services) =>
+            {
+                services.AddHostedService<ExperimentsWorker>();
+                services.AddScoped<IGodAssistant, GodAssistant>();
+                services.AddScoped<IGod, God>();
+                services.AddScoped<IColiseumSandbox, ColiseumSandbox>();
+                services.AddScoped<ICardPickStrategy, PickFirstStrategy>();
+
+            });
+    }
 
 }
