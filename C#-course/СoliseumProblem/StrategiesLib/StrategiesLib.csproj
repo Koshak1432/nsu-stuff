@@ -10,4 +10,8 @@
       <ProjectReference Include="..\CardsLib\CardsLib.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="xunit" Version="2.5.2-pre.2" />
+    </ItemGroup>
+
 </Project>
