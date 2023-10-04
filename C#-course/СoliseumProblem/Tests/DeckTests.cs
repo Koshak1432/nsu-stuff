@@ -1,4 +1,5 @@
 ﻿using CardsLib;
+using ColiseumProblem;
 using ColiseumProblem.GodAndAssistant;
 using Xunit;
 
@@ -6,8 +7,7 @@ namespace Tests;
 
 public class DeckTests
 {
-    private IGodAssistant _assistant = new GodAssistant();
-    private const int CardsTotal = 36;
+    private readonly IGodAssistant _assistant = new GodAssistant();
     
     [Fact]
     public void CheckCardsNumWithoutShuffle()
@@ -16,8 +16,8 @@ public class DeckTests
         var blackNum = 0;
         var redNum = 0;
         CountCards(deck, ref blackNum, ref redNum);
-        Assert.Equal(CardsTotal / 2, blackNum);
-        Assert.Equal(CardsTotal / 2, redNum);
+        Assert.Equal(Constants.CardsNum / 2, blackNum);
+        Assert.Equal(Constants.CardsNum / 2, redNum);
     }
     
     [Fact]
@@ -28,8 +28,8 @@ public class DeckTests
         var redNum = 0;
         _assistant.ShuffleDeck(deck);
         CountCards(deck, ref blackNum, ref redNum);
-        Assert.Equal(CardsTotal / 2, blackNum);
-        Assert.Equal(CardsTotal / 2, redNum);
+        Assert.Equal(Constants.CardsNum / 2, blackNum);
+        Assert.Equal(Constants.CardsNum / 2, redNum);
     }
 
     private static void CountCards(Card[] deck, ref int blackNum, ref int redNum)

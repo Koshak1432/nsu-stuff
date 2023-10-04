@@ -25,7 +25,16 @@ public class GodAssistant : IGodAssistant
         }
     }
 
-    
+    public (Card[], Card[]) SplitDeck(Card[] deck)
+    {
+        var elonCards = new Card[Constants.CardsNum / 2];
+        var markCards = new Card[Constants.CardsNum / 2];
+        Array.Copy(deck, 0, elonCards, 0, Constants.CardsNum / 2);
+        Array.Copy(deck, Constants.CardsNum / 2, markCards, 0, Constants.CardsNum / 2);
+        return (elonCards, markCards);
+    }
+
+
     private static void FillHalfColor(Card[] cards, CardColor color)
     {
         var offset = (color == CardColor.Red) ? Constants.CardsNum / 2 : 0;

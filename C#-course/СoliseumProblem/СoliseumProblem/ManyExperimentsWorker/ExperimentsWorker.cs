@@ -6,7 +6,7 @@ namespace ColiseumProblem.ManyExperimentsWorker;
 public class ExperimentsWorker : BackgroundService, IExperimentsWorker
 {
     private readonly IColiseumSandbox _sandbox;
-    private IHostApplicationLifetime _lifetime; 
+    private readonly IHostApplicationLifetime _lifetime; 
 
     public ExperimentsWorker(IColiseumSandbox sandbox, IHostApplicationLifetime lifetime)
     {

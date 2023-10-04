@@ -18,17 +18,14 @@ public class ColiseumSandbox : IColiseumSandbox
 
     public int RunExperiment()
     {
-        var cards = _assistant.CreateDeck();
-        _assistant.ShuffleDeck(cards);
-
-        var elonCards = new Card[Constants.CardsNum / 2];
-        var markCards = new Card[Constants.CardsNum / 2];
-        Array.Copy(cards, 0, elonCards, 0, Constants.CardsNum / 2);
-        Array.Copy(cards, Constants.CardsNum / 2, markCards, 0, Constants.CardsNum / 2);
-
+        var deck = _assistant.CreateDeck();
+        _assistant.ShuffleDeck(deck);
+        var splitDeck = _assistant.SplitDeck(deck);
+        var elonCards = splitDeck.Item1;
+        var markCards = splitDeck.Item2;
         _god.SetDecks(elonCards, markCards);
         var decision = _god.MakeDecision(new PickFirstStrategy(), new PickFirstStrategy());
-        return (decision ? 1 : 0);
+        return decision ? 1 : 0;
     }
 
     private static void PrintPlayerCards(Card[] cards)
