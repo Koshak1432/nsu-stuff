@@ -3,15 +3,15 @@ using Microsoft.Extensions.Hosting;
 
 namespace ColiseumProblem.ManyExperimentsWorker;
 
-public class ExperimentsWorker : BackgroundService, IExperimentsWorker
+public class ExperimentsWorker : BackgroundService
 {
     private readonly IColiseumSandbox _sandbox;
     private readonly IHostApplicationLifetime _lifetime; 
 
     public ExperimentsWorker(IColiseumSandbox sandbox, IHostApplicationLifetime lifetime)
     {
-        this._sandbox = sandbox;
-        this._lifetime = lifetime;
+        _sandbox = sandbox;
+        _lifetime = lifetime;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -33,10 +33,5 @@ public class ExperimentsWorker : BackgroundService, IExperimentsWorker
         }, CancellationToken.None);
 
         _lifetime.StopApplication();
-    }
-
-    public void RunExperiments(int numExperiments)
-    {
-        
     }
 }

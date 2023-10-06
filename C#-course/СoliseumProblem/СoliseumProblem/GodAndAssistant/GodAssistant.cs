@@ -5,7 +5,7 @@ namespace ColiseumProblem.GodAndAssistant;
 // add interface
 public class GodAssistant : IGodAssistant
 {
-    private static Random _random = new Random();
+    private static readonly Random Random = new ();
 
     public Card[] CreateDeck()
     {
@@ -20,7 +20,7 @@ public class GodAssistant : IGodAssistant
     {
         for (var i = Constants.CardsNum - 1; i > 0; --i)
         {
-            int k = _random.Next(i + 1);
+            var k = Random.Next(i + 1);
             (cards[i], cards[k]) = (cards[k], cards[i]);
         }
     }

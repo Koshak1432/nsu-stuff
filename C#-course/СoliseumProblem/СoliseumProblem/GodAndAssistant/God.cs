@@ -24,7 +24,7 @@ public class God : IGod
 
     public void SetDecks(Card[] elonDeck, Card[] markDeck)
     {
-        this._elonCards = elonDeck;
-        this._markCards = markDeck;
+        _elonCards = elonDeck;
+        _markCards = markDeck;
     }
 }

@@ -12,8 +12,8 @@ public class ColiseumSandbox : IColiseumSandbox
 
     public ColiseumSandbox(IGod god, IGodAssistant assistant)
     {
-        this._god = god;
-        this._assistant = assistant;
+        _god = god;
+        _assistant = assistant;
     }
 
     public int RunExperiment()
