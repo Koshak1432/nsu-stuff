@@ -2,7 +2,7 @@
 
 namespace StrategiesLib;
 
-public class PickFirstStrategy : ICardPickStrategy
+public class FirstStrategy : ICardPickStrategy
 {
     public int Pick(Card[] cards)
     {

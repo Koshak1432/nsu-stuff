@@ -4,9 +4,9 @@ namespace ColiseumProblem.GodAndAssistant;
 
 public interface IGodAssistant
 {
-    public void ShuffleDeck(Card[] cards);
+    public void ShuffleDeck(Card[] cards, string? customOrder = null);
 
     public Card[] CreateDeck();
 
-    public (Card[], Card[]) SplitDeck(Card[] deck);
+    public SplitDeck SplitDeck(Card[] deck);
 }

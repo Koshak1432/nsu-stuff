@@ -23,7 +23,7 @@ class Program
                 services.AddScoped<IGodAssistant, GodAssistant>();
                 services.AddScoped<IGod, God>();
                 services.AddScoped<IColiseumSandbox, ColiseumSandbox>();
-                services.AddScoped<ICardPickStrategy, PickFirstStrategy>();
+                services.AddScoped<ICardPickStrategy, FirstStrategy>();
 
             });
     }

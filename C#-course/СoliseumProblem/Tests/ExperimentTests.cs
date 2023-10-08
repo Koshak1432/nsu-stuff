@@ -1,4 +1,5 @@
 ﻿using CardsLib;
+using ColiseumProblem;
 using ColiseumProblem.GodAndAssistant;
 using ColiseumProblem.OneExperimentWorker;
 using Moq;
@@ -14,26 +15,25 @@ public class ExperimentTests
     {
         var assistantMock = new Mock<IGodAssistant>();
         var godMock = new Mock<IGod>();
+        var strategies = new Mock<Strategies>();
         IColiseumSandbox sandbox = new ColiseumSandbox(godMock.Object, assistantMock.Object);
-        sandbox.RunExperiment();
+        sandbox.RunExperiment(strategies.Object);
 
         assistantMock.Verify(a => a.CreateDeck(), Times.Once);
-        assistantMock.Verify(a => a.ShuffleDeck(It.IsAny<Card[]>()), Times.Once);
-
+        assistantMock.Verify(a => a.ShuffleDeck(It.IsAny<Card[]>(), null), Times.Once);
     }
-
+    
+    
     [Fact]
     public void CorrectDecision()
     {
-        IGodAssistant assistant = new GodAssistant();
         IGod god = new God();
-        var deck = assistant.CreateDeck();
-        var splitDeck = assistant.SplitDeck(deck);
-        var elonCards = splitDeck.Item1;
-        var markCards = splitDeck.Item2;
-        god.SetDecks(elonCards, markCards);
-        var decision = god.MakeDecision(new PickFirstStrategy(), new PickFirstStrategy());
-        Assert.False(decision);
+        IGodAssistant assistant = new GodAssistant();
+        IColiseumSandbox sandbox = new ColiseumSandbox(god, assistant);
+        var strategies = new Strategies(new FirstRedStrategy(), new FirstBlackStrategy());
+        var customOrder = "BRBRBRBRBRBRBRBRBRBRBRBRBRBRBRBRBRBR";
+        
+        Assert.Equal(0, sandbox.RunExperiment(strategies, customOrder));
     }
     
     

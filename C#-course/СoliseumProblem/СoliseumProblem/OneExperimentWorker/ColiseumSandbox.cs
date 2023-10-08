@@ -16,15 +16,13 @@ public class ColiseumSandbox : IColiseumSandbox
         _assistant = assistant;
     }
 
-    public int RunExperiment()
+    public int RunExperiment(Strategies strategies, string? customOrder = null)
     {
         var deck = _assistant.CreateDeck();
-        _assistant.ShuffleDeck(deck);
-        var splitDeck = _assistant.SplitDeck(deck);
-        var elonCards = splitDeck.Item1;
-        var markCards = splitDeck.Item2;
+        _assistant.ShuffleDeck(deck, customOrder);
+        var (elonCards, markCards) = _assistant.SplitDeck(deck);
         _god.SetDecks(elonCards, markCards);
-        var decision = _god.MakeDecision(new PickFirstStrategy(), new PickFirstStrategy());
+        var decision = _god.MakeDecision(strategies.ElonStrategy, strategies.MarkStrategy);
         return decision ? 1 : 0;
     }
 
