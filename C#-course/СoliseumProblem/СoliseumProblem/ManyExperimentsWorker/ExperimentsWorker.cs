@@ -25,10 +25,11 @@ public class ExperimentsWorker : BackgroundService
         {
             var positiveCount = 0f;
             var strategies = new Strategies(new FirstRedStrategy(), new FirstRedStrategy());
+            var strategiesWrapper = new StrategiesWrapper(strategies);
             var watch = System.Diagnostics.Stopwatch.StartNew();
             for (var i = 0; i < Constants.NumExperiments; ++i)
             {
-                positiveCount += _sandbox.RunExperiment(strategies);
+                positiveCount += _sandbox.RunExperiment(strategiesWrapper);
             }
 
             watch.Stop();

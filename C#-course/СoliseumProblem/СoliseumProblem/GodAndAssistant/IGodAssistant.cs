@@ -8,5 +8,5 @@ public interface IGodAssistant
 
     public Card[] CreateDeck();
 
-    public SplitDeck SplitDeck(Card[] deck);
+    public (Card[] elon, Card[] mark) SplitDeck(Card[] deck);
 }

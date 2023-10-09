@@ -16,13 +16,14 @@ public class ColiseumSandbox : IColiseumSandbox
         _assistant = assistant;
     }
 
-    public int RunExperiment(Strategies strategies, string? customOrder = null)
+    public int RunExperiment(IStrategiesWrapper strategies, string? customOrder = null)
     {
         var deck = _assistant.CreateDeck();
         _assistant.ShuffleDeck(deck, customOrder);
         var (elonCards, markCards) = _assistant.SplitDeck(deck);
         _god.SetDecks(elonCards, markCards);
-        var decision = _god.MakeDecision(strategies.ElonStrategy, strategies.MarkStrategy);
+        var (elonStrategy, markStrategy) = strategies.GetStrategies();
+        var decision = _god.MakeDecision(elonStrategy, markStrategy);
         return decision ? 1 : 0;
     }
 

@@ -73,15 +73,14 @@ public class GodAssistant : IGodAssistant
         }
     }
 
-    public SplitDeck SplitDeck(Card[] deck)
+    public (Card[] elon, Card[] mark) SplitDeck(Card[] deck)
     {
         var elonCards = new Card[Constants.CardsNum / 2];
         var markCards = new Card[Constants.CardsNum / 2];
         Array.Copy(deck, 0, elonCards, 0, Constants.CardsNum / 2);
         Array.Copy(deck, Constants.CardsNum / 2, markCards, 0, Constants.CardsNum / 2);
-        var split = new SplitDeck(elonCards, markCards);
-
-        return split;
+        
+        return (elonCards, markCards);
     }
 
 
