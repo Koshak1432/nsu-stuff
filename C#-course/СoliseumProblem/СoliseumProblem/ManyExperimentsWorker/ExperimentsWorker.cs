@@ -1,4 +1,4 @@
-﻿using ColiseumProblem.GodAndAssistant;
+﻿using ColiseumProblem.Db;
 using ColiseumProblem.OneExperimentWorker;
 using Microsoft.Extensions.Hosting;
 using StrategiesLib;
@@ -8,15 +8,15 @@ namespace ColiseumProblem.ManyExperimentsWorker;
 public class ExperimentsWorker : BackgroundService
 {
     private readonly IColiseumSandbox _sandbox;
-    private readonly IHostApplicationLifetime _lifetime; 
-
+    private readonly IHostApplicationLifetime _lifetime;
+    private readonly ColiseumContext _context;
     
     // todo add customOrder?
-    public ExperimentsWorker(IColiseumSandbox sandbox, IHostApplicationLifetime lifetime)
+    public ExperimentsWorker(IColiseumSandbox sandbox, IHostApplicationLifetime lifetime, ColiseumContext context)
     {
         _sandbox = sandbox;
         _lifetime = lifetime;
-        
+        _context = context;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -27,14 +27,15 @@ public class ExperimentsWorker : BackgroundService
             var strategies = new Strategies(new FirstRedStrategy(), new FirstRedStrategy());
             var strategiesWrapper = new StrategiesWrapper(strategies);
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            for (var i = 0; i < Constants.NumExperiments; ++i)
+            var experimentsConditions = _context.experiments_conditions.ToList();
+            foreach (var condition in experimentsConditions)
             {
-                positiveCount += _sandbox.RunExperiment(strategiesWrapper);
+                positiveCount += _sandbox.RunExperiment(strategiesWrapper, condition.condition);
             }
 
             watch.Stop();
             var elapsedSeconds = watch.ElapsedMilliseconds;
-            var ratio = positiveCount / Constants.NumExperiments;
+            var ratio = positiveCount / experimentsConditions.Count;
             Console.WriteLine("RES RATIO: " + ratio);
             Console.WriteLine("TIME ELAPSED MS: " + elapsedSeconds);
         }, CancellationToken.None);

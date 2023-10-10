@@ -1,6 +1,8 @@
-﻿using ColiseumProblem.GodAndAssistant;
+﻿using ColiseumProblem.Db;
+using ColiseumProblem.GodAndAssistant;
 using ColiseumProblem.ManyExperimentsWorker;
 using ColiseumProblem.OneExperimentWorker;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using StrategiesLib;
@@ -24,6 +26,11 @@ class Program
                 services.AddScoped<IGod, God>();
                 services.AddScoped<IColiseumSandbox, ColiseumSandbox>();
                 services.AddScoped<ICardPickStrategy, FirstStrategy>();
+                services.AddScoped<ICardPickStrategy, FirstRedStrategy>();
+                services.AddScoped<ICardPickStrategy, FirstBlackStrategy>();
+                services.AddScoped<ConditionRepository>();
+                services.AddDbContext<ColiseumContext>(options =>
+                    options.UseNpgsql(Constants.ConnectionString));
 
             });
     }

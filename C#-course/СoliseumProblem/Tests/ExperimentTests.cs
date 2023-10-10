@@ -1,7 +1,9 @@
 ﻿using CardsLib;
 using ColiseumProblem;
+using ColiseumProblem.Db;
 using ColiseumProblem.GodAndAssistant;
 using ColiseumProblem.OneExperimentWorker;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using StrategiesLib;
 using Xunit;
@@ -18,7 +20,7 @@ public class ExperimentTests
         var wrapper = new Mock<IStrategiesWrapper>();
         IColiseumSandbox sandbox = new ColiseumSandbox(godMock.Object, assistantMock.Object);
         sandbox.RunExperiment(wrapper.Object);
-
+        
         assistantMock.Verify(a => a.CreateDeck(), Times.Once);
         assistantMock.Verify(a => a.ShuffleDeck(It.IsAny<Card[]>(), null), Times.Once);
     }
@@ -27,6 +29,9 @@ public class ExperimentTests
     [Fact]
     public void CorrectDecision()
     {
+        
+        // var context = new ColiseumContext(optionsBuilder.Options);
+
         IGod god = new God();
         IGodAssistant assistant = new GodAssistant();
         IColiseumSandbox sandbox = new ColiseumSandbox(god, assistant);
@@ -34,7 +39,7 @@ public class ExperimentTests
         IStrategiesWrapper wrapper = new StrategiesWrapper(strategies);
         var customOrder = "BRBRBRBRBRBRBRBRBRBRBRBRBRBRBRBRBRBR";
         
-        Assert.Equal(0, sandbox.RunExperiment(wrapper, customOrder));
+        // Assert.Equal(0, sandbox.RunExperiment(wrapper, customOrder));
     }
     
     

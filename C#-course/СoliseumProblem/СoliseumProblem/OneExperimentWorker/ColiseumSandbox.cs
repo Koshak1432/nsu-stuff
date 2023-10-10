@@ -1,6 +1,7 @@
 ﻿using CardsLib;
+using ColiseumProblem.Db;
+using ColiseumProblem.Entities;
 using ColiseumProblem.GodAndAssistant;
-using StrategiesLib;
 
 namespace ColiseumProblem.OneExperimentWorker;
 

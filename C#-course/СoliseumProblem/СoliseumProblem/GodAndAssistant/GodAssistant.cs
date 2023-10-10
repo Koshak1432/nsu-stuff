@@ -1,4 +1,5 @@
-﻿using CardsLib;
+﻿using System.Text;
+using CardsLib;
 using Microsoft.VisualBasic;
 
 namespace ColiseumProblem.GodAndAssistant;
@@ -7,13 +8,24 @@ namespace ColiseumProblem.GodAndAssistant;
 public class GodAssistant : IGodAssistant
 {
     private static readonly Random Random = new ();
-
+    private Card[]? _deck;
+    
     public Card[] CreateDeck()
     {
         var cards = new Card[Constants.CardsNum];
         FillHalfColor(cards, CardColor.Black);
         FillHalfColor(cards, CardColor.Red);
+        _deck = cards;
         return cards;
+    }
+
+    public Card[] GetDeck()
+    {
+        if (_deck == null)
+        {
+            throw new NullReferenceException("Deck is null");
+        }
+        return _deck;
     }
 
     // Fisher–Yates shuffle
@@ -37,32 +49,44 @@ public class GodAssistant : IGodAssistant
             {
                 throw new ArgumentException("Invalid custom order length");
             }
-            var lower = customOrder.ToLower();
-            if (!(lower.Count(c => c == 'r') == Constants.CardsNum / 2 && lower.Count(c => c == 'b') == Constants.CardsNum / 2))
-            {
-                throw new ArgumentException("Custom order must contain exactly " + Constants.CardsNum +
-                                            " red and black cards");
-            }
             
-            var blackIdx = 0;
-            var redIdx = 0;
-            var shuffled = new Card[cards.Length];
-            for (var i = 0; i < cards.Length; ++i)
-            {
-                if (lower[i] == 'b')
-                {
-                    CycleToColor(cards, CardColor.Black, ref blackIdx);
-                    shuffled[i] = cards[blackIdx];
-                }
-                else
-                {
-                    CycleToColor(cards, CardColor.Red, ref redIdx);
-                    shuffled[i] = cards[redIdx];
-                }
-            }
-
+            var shuffled = PlaceInOrder(cards, customOrder);
             Array.Copy(shuffled, cards, cards.Length);
         }
+    }
+
+    private static Card[] PlaceInOrder(Card[] cards, string customOrder)
+    {
+        var lower = customOrder.ToLower();
+        if (!IsCountValid(lower))
+        {
+            throw new ArgumentException("Order must contain exactly " + Constants.CardsNum/2 +
+                                        " red and" + Constants.CardsNum / 2 + " black cards");
+        }
+
+        var blackIdx = 0;
+        var redIdx = 0;
+        var shuffled = new Card[cards.Length];
+        for (var i = 0; i < cards.Length; ++i)
+        {
+            if (lower[i] == 'b')
+            {
+                CycleToColor(cards, CardColor.Black, ref blackIdx);
+                shuffled[i] = cards[blackIdx];
+            }
+            else
+            {
+                CycleToColor(cards, CardColor.Red, ref redIdx);
+                shuffled[i] = cards[redIdx];
+            }
+        }
+
+        return shuffled;
+    }
+
+    private static bool IsCountValid(string lower)
+    {
+        return lower.Count(c => c == 'r') == Constants.CardsNum / 2 && lower.Count(c => c == 'b') == Constants.CardsNum / 2;
     }
 
     private static void CycleToColor(Card[] cards, CardColor color, ref int colorIdx)
@@ -91,5 +115,27 @@ public class GodAssistant : IGodAssistant
         {
             cards[i + offset] = new Card(color);
         }
+    }
+
+    public string GetDeckOrder()
+    {
+        if (_deck == null)
+        {
+            throw new NullReferenceException("Deck is null");
+        }
+        var builder = new StringBuilder();
+        foreach (var card in _deck)
+        {
+            builder.Append(card.Color == CardColor.Black ? "b" : "r");
+        }
+
+        var res = builder.ToString();
+        if (!IsCountValid(res))
+        {
+            throw new ArgumentException("Order must contain exactly " + Constants.CardsNum/2 +
+                                        " red and" + Constants.CardsNum / 2 + " black cards");
+        }
+
+        return builder.ToString();
     }
 }
