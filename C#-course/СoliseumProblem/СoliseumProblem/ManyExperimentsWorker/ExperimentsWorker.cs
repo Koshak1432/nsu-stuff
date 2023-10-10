@@ -11,7 +11,6 @@ public class ExperimentsWorker : BackgroundService
     private readonly IHostApplicationLifetime _lifetime;
     private readonly ColiseumContext _context;
     
-    // todo add customOrder?
     public ExperimentsWorker(IColiseumSandbox sandbox, IHostApplicationLifetime lifetime, ColiseumContext context)
     {
         _sandbox = sandbox;
@@ -24,13 +23,14 @@ public class ExperimentsWorker : BackgroundService
         await Task.Run(() =>
         {
             var positiveCount = 0f;
-            var strategies = new Strategies(new FirstRedStrategy(), new FirstRedStrategy());
-            var strategiesWrapper = new StrategiesWrapper(strategies);
+            
+            // var strategies = new Strategies(new FirstRedStrategy(), new FirstRedStrategy());
+            // var strategiesWrapper = new StrategiesWrapper(strategies);
             var watch = System.Diagnostics.Stopwatch.StartNew();
             var experimentsConditions = _context.experiments_conditions.ToList();
             foreach (var condition in experimentsConditions)
             {
-                positiveCount += _sandbox.RunExperiment(strategiesWrapper, condition.condition);
+                positiveCount += _sandbox.RunExperiment(condition.condition);
             }
 
             watch.Stop();

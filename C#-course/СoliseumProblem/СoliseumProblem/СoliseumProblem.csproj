@@ -11,6 +11,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CardsLib\CardsLib.csproj" />
+      <ProjectReference Include="..\ElonRoom\ElonRoom.csproj" />
+      <ProjectReference Include="..\MarkRoom\MarkRoom.csproj" />
       <ProjectReference Include="..\StrategiesLib\StrategiesLib.csproj" />
     </ItemGroup>
 

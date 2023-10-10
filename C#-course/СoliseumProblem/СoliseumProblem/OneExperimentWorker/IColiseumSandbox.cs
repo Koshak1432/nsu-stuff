@@ -2,5 +2,5 @@
 
 public interface IColiseumSandbox
 {
-    public int RunExperiment(IStrategiesWrapper strategies, string? customOrder = null);
+    public int RunExperiment(string? customOrder = null);
 }

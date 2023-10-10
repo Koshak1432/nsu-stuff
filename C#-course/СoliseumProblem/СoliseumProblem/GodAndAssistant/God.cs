@@ -9,15 +9,17 @@ public class God : IGod
     private Card[]? _elonCards;
     private Card[]? _markCards;
 
-    public bool MakeDecision(ICardPickStrategy elonStrategy, ICardPickStrategy markStrategy)
+    public bool MakeDecision(int elonPick, int markPick)
     {
         if (_elonCards == null || _markCards == null)
         {
             throw new NullReferenceException("Elon or/and mark cards are null");
         }
-        var elonPick = elonStrategy.Pick(_elonCards);
-        var markPick = markStrategy.Pick(_markCards);
-
+        
+        if (elonPick < 0 || elonPick >= Constants.CardsNum || markPick < 0 || markPick >= Constants.CardsNum)
+        {
+            throw new ArgumentException($"Invalid picks, elon: {elonPick} , mark: {markPick}");
+        }
         return _markCards[elonPick].Color == _elonCards[markPick].Color;
     }
 
