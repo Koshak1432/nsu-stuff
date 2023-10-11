@@ -11,7 +11,7 @@ public class ElonRoomController : ControllerBase
     [HttpPost("pick")]
     public ActionResult<int> Pick([FromBody] List<Card> deck)
     {
-        ICardPickStrategy strategy = new FirstRedStrategy();
+        ICardPickStrategy strategy = new FirstBlackStrategy();
         var res = strategy.Pick(deck.ToArray());
         Console.WriteLine("GET:");
         foreach (var card in deck)

@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
 using CardsLib;
 using ColiseumProblem.GodAndAssistant;
 
@@ -24,7 +25,7 @@ public class ColiseumSandbox : IColiseumSandbox
         _assistant.ShuffleDeck(deck, customOrder);
         var (elonCards, markCards) = _assistant.SplitDeck(deck);
         _god.SetDecks(elonCards, markCards);
-        var elonPick = SendDeckToRoom(_client, Elon.Constants.ElonRoomUrl, "elon", elonCards);
+        var elonPick = SendDeckToRoom(_client, ElonRoom.Constants.ElonRoomUrl, "elon", elonCards);
         var markPick = SendDeckToRoom(_client, MarkRoom.Constants.MarkRoomUrl, "mark", elonCards);
         var decision = _god.MakeDecision(elonPick.Result, markPick.Result);
         return decision ? 1 : 0;
@@ -33,13 +34,12 @@ public class ColiseumSandbox : IColiseumSandbox
     private static async Task<int> SendDeckToRoom(HttpClient client, string port, string toWhom, Card[] deck)
     {
         var apiURL = $"http://localhost:{port}/{toWhom}/pick";
-        var content = new StringContent(JsonSerializer.Serialize(deck));
-        Console.WriteLine($"SENDING DECK TO {toWhom}, url is {apiURL}");
+        var content = new StringContent(JsonSerializer.Serialize(deck.ToList()), Encoding.UTF8, "application/json");
         var response = await client.PostAsync(apiURL, content);
-
+        
         if (!response.IsSuccessStatusCode)
         {
-            throw new Exception($"Error while sending deck to {toWhom}, error: {response.ReasonPhrase}");
+            throw new Exception($"Error while sending deck to {toWhom}, cause: {response.ReasonPhrase}");
 
         }
         var responseContent = await response.Content.ReadAsStringAsync();
