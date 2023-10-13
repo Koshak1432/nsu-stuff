@@ -2,9 +2,11 @@
 using ColiseumProblem.GodAndAssistant;
 using ColiseumProblem.ManyExperimentsWorker;
 using ColiseumProblem.OneExperimentWorker;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using RabbitMQ.Client;
 
 namespace ColiseumProblem;
 
@@ -28,7 +30,17 @@ static class Program
                 services.AddScoped<ConditionRepository>();
                 services.AddDbContext<ColiseumContext>(options =>
                     options.UseNpgsql(Constants.ConnectionString));
-
+                services.AddMassTransit(x =>
+                {
+                    x.UsingRabbitMq((context, cfg) =>
+                    {
+                        cfg.Host("localhost", "/", h =>
+                        {
+                            h.Username("guest");
+                            h.Password("guest");
+                        });
+                    });
+                });
             });
     }
 

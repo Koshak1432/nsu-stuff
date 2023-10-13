@@ -4,5 +4,5 @@ public class ExperimentCondition
 {
     public long id { get; set; }
     
-    public string condition { get; set; }
+    public string? condition { get; set; }
 }

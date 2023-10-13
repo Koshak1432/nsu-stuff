@@ -13,11 +13,6 @@ public class ElonRoomController : ControllerBase
     {
         ICardPickStrategy strategy = new FirstBlackStrategy();
         var res = strategy.Pick(deck.ToArray());
-        Console.WriteLine("GET:");
-        foreach (var card in deck)
-        {
-            Console.WriteLine(card);
-        }
         return res;
     }
 }

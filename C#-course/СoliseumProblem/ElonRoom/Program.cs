@@ -1,7 +1,19 @@
 using ElonRoom;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+    });
+});
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -10,6 +22,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+var busControl = app.Services.GetRequiredService<IBusControl>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -24,4 +38,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// запуск MassTransit
+busControl.Start();
 app.Run($"http://localhost:{Constants.ElonRoomUrl}");
