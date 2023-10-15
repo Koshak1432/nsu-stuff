@@ -1,4 +1,5 @@
 using MarkRoom;
+using MarkRoom.MessageConsumers;
 using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,11 @@ builder.Services.AddMassTransit(x =>
         {
             h.Username("guest");
             h.Password("guest");
+        });
+        cfg.ReceiveEndpoint("MarkRoom", e =>
+        {
+            e.ConfigureConsumer<DeckMessageConsumer>(context);
+            e.ConfigureConsumer<CardMessageConsumer>(context);
         });
     });
 });

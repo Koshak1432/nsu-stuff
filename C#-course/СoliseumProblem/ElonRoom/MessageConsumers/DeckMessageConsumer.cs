@@ -1,0 +1,26 @@
+﻿using ElonRoom.Services;
+using MassTransit;
+using Messages;
+using StrategiesLib;
+
+namespace ElonRoom.MessageConsumers;
+
+public class DeckMessageConsumer : IConsumer<DeckMessage>
+{
+    private readonly ICardService _cardService;
+
+    public DeckMessageConsumer(ICardService cardService)
+    {
+        _cardService = cardService;
+    }
+
+    public Task Consume(ConsumeContext<DeckMessage> context)
+    {
+        var deck = context.Message.deck;
+        _cardService.SetDeck(deck);
+        ICardPickStrategy strategy = new FirstBlackStrategy();
+        var pick = strategy.Pick(deck.ToArray());
+        // отправить пик марку
+        return Task.CompletedTask;
+    }
+}
