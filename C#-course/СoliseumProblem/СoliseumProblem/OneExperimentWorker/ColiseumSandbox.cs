@@ -42,7 +42,7 @@ public class ColiseumSandbox : IColiseumSandbox
 
     private async Task sendDeckTo(string who,Card[] deck)
     {
-        var endpoint = await _provider.GetSendEndpoint(new Uri($"queue:{who}"));
+        var endpoint = await _provider.GetSendEndpoint(new Uri($"queue:{who}-deck"));
         await endpoint.Send(new DeckMessage { deck = deck });
     }
 

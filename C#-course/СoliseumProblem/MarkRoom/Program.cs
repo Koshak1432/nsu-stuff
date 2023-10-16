@@ -17,10 +17,13 @@ builder.Services.AddMassTransit(x =>
             h.Password("guest");
             
         });
-        cfg.ReceiveEndpoint("MarkRoom", e =>
+        cfg.ReceiveEndpoint("MarkRoom-pick", e =>
+        {
+            e.ConfigureConsumer<CardMessageConsumer>(context);
+        });
+        cfg.ReceiveEndpoint("MarkRoom-deck", e =>
         {
             e.ConfigureConsumer<DeckMessageConsumer>(context);
-            e.ConfigureConsumer<CardMessageConsumer>(context);
         });
     });
 });

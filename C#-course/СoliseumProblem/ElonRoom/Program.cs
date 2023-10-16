@@ -17,12 +17,13 @@ builder.Services.AddMassTransit(x =>
             h.Password("guest");
             
         });
-        cfg.ReceiveEndpoint("ElonRoom", e =>
+        cfg.ReceiveEndpoint("ElonRoom-pick", e =>
         {
-            // e.Consumer<DeckMessageConsumer>();
-            // e.Consumer<CardMessageConsumer>();
-            e.ConfigureConsumer<DeckMessageConsumer>(context);
             e.ConfigureConsumer<CardMessageConsumer>(context);
+        });
+        cfg.ReceiveEndpoint("ElonRoom-deck", e =>
+        {
+            e.ConfigureConsumer<DeckMessageConsumer>(context);
         });
     });
 });
