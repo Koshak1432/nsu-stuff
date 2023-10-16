@@ -20,6 +20,8 @@ public class DeckMessageConsumer : IConsumer<DeckMessage>
         _cardService.SetDeck(deck);
         ICardPickStrategy strategy = new FirstBlackStrategy();
         var pick = strategy.Pick(deck.ToArray());
+        Console.WriteLine($"CONSUME DeckMessage in MARK: {deck.Length}");
+        Console.WriteLine($"Mark pick: {pick}");
         // отправить пик марку
         return Task.CompletedTask;
     }

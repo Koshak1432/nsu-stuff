@@ -1,17 +1,21 @@
 using MarkRoom;
 using MarkRoom.MessageConsumers;
+using MarkRoom.Services;
 using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddSingleton<ICardService, CardService>();
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumer<DeckMessageConsumer>();
+    x.AddConsumer<CardMessageConsumer>();
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host("localhost", "/", h =>
         {
             h.Username("guest");
             h.Password("guest");
+            
         });
         cfg.ReceiveEndpoint("MarkRoom", e =>
         {

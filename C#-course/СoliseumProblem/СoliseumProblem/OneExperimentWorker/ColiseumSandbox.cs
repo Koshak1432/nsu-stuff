@@ -2,6 +2,8 @@
 using System.Text.Json;
 using CardsLib;
 using ColiseumProblem.GodAndAssistant;
+using MassTransit;
+using Messages;
 
 namespace ColiseumProblem.OneExperimentWorker;
 
@@ -11,24 +13,37 @@ public class ColiseumSandbox : IColiseumSandbox
     private readonly IGod _god;
     private readonly IGodAssistant _assistant;
     private readonly HttpClient _client;
+    private readonly ISendEndpointProvider _provider;
 
-    public ColiseumSandbox(IGod god, IGodAssistant assistant, HttpClient client)
+    public ColiseumSandbox(IGod god, IGodAssistant assistant, HttpClient client, ISendEndpointProvider provider)
     {
         _god = god;
         _assistant = assistant;
         _client = client;
+        _provider = provider;
     }
 
-    public int RunExperiment(string? customOrder = null)
+    public async Task<int> RunExperiment(string? customOrder = null)
     {
         var deck = _assistant.CreateDeck();
         _assistant.ShuffleDeck(deck, customOrder);
         var (elonCards, markCards) = _assistant.SplitDeck(deck);
         _god.SetDecks(elonCards, markCards);
-        var elonPick = SendDeckToRoom(_client, ElonRoom.Constants.ElonRoomUrl, "elon", elonCards);
-        var markPick = SendDeckToRoom(_client, MarkRoom.Constants.MarkRoomUrl, "mark", elonCards);
-        var decision = _god.MakeDecision(elonPick.Result, markPick.Result);
+        await sendDeckTo("ElonRoom", elonCards);
+        await sendDeckTo("MarkRoom", markCards);
+        // todo
+        // var elonPick = SendDeckToRoom(_client, ElonRoom.Constants.ElonRoomUrl, "elon", elonCards);
+        // var markPick = SendDeckToRoom(_client, MarkRoom.Constants.MarkRoomUrl, "mark", elonCards);
+        // var elonPick = 
+        // var decision = _god.MakeDecision(elonPick.Result, markPick.Result);
+        var decision = true;
         return decision ? 1 : 0;
+    }
+
+    private async Task sendDeckTo(string who,Card[] deck)
+    {
+        var endpoint = await _provider.GetSendEndpoint(new Uri($"queue:{who}"));
+        await endpoint.Send(new DeckMessage { deck = deck });
     }
 
     private static async Task<int> SendDeckToRoom(HttpClient client, string port, string toWhom, Card[] deck)

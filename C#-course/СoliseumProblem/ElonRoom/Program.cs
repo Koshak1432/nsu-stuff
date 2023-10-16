@@ -2,21 +2,25 @@ using ElonRoom;
 using ElonRoom.MessageConsumers;
 using ElonRoom.Services;
 using MassTransit;
-using Messages;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddSingleton<ICardService, CardService>();
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumer<DeckMessageConsumer>();
+    x.AddConsumer<CardMessageConsumer>();
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host("localhost", "/", h =>
         {
             h.Username("guest");
             h.Password("guest");
+            
         });
         cfg.ReceiveEndpoint("ElonRoom", e =>
         {
+            // e.Consumer<DeckMessageConsumer>();
+            // e.Consumer<CardMessageConsumer>();
             e.ConfigureConsumer<DeckMessageConsumer>(context);
             e.ConfigureConsumer<CardMessageConsumer>(context);
         });
@@ -28,7 +32,6 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<CardService>();
 
 var app = builder.Build();
 
@@ -40,6 +43,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 app.UseHttpsRedirection();
 

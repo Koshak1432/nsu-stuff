@@ -30,7 +30,7 @@ public class ExperimentsWorker : BackgroundService
             var experimentsConditions = _context.experiments_conditions.ToList();
             foreach (var condition in experimentsConditions)
             {
-                positiveCount += _sandbox.RunExperiment(condition.condition);
+                positiveCount += _sandbox.RunExperiment(condition.condition).Result;
             }
 
             watch.Stop();
