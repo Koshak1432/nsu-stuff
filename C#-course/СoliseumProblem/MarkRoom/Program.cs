@@ -1,10 +1,10 @@
 using MarkRoom;
 using MarkRoom.MessageConsumers;
-using MarkRoom.Services;
+using MarkRoom.Storage;
 using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSingleton<ICardService, CardService>();
+builder.Services.AddSingleton<ICardStorage, CardStorage>();
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<DeckMessageConsumer>();

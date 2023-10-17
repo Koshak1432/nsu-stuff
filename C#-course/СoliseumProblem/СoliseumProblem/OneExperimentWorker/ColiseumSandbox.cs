@@ -10,14 +10,12 @@ namespace ColiseumProblem.OneExperimentWorker;
 // проводит 1 эксперимент
 public class ColiseumSandbox : IColiseumSandbox
 {
-    private readonly IGod _god;
     private readonly IGodAssistant _assistant;
     private readonly HttpClient _client;
     private readonly ISendEndpointProvider _provider;
 
-    public ColiseumSandbox(IGod god, IGodAssistant assistant, HttpClient client, ISendEndpointProvider provider)
+    public ColiseumSandbox(IGodAssistant assistant, HttpClient client, ISendEndpointProvider provider)
     {
-        _god = god;
         _assistant = assistant;
         _client = client;
         _provider = provider;
@@ -28,29 +26,26 @@ public class ColiseumSandbox : IColiseumSandbox
         var deck = _assistant.CreateDeck();
         _assistant.ShuffleDeck(deck, customOrder);
         var (elonCards, markCards) = _assistant.SplitDeck(deck);
-        _god.SetDecks(elonCards, markCards);
-        await SendDeckTo("ElonRoom", elonCards);
-        await SendDeckTo("MarkRoom", markCards);
-        // todo
-        // var elonPick = SendDeckToRoom(_client, ElonRoom.Constants.ElonRoomUrl, "elon", elonCards);
-        // var markPick = SendDeckToRoom(_client, MarkRoom.Constants.MarkRoomUrl, "mark", elonCards);
-        // var elonPick = 
-        // var decision = _god.MakeDecision(elonPick.Result, markPick.Result);
-        var decision = true;
+        await SendDeckToQueue("ElonRoom", elonCards);
+        await SendDeckToQueue("MarkRoom", markCards);
+        var elonColor = await GetColor(_client, ElonRoom.Constants.ElonRoomUrl, "elon");
+        var markColor = await GetColor(_client, MarkRoom.Constants.MarkRoomUrl, "mark");
+
+        Console.WriteLine($"GOT Elon color: {elonColor} and Mark color: {markColor}");
+        var decision = elonColor == markColor;
         return decision ? 1 : 0;
     }
 
-    private async Task SendDeckTo(string who,Card[] deck)
+    private async Task SendDeckToQueue(string who,Card[] deck)
     {
         var endpoint = await _provider.GetSendEndpoint(new Uri($"queue:{who}-deck"));
         await endpoint.Send(new DeckMessage { deck = deck });
     }
 
-    private static async Task<int> SendDeckToRoom(HttpClient client, string port, string toWhom, Card[] deck)
+    private static async Task<CardColor> GetColor(HttpClient client, string port, string toWhom)
     {
-        var apiURL = $"http://localhost:{port}/{toWhom}/pick";
-        var content = new StringContent(JsonSerializer.Serialize(deck.ToList()), Encoding.UTF8, "application/json");
-        var response = await client.PostAsync(apiURL, content);
+        var apiURL = $"http://localhost:{port}/{toWhom}/color";
+        var response = await client.GetAsync(apiURL);
         
         if (!response.IsSuccessStatusCode)
         {
@@ -59,20 +54,10 @@ public class ColiseumSandbox : IColiseumSandbox
         }
         var responseContent = await response.Content.ReadAsStringAsync();
         
-        if (!int.TryParse(responseContent, out var res))
+        if (!Enum.TryParse(responseContent, out CardColor res))
         {
             throw new Exception($"Cannot parse {responseContent}");
         }
         return res;
-    }
-
-    private static void PrintCards(Card[] cards)
-    {
-        foreach (var card in cards)
-        {
-            Console.Write(card + " ");
-        }
-
-        Console.Write("\n");
     }
 }

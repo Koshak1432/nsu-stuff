@@ -1,4 +1,4 @@
-﻿using ElonRoom.Services;
+﻿using ElonRoom.Storage;
 using MassTransit;
 using Messages;
 
@@ -6,11 +6,11 @@ namespace ElonRoom.MessageConsumers;
 
 public class CardMessageConsumer : IConsumer<CardMessage>
 {
-    private readonly ICardService _cardService;
+    private readonly ICardStorage _cardStorage;
     
-    public CardMessageConsumer(ICardService cardService)
+    public CardMessageConsumer(ICardStorage cardStorage)
     {
-        _cardService = cardService;
+        _cardStorage = cardStorage;
     }
     
     public Task Consume(ConsumeContext<CardMessage> context)
@@ -19,11 +19,9 @@ public class CardMessageConsumer : IConsumer<CardMessage>
 
         if (from == "Elon")
         {
-            Console.WriteLine("Got own message");
             return Task.CompletedTask;
         }
-        Console.WriteLine($"Received card: {cardNumber} from {from}");
-        _cardService.SetPickedNumber(cardNumber);
+        _cardStorage.SetPickedNumber(cardNumber);
         return Task.CompletedTask;
     }
 }

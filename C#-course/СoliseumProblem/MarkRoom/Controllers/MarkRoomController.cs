@@ -1,18 +1,23 @@
 ﻿using CardsLib;
+using MarkRoom.Storage;
 using Microsoft.AspNetCore.Mvc;
-using StrategiesLib;
 
 namespace MarkRoom.Controllers;
 
 [ApiController]
 [Route("mark")]
-public class ElonRoomController : ControllerBase
+public class MarkRoomController : ControllerBase
 {
-    [HttpPost("pick")]
-    public ActionResult<int> Pick([FromBody] List<Card> deck)
+    private readonly ICardStorage _cardStorage;
+
+    public MarkRoomController(ICardStorage cardStorage)
     {
-        ICardPickStrategy strategy = new FirstBlackStrategy();
-        var res = strategy.Pick(deck.ToArray());
-        return res;
+        _cardStorage = cardStorage;
+    }
+    
+    [HttpGet("color")]
+    public ActionResult<CardColor> GetColor()
+    {
+        return _cardStorage.GetPickedColor();
     }
 }

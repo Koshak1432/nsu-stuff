@@ -1,10 +1,10 @@
 using ElonRoom;
 using ElonRoom.MessageConsumers;
-using ElonRoom.Services;
+using ElonRoom.Storage;
 using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSingleton<ICardService, CardService>();
+builder.Services.AddSingleton<ICardStorage, CardStorage>();
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<DeckMessageConsumer>();

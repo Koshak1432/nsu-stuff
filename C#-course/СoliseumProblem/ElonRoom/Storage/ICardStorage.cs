@@ -1,8 +1,8 @@
 ﻿using CardsLib;
 
-namespace ElonRoom.Services;
+namespace ElonRoom.Storage;
 
-public interface ICardService
+public interface ICardStorage
 {
     public void SetDeck(Card[] deck);
     public void SetPickedNumber(int pick);

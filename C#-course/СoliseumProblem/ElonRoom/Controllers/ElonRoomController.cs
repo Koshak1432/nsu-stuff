@@ -1,7 +1,6 @@
 ﻿using CardsLib;
-using ElonRoom.Services;
+using ElonRoom.Storage;
 using Microsoft.AspNetCore.Mvc;
-using StrategiesLib;
 
 namespace ElonRoom.Controllers;
 
@@ -9,24 +8,18 @@ namespace ElonRoom.Controllers;
 [Route("elon")]
 public class ElonRoomController : ControllerBase
 {
-    private ICardService _cardService;
+    private readonly ICardStorage _cardStorage;
 
-    public ElonRoomController(ICardService cardService)
+    public ElonRoomController(ICardStorage cardStorage)
     {
-        _cardService = cardService;
-    }
-
-    [HttpPost("pick")]
-    public ActionResult<int> Pick([FromBody] List<Card> deck)
-    {
-        ICardPickStrategy strategy = new FirstBlackStrategy();
-        var res = strategy.Pick(deck.ToArray());
-        return res;
+        _cardStorage = cardStorage;
     }
 
     [HttpGet("color")]
-    public ActionResult<CardColor> getColor()
+    public ActionResult<CardColor> GetColor()
     {
-        throw new NotImplementedException();
+        // тут ждать, пока лок на стораге откроется?
+        // тогда раньше в консумерах надо залокать
+        return _cardStorage.GetPickedColor();
     }
 }
