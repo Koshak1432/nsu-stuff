@@ -29,8 +29,8 @@ public class ColiseumSandbox : IColiseumSandbox
         _assistant.ShuffleDeck(deck, customOrder);
         var (elonCards, markCards) = _assistant.SplitDeck(deck);
         _god.SetDecks(elonCards, markCards);
-        await sendDeckTo("ElonRoom", elonCards);
-        await sendDeckTo("MarkRoom", markCards);
+        await SendDeckTo("ElonRoom", elonCards);
+        await SendDeckTo("MarkRoom", markCards);
         // todo
         // var elonPick = SendDeckToRoom(_client, ElonRoom.Constants.ElonRoomUrl, "elon", elonCards);
         // var markPick = SendDeckToRoom(_client, MarkRoom.Constants.MarkRoomUrl, "mark", elonCards);
@@ -40,7 +40,7 @@ public class ColiseumSandbox : IColiseumSandbox
         return decision ? 1 : 0;
     }
 
-    private async Task sendDeckTo(string who,Card[] deck)
+    private async Task SendDeckTo(string who,Card[] deck)
     {
         var endpoint = await _provider.GetSendEndpoint(new Uri($"queue:{who}-deck"));
         await endpoint.Send(new DeckMessage { deck = deck });

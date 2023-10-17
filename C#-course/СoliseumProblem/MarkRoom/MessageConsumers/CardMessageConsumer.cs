@@ -15,9 +15,14 @@ public class CardMessageConsumer : IConsumer<CardMessage>
     
     public Task Consume(ConsumeContext<CardMessage> context)
     {
-        var cardNumber = context.Message.CardNumber;
+        var (cardNumber, from) = (context.Message.CardNumber, context.Message.Whose);
 
-        Console.WriteLine($"Received card: {cardNumber}");
+        if (from == "Mark")
+        {
+            Console.WriteLine("Got own message");
+            return Task.CompletedTask;
+        }
+        Console.WriteLine($"Received card: {cardNumber} from {from}");
         _cardService.SetPickedNumber(cardNumber);
         return Task.CompletedTask;
     }

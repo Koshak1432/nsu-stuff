@@ -8,13 +8,15 @@ namespace MarkRoom.MessageConsumers;
 public class DeckMessageConsumer : IConsumer<DeckMessage>
 {
     private readonly ICardService _cardService;
+    private readonly IPublishEndpoint _publish;
 
-    public DeckMessageConsumer(ICardService cardService)
+    public DeckMessageConsumer(ICardService cardService, IPublishEndpoint publish)
     {
         _cardService = cardService;
+        _publish = publish;
     }
 
-    public Task Consume(ConsumeContext<DeckMessage> context)
+    public async Task Consume(ConsumeContext<DeckMessage> context)
     {
         var deck = context.Message.deck;
         _cardService.SetDeck(deck);
@@ -22,7 +24,6 @@ public class DeckMessageConsumer : IConsumer<DeckMessage>
         var pick = strategy.Pick(deck.ToArray());
         Console.WriteLine($"CONSUME DeckMessage in MARK: {deck.Length}");
         Console.WriteLine($"Mark pick: {pick}");
-        // отправить пик марку
-        return Task.CompletedTask;
+        await _publish.Publish(new CardMessage { CardNumber = pick, Whose = "Mark" });
     }
 }
