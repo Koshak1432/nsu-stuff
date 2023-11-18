@@ -7,11 +7,14 @@ public class CardStorage : ICardStorage
     private Card[]? _deck;
     private int? _pickedNumber;
     private bool _numberSet = false;
-    private object _lockObject = new ();
+    private readonly object _lockObject = new ();
 
     public void SetDeck(Card[] deck)
     {
-        _deck = deck;
+        lock (_lockObject)
+        {
+            _deck = deck;
+        }
     }
 
     public void SetPickedNumber(int pick)

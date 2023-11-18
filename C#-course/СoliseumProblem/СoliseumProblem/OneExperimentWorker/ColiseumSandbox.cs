@@ -31,7 +31,7 @@ public class ColiseumSandbox : IColiseumSandbox
         var elonColor = await GetColor(_client, ElonRoom.Constants.ElonRoomUrl, "elon");
         var markColor = await GetColor(_client, MarkRoom.Constants.MarkRoomUrl, "mark");
 
-        Console.WriteLine($"GOT Elon color: {elonColor} and Mark color: {markColor}");
+        Console.WriteLine($"Elon color: {elonColor} | Mark color: {markColor}");
         var decision = elonColor == markColor;
         return decision ? 1 : 0;
     }
