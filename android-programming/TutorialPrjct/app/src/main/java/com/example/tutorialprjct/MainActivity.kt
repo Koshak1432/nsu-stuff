@@ -7,7 +7,10 @@ import android.os.Bundle
 import android.view.Menu
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 
 class MainActivity : AppCompatActivity() {
 //    private var counter = 0
@@ -41,10 +44,19 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var fragmentCounterText: TextView
 
+//    private lateinit var viewModel: MyViewModel
+
+    private val viewModel: MyViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         fragmentCounterText = findViewById(R.id.fragment_counter)
+//        viewModel = ViewModelProvider(this)[MyViewModel::class.java]
+        viewModel.currentCounter.observe(this) {
+            fragmentCounterText.text = "Фрагменты: ${it.toString()}"
+        }
+
         onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (supportFragmentManager.backStackEntryCount > 0) {
@@ -52,7 +64,7 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     finish()
                 }
-                updateFragmentCounter()
+//                updateFragmentCounter()
             }
         })
 
@@ -61,12 +73,11 @@ class MainActivity : AppCompatActivity() {
                 .add(R.id.container_list, FragmentMenu.create(false), "menu")
                 .commit()
         }
-        updateFragmentCounter()
-
+//        updateFragmentCounter()
     }
 
     private fun updateFragmentCounter() {
         val visibleFragments = supportFragmentManager.fragments
-        fragmentCounterText.text = "Фрагментыы: ${visibleFragments.size}"
+//        fragmentCounterText.text = "Фрагментыы: ${visibleFragments.size}"
     }
 }

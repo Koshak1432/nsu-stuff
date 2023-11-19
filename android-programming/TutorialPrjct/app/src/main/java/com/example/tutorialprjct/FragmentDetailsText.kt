@@ -7,9 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 
 class FragmentDetailsText : Fragment() {
     // аналогичен статическим методам и свойствам в Java
+    private val viewModel: MyViewModel by activityViewModels()
+
     companion object {
         private const val ARG_TEXT = "text"
 

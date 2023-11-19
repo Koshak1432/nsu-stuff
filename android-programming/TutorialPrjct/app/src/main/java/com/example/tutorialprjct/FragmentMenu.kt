@@ -8,8 +8,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
 
 class FragmentMenu() : Fragment() {
+
+    private val viewModel: MyViewModel by activityViewModels()
+
     companion object {
         private const val BACK_VISIBLE = "backButton"
 
