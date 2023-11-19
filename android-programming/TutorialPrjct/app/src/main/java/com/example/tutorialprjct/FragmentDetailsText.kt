@@ -31,6 +31,12 @@ class FragmentDetailsText : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_details_text, container, false)
+        println("text, fragments: ${parentFragmentManager.fragments}")
+        
+        println("text, is visible: ${this.isVisible}, isHidden: ${this.isHidden}," +
+                " isInLayout: ${this.isInLayout}, isDetached: ${this.isDetached}," +
+                " isAdded: ${this.isAdded}, isResumed: ${this.isResumed}")
+        viewModel.currentCounter.value = parentFragmentManager.fragments.size
         val textView = view.findViewById<TextView>(R.id.text)
         textView.text = requireArguments().getString(ARG_TEXT)
         return view

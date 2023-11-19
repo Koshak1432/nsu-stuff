@@ -13,46 +13,33 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
 class MainActivity : AppCompatActivity() {
-//    private var counter = 0
-//    private val counterKey = "counter"
-
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_main)
-//        val btnIncrement = findViewById<Button>(R.id.incrementBtn)
-//        val btnShow = findViewById<Button>(R.id.showToast)
-//        btnIncrement.setOnClickListener {
-//            counter++
-//        }
-//        btnShow.setOnClickListener {
-//            val counterVal = "Counter value: $counter"
-//            Toast.makeText(this, counterVal, Toast.LENGTH_SHORT).show()
-//        }
-//    }
-
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        outState.run {
-//            putInt(counterKey, counter)
-//        }
-//        super.onSaveInstanceState(outState)
-//    }
-//
-//    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-//        super.onRestoreInstanceState(savedInstanceState)
-//        counter = savedInstanceState.getInt(counterKey)
-//    }
+    private val ARG_ITEM_ID = "itemId"
+    private val ARG_PORTRAIT = "port"
+    private val ARG_FRAGMENTS = "fragments"
 
     private lateinit var fragmentCounterText: TextView
-
-//    private lateinit var viewModel: MyViewModel
-
     private val viewModel: MyViewModel by viewModels()
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.run {
+            putBoolean(ARG_PORTRAIT, resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+            putIntArray(ARG_FRAGMENTS, supportFragmentManager.fragments.map{it.id}.toIntArray())
+        }
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+//        counter = savedInstanceState.getInt(counterKey)
+//        val fragments = savedInstanceState.getIntArray(ARG_FRAGMENTS)
+//        supportFragmentManager.fragments = fragments
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         fragmentCounterText = findViewById(R.id.fragment_counter)
-//        viewModel = ViewModelProvider(this)[MyViewModel::class.java]
         viewModel.currentCounter.observe(this) {
             fragmentCounterText.text = "Фрагменты: ${it.toString()}"
         }
@@ -61,10 +48,17 @@ class MainActivity : AppCompatActivity() {
             override fun handleOnBackPressed() {
                 if (supportFragmentManager.backStackEntryCount > 0) {
                     supportFragmentManager.popBackStack()
+                    println("backStackCount: ${supportFragmentManager.backStackEntryCount}")
+                    println("activity, fragments: ${supportFragmentManager.fragments}")
+
+                    for (i in supportFragmentManager.fragments.filter { it.isVisible }) {
+                        println("${i.tag}, is visible: ${i.isVisible}, isHidden: ${i.isHidden}," +
+                                " isInLayout: ${i.isInLayout}, isDetached: ${i.isDetached}," +
+                                " isAdded: ${i.isAdded}, isResumed: ${i.isResumed}")
+                    }
                 } else {
                     finish()
                 }
-//                updateFragmentCounter()
             }
         })
 
@@ -73,11 +67,5 @@ class MainActivity : AppCompatActivity() {
                 .add(R.id.container_list, FragmentMenu.create(false), "menu")
                 .commit()
         }
-//        updateFragmentCounter()
-    }
-
-    private fun updateFragmentCounter() {
-        val visibleFragments = supportFragmentManager.fragments
-//        fragmentCounterText.text = "Фрагментыы: ${visibleFragments.size}"
     }
 }
