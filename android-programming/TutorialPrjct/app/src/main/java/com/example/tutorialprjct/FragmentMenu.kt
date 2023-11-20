@@ -12,14 +12,11 @@ import androidx.fragment.app.activityViewModels
 
 class FragmentMenu() : Fragment() {
     private val viewModel: MyViewModel by activityViewModels()
-    private lateinit var curText: String
     private var curItemId: Int = 0
 
     companion object {
         private const val BACK_VISIBLE = "backButton"
         private const val ARG_ITEM_ID = "itemId"
-        private const val ARG_MENU_SHOW = "menu"
-        private const val ARG_TEXT = "text"
 
         fun create(isBackVisible: Boolean): FragmentMenu {
             val menu = FragmentMenu()
@@ -47,11 +44,11 @@ class FragmentMenu() : Fragment() {
         backButton.setOnClickListener {
             parentFragmentManager.popBackStack("back", FragmentManager.POP_BACK_STACK_INCLUSIVE)
         }
-        println("menu, is visible: ${this.isVisible}, isHidden: ${this.isHidden}," +
-                " isInLayout: ${this.isInLayout}, isDetached: ${this.isDetached}," +
-                " isAdded: ${this.isAdded}, isResumed: ${this.isResumed}")
+//        println("menu, is visible: ${this.isVisible}, isHidden: ${this.isHidden}," +
+//                " isInLayout: ${this.isInLayout}, isDetached: ${this.isDetached}," +
+//                " isAdded: ${this.isAdded}, isResumed: ${this.isResumed}")
         updateFragmentCounter()
-        println("menu, size: ${parentFragmentManager.fragments.size}")
+//        println("menu, size: ${parentFragmentManager.fragments.size}")
 
 
         val button1 = view.findViewById<Button>(R.id.button_1)
@@ -59,16 +56,34 @@ class FragmentMenu() : Fragment() {
         val button3 = view.findViewById<Button>(R.id.button_3)
 
         button1.setOnClickListener {
+            curItemId = R.id.button_1
             showDetailsButton(button1.text.toString())
         }
         button2.setOnClickListener {
+            curItemId = R.id.button_2
             showDetailsButton(button2.text.toString())
         }
         button3.setOnClickListener {
+            curItemId = R.id.button_3
             showDetailsButton(button3.text.toString())
         }
 
-        return view;
+
+
+        return view
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            curItemId = savedInstanceState.getInt(ARG_ITEM_ID, 0)
+            println("MENU: savedInstanceState != null, curItemId: $curItemId")
+            println(savedInstanceState.describeContents())
+        }
+        if (curItemId != 0) {
+            showDetailsButton(this.view?.findViewById<Button>(curItemId)?.text.toString())
+            println("MENU: curItemId != 0, set $curItemId button")
+        }
     }
 
     private fun showDetailsButton(buttonText: String) {
@@ -85,26 +100,11 @@ class FragmentMenu() : Fragment() {
             .commit()
     }
 
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        super.onSaveInstanceState(outState)
-//        outState.run {
-//            putInt(ARG_ITEM_ID, curItemId)
-//            putString(ARG_TEXT, curText)
-//        }
-//    }
-//
-    // создаётся раньше чем onViewCreate,поэтому краш
-    // КАКК????
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        val idToShow :Int? = savedInstanceState?.getInt(ARG_ITEM_ID)
-//        val text = savedInstanceState?.getString(ARG_TEXT)
-//        if (idToShow != null && text != null) {
-//            showDetailsButton(text)
-//        }
-//        updateFragmentCounter()
-//    }
-
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(ARG_ITEM_ID, curItemId)
+        println("MENU: save instance, curItemId: $curItemId")
+    }
 
     private fun updateFragmentCounter() {
         viewModel.currentCounter.value = parentFragmentManager.fragments.size

@@ -20,21 +20,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fragmentCounterText: TextView
     private val viewModel: MyViewModel by viewModels()
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.run {
-            putBoolean(ARG_PORTRAIT, resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
-            putIntArray(ARG_FRAGMENTS, supportFragmentManager.fragments.map{it.id}.toIntArray())
-        }
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-
-//        counter = savedInstanceState.getInt(counterKey)
-//        val fragments = savedInstanceState.getIntArray(ARG_FRAGMENTS)
-//        supportFragmentManager.fragments = fragments
-    }
+//    override fun onSaveInstanceState(outState: Bundle) {
+//        super.onSaveInstanceState(outState)
+//        outState.run {
+//            putBoolean(ARG_PORTRAIT, resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+//            putIntArray(ARG_FRAGMENTS, supportFragmentManager.fragments.map{it.id}.toIntArray())
+//        }
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,14 +40,14 @@ class MainActivity : AppCompatActivity() {
             override fun handleOnBackPressed() {
                 if (supportFragmentManager.backStackEntryCount > 0) {
                     supportFragmentManager.popBackStack()
-                    println("backStackCount: ${supportFragmentManager.backStackEntryCount}")
-                    println("activity, fragments: ${supportFragmentManager.fragments}")
-
-                    for (i in supportFragmentManager.fragments.filter { it.isVisible }) {
-                        println("${i.tag}, is visible: ${i.isVisible}, isHidden: ${i.isHidden}," +
-                                " isInLayout: ${i.isInLayout}, isDetached: ${i.isDetached}," +
-                                " isAdded: ${i.isAdded}, isResumed: ${i.isResumed}")
-                    }
+//                    println("backStackCount: ${supportFragmentManager.backStackEntryCount}")
+//                    println("activity, fragments: ${supportFragmentManager.fragments}")
+//
+//                    for (i in supportFragmentManager.fragments.filter { it.isVisible }) {
+//                        println("${i.tag}, is visible: ${i.isVisible}, isHidden: ${i.isHidden}," +
+//                                " isInLayout: ${i.isInLayout}, isDetached: ${i.isDetached}," +
+//                                " isAdded: ${i.isAdded}, isResumed: ${i.isResumed}")
+//                    }
                 } else {
                     finish()
                 }
@@ -66,6 +58,7 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction()
                 .add(R.id.container_list, FragmentMenu.create(false), "menu")
                 .commit()
+            println("ACTIVITY: savedInstanceState == null, set menu")
         }
     }
 }
