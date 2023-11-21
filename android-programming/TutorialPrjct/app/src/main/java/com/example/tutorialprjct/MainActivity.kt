@@ -30,9 +30,14 @@ class MainActivity : AppCompatActivity() {
 
         onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (supportFragmentManager.backStackEntryCount > 0) {
+                val backStackEntryCount = supportFragmentManager.backStackEntryCount
+                if (backStackEntryCount > 0) {
                     savedInstanceState?.putInt(FragmentMenu.ARG_ITEM_ID, 0)
-                    println("HELLO")
+                    if (supportFragmentManager.getBackStackEntryAt(backStackEntryCount - 1).name == "back") {
+                        viewModel.setTextShow(false)
+                        println("SET TEXT SHOW TO FALSE")
+                    }
+                    println("BACKSTAKE at $backStackEntryCount: ${supportFragmentManager.getBackStackEntryAt(backStackEntryCount - 1).name}")
                     supportFragmentManager.popBackStack()
 //                    println("backStackCount: ${supportFragmentManager.backStackEntryCount}")
 //                    println("activity, fragments: ${supportFragmentManager.fragments}")

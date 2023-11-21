@@ -12,7 +12,7 @@ import androidx.fragment.app.activityViewModels
 class FragmentDetailsButton() : Fragment() {
     // аналогичен статическим методам и свойствам в Java
     private val viewModel: MyViewModel by activityViewModels()
-    private var isTextShown: Boolean = false
+    private var isTextShow = false
 
     companion object {
         private const val ARG_IS_TEXT_SHOWN = "textShown"
@@ -49,20 +49,21 @@ class FragmentDetailsButton() : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState != null) {
-            isTextShown = savedInstanceState.getBoolean(ARG_IS_TEXT_SHOWN)
-            println("BUTTON: savedInstanceState != null, isTextShown $isTextShown")
-            val text = requireArguments().getString(ARG_BUTTON_TEXT)
-            if (isTextShown) {
-                if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    println("BUTTON: savedInstanceState != null, create just text $text")
-                    createText(text)
-                } else {
-                    println("BUTTON: savedInstanceState != null, create menuBack and text $text")
-                    createTextAndMenuBack(text)
-                }
+        val text = requireArguments().getString(ARG_BUTTON_TEXT)
+        if (viewModel.isTextShow()) {
+            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                println("BUTTON: savedInstanceState != null, create just text $text")
+                createText(text)
+            } else {
+                println("BUTTON: savedInstanceState != null, create menuBack and text $text")
+                createTextAndMenuBack(text)
             }
         }
+//        if (savedInstanceState != null) {
+////            isTextShow = savedInstanceState.getBoolean(ARG_IS_TEXT_SHOWN)
+//            println("BUTTON: savedInstanceState != null, isTextShow ${viewModel.isTextShow()}")
+//
+//        }
     }
 
     private fun setListeners(button: Button, text: String?) {
@@ -83,7 +84,8 @@ class FragmentDetailsButton() : Fragment() {
             .replace(R.id.container_list, FragmentMenu.create(true), "menuBack")
             .addToBackStack("back")
             .commit()
-        isTextShown = true
+        viewModel.setTextShow(true)
+//        isTextShow = true
         println("createTextAndMenuBack: Set is text shown to true")
     }
 
@@ -92,19 +94,20 @@ class FragmentDetailsButton() : Fragment() {
             .replace(R.id.container_list, FragmentDetailsText.create(text), "text")
             .addToBackStack("back")
             .commit()
-        isTextShown = true
+        viewModel.setTextShow(true)
+//        isTextShow = true
         println("createText: Set is text shown to true")
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(ARG_IS_TEXT_SHOWN, isTextShown)
-
-        println("BUTTON: save instance, isTextShown: $isTextShown")
-    }
+//    override fun onSaveInstanceState(outState: Bundle) {
+//        super.onSaveInstanceState(outState)
+////        outState.putBoolean(ARG_IS_TEXT_SHOWN, viewModel.isTextShow())
+//
+//        println("BUTTON: save instance, isTextShown: ${viewModel.isTextShow()}")
+//    }
 
     private fun updateFragmentCounter() {
-        viewModel.currentCounter.value = parentFragmentManager.fragments.size
+        viewModel.updateCounter(parentFragmentManager.fragments.size)
 //        println("button, size: ${parentFragmentManager.fragments.size}")
     }
 }

@@ -43,6 +43,7 @@ class FragmentMenu() : Fragment() {
 
         backButton.setOnClickListener {
             parentFragmentManager.popBackStack("back", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            viewModel.setTextShow(false)
         }
 //        println("menu, is visible: ${this.isVisible}, isHidden: ${this.isHidden}," +
 //                " isInLayout: ${this.isInLayout}, isDetached: ${this.isDetached}," +
@@ -103,6 +104,6 @@ class FragmentMenu() : Fragment() {
     }
 
     private fun updateFragmentCounter() {
-        viewModel.currentCounter.value = parentFragmentManager.fragments.size
+        viewModel.updateCounter(parentFragmentManager.fragments.size)
     }
 }
