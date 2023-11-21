@@ -39,6 +39,7 @@ class FragmentDetailsText : Fragment() {
         viewModel.currentCounter.value = parentFragmentManager.fragments.size
         val textView = view.findViewById<TextView>(R.id.text)
         textView.text = requireArguments().getString(ARG_TEXT)
+        println("TEXT with text: ${requireArguments().getString(ARG_TEXT)}")
         return view
     }
 }

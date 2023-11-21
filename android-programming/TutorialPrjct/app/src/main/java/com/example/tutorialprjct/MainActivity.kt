@@ -20,14 +20,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fragmentCounterText: TextView
     private val viewModel: MyViewModel by viewModels()
 
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        super.onSaveInstanceState(outState)
-//        outState.run {
-//            putBoolean(ARG_PORTRAIT, resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
-//            putIntArray(ARG_FRAGMENTS, supportFragmentManager.fragments.map{it.id}.toIntArray())
-//        }
-//    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -39,6 +31,8 @@ class MainActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (supportFragmentManager.backStackEntryCount > 0) {
+                    savedInstanceState?.putInt(FragmentMenu.ARG_ITEM_ID, 0)
+                    println("HELLO")
                     supportFragmentManager.popBackStack()
 //                    println("backStackCount: ${supportFragmentManager.backStackEntryCount}")
 //                    println("activity, fragments: ${supportFragmentManager.fragments}")

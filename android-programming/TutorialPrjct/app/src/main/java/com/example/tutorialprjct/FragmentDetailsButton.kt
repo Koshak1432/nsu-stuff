@@ -12,7 +12,7 @@ import androidx.fragment.app.activityViewModels
 class FragmentDetailsButton() : Fragment() {
     // аналогичен статическим методам и свойствам в Java
     private val viewModel: MyViewModel by activityViewModels()
-    private var isTextShown = false
+    private var isTextShown: Boolean = false
 
     companion object {
         private const val ARG_IS_TEXT_SHOWN = "textShown"
@@ -37,9 +37,22 @@ class FragmentDetailsButton() : Fragment() {
         val text = requireArguments().getString(ARG_BUTTON_TEXT)
         button.text = text
 
+//        println("button, fragments: ${parentFragmentManager.fragments}")
+//        println("button, is visible: ${this.isVisible}, isHidden: ${this.isHidden}," +
+//                " isInLayout: ${this.isInLayout}, isDetached: ${this.isDetached}," +
+//                " isAdded: ${this.isAdded}, isResumed: ${this.isResumed}")
+
+        updateFragmentCounter()
+        setListeners(button, text)
+        return view
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         if (savedInstanceState != null) {
-            val isTextShown = savedInstanceState.getBoolean(ARG_IS_TEXT_SHOWN)
+            isTextShown = savedInstanceState.getBoolean(ARG_IS_TEXT_SHOWN)
             println("BUTTON: savedInstanceState != null, isTextShown $isTextShown")
+            val text = requireArguments().getString(ARG_BUTTON_TEXT)
             if (isTextShown) {
                 if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
                     println("BUTTON: savedInstanceState != null, create just text $text")
@@ -50,17 +63,6 @@ class FragmentDetailsButton() : Fragment() {
                 }
             }
         }
-
-//        println("button, fragments: ${parentFragmentManager.fragments}")
-//
-//        println("button, is visible: ${this.isVisible}, isHidden: ${this.isHidden}," +
-//                " isInLayout: ${this.isInLayout}, isDetached: ${this.isDetached}," +
-//                " isAdded: ${this.isAdded}, isResumed: ${this.isResumed}")
-
-
-        updateFragmentCounter()
-        setListeners(button, text)
-        return view
     }
 
     private fun setListeners(button: Button, text: String?) {
@@ -82,6 +84,7 @@ class FragmentDetailsButton() : Fragment() {
             .addToBackStack("back")
             .commit()
         isTextShown = true
+        println("createTextAndMenuBack: Set is text shown to true")
     }
 
     private fun createText(text: String?) {
@@ -90,6 +93,7 @@ class FragmentDetailsButton() : Fragment() {
             .addToBackStack("back")
             .commit()
         isTextShown = true
+        println("createText: Set is text shown to true")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

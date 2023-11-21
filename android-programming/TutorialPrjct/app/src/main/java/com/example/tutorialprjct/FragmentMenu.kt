@@ -16,7 +16,7 @@ class FragmentMenu() : Fragment() {
 
     companion object {
         private const val BACK_VISIBLE = "backButton"
-        private const val ARG_ITEM_ID = "itemId"
+        const val ARG_ITEM_ID = "itemId"
 
         fun create(isBackVisible: Boolean): FragmentMenu {
             val menu = FragmentMenu()
@@ -50,7 +50,6 @@ class FragmentMenu() : Fragment() {
         updateFragmentCounter()
 //        println("menu, size: ${parentFragmentManager.fragments.size}")
 
-
         val button1 = view.findViewById<Button>(R.id.button_1)
         val button2 = view.findViewById<Button>(R.id.button_2)
         val button3 = view.findViewById<Button>(R.id.button_3)
@@ -67,9 +66,6 @@ class FragmentMenu() : Fragment() {
             curItemId = R.id.button_3
             showDetailsButton(button3.text.toString())
         }
-
-
-
         return view
     }
 
@@ -77,12 +73,12 @@ class FragmentMenu() : Fragment() {
         super.onCreate(savedInstanceState)
         if (savedInstanceState != null) {
             curItemId = savedInstanceState.getInt(ARG_ITEM_ID, 0)
-            println("MENU: savedInstanceState != null, curItemId: $curItemId")
+            println("MENU: onCreated, savedInstanceState != null, curItemId: $curItemId")
             println(savedInstanceState.describeContents())
         }
         if (curItemId != 0) {
-            showDetailsButton(this.view?.findViewById<Button>(curItemId)?.text.toString())
-            println("MENU: curItemId != 0, set $curItemId button")
+            showDetailsButton(resources.getResourceEntryName(curItemId))
+            println("MENU: onCreate getResNameBy id $curItemId")
         }
     }
 
