@@ -12,6 +12,18 @@ class MyViewModel() : ViewModel() {
         MutableLiveData<Boolean>()
     }
 
+    private val itemId: MutableLiveData<Int> by lazy {
+        MutableLiveData<Int>()
+    }
+
+    fun setItemId(id : Int?) {
+        itemId.value = id
+    }
+
+    fun getItemId(): Int? {
+        return itemId.value
+    }
+
     fun setTextShow(isShown: Boolean) {
         isTextShow.value = isShown
     }
@@ -21,7 +33,7 @@ class MyViewModel() : ViewModel() {
     }
 
 
-    fun updateCounter(numFragments: Int) {
+    fun setCounter(numFragments: Int) {
         currentCounter.value = numFragments
     }
 

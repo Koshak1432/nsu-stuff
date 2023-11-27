@@ -1,5 +1,6 @@
 package com.example.tutorialprjct
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,11 +9,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import java.lang.RuntimeException
 
 class FragmentDetailsButton() : Fragment() {
     // аналогичен статическим методам и свойствам в Java
     private val viewModel: MyViewModel by activityViewModels()
-    private var isTextShow = false
+    private var menuVisibilityListener: OnVisibilityChangeListener? = null
 
     companion object {
         private const val ARG_IS_TEXT_SHOWN = "textShown"
@@ -27,6 +29,15 @@ class FragmentDetailsButton() : Fragment() {
         }
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnVisibilityChangeListener) {
+            menuVisibilityListener = context
+        } else {
+            throw RuntimeException("$context must implement OnVisibilityChangeListener")
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,14 +47,11 @@ class FragmentDetailsButton() : Fragment() {
         val button = view.findViewById<Button>(R.id.button)
         val text = requireArguments().getString(ARG_BUTTON_TEXT)
         button.text = text
-
-//        println("button, fragments: ${parentFragmentManager.fragments}")
-//        println("button, is visible: ${this.isVisible}, isHidden: ${this.isHidden}," +
-//                " isInLayout: ${this.isInLayout}, isDetached: ${this.isDetached}," +
-//                " isAdded: ${this.isAdded}, isResumed: ${this.isResumed}")
-
-        updateFragmentCounter()
-        setListeners(button, text)
+//        updateFragmentCounter()
+        menuVisibilityListener?.onVisibilityChange(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        button.setOnClickListener {
+            createText(text)
+        }
         return view
     }
 
@@ -51,63 +59,53 @@ class FragmentDetailsButton() : Fragment() {
         super.onCreate(savedInstanceState)
         val text = requireArguments().getString(ARG_BUTTON_TEXT)
         if (viewModel.isTextShow()) {
-            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                println("BUTTON: savedInstanceState != null, create just text $text")
-                createText(text)
-            } else {
-                println("BUTTON: savedInstanceState != null, create menuBack and text $text")
-                createTextAndMenuBack(text)
-            }
+            parentFragmentManager.popBackStack()
+            createText(text)
         }
-//        if (savedInstanceState != null) {
-////            isTextShow = savedInstanceState.getBoolean(ARG_IS_TEXT_SHOWN)
-//            println("BUTTON: savedInstanceState != null, isTextShow ${viewModel.isTextShow()}")
-//
-//        }
-    }
-
-    private fun setListeners(button: Button, text: String?) {
-        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            button.setOnClickListener {
-                createText(text)
-            }
-        } else {
-            button.setOnClickListener {
-                createTextAndMenuBack(text)
-            }
-        }
-    }
-
-    private fun createTextAndMenuBack(text: String?) {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.container_item, FragmentDetailsText.create(text), "text")
-            .replace(R.id.container_list, FragmentMenu.create(true), "menuBack")
-            .addToBackStack("back")
-            .commit()
-        viewModel.setTextShow(true)
-//        isTextShow = true
-        println("createTextAndMenuBack: Set is text shown to true")
+//        updateFragmentCounter()
     }
 
     private fun createText(text: String?) {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.container_list, FragmentDetailsText.create(text), "text")
-            .addToBackStack("back")
-            .commit()
+        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.container_item, FragmentDetailsText.create(text), "text")
+//                .remove(parentFragmentManager.findFragmentByTag("menu")!!)
+                .addToBackStack("back")
+                .commit()
+            println("createText: create just text")
+        } else {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.container_item, FragmentDetailsText.create(text), "text")
+                .replace(R.id.container_list, FragmentMenu.create(true), "menuBack")
+                .addToBackStack("back")
+                .commit()
+            println("createText: create text and menu with back button")
+        }
         viewModel.setTextShow(true)
-//        isTextShow = true
         println("createText: Set is text shown to true")
     }
 
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        super.onSaveInstanceState(outState)
-////        outState.putBoolean(ARG_IS_TEXT_SHOWN, viewModel.isTextShow())
-//
-//        println("BUTTON: save instance, isTextShown: ${viewModel.isTextShow()}")
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+//        updateFragmentCounter()
 //    }
 
-    private fun updateFragmentCounter() {
-        viewModel.updateCounter(parentFragmentManager.fragments.size)
-//        println("button, size: ${parentFragmentManager.fragments.size}")
-    }
+//    private fun updateFragmentCounter() {
+//        val fragments = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//            parentFragmentManager.fragments.size
+//        } else {
+//            parentFragmentManager.fragments.filter { it.isVisible }.size
+//        }
+//
+//        println("FRAGMENTS:")
+//        for (frag in parentFragmentManager.fragments) {
+//            println("TAG: ${frag.tag}, isVisible: ${frag.isVisible}")
+//        }
+//        println("BUTTON: counter: ${parentFragmentManager.fragments.size}")
+//        println("BUTTON: filtered counter: ${parentFragmentManager.fragments.filter { it.isVisible }.size}")
+//        println("BUTTON: updated counter to : $fragments")
+//
+//        viewModel.setCounter(parentFragmentManager.fragments.size)
+////        viewModel.setCounter(fragments)
+//    }
 }

@@ -1,5 +1,6 @@
 package com.example.tutorialprjct
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,12 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import java.lang.RuntimeException
 
 class FragmentMenu() : Fragment() {
     private val viewModel: MyViewModel by activityViewModels()
-    private var curItemId: Int = 0
+    private var menuVisibilityListener: OnVisibilityChangeListener? = null
 
     companion object {
         private const val BACK_VISIBLE = "backButton"
@@ -24,6 +27,15 @@ class FragmentMenu() : Fragment() {
             args.putBoolean(BACK_VISIBLE, isBackVisible)
             menu.arguments = args
             return menu
+        }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnVisibilityChangeListener) {
+            menuVisibilityListener = context
+        } else {
+            throw RuntimeException("$context must implement OnVisibilityChangeListener")
         }
     }
 
@@ -45,65 +57,53 @@ class FragmentMenu() : Fragment() {
             parentFragmentManager.popBackStack("back", FragmentManager.POP_BACK_STACK_INCLUSIVE)
             viewModel.setTextShow(false)
         }
-//        println("menu, is visible: ${this.isVisible}, isHidden: ${this.isHidden}," +
-//                " isInLayout: ${this.isInLayout}, isDetached: ${this.isDetached}," +
-//                " isAdded: ${this.isAdded}, isResumed: ${this.isResumed}")
-        updateFragmentCounter()
-//        println("menu, size: ${parentFragmentManager.fragments.size}")
+//        updateFragmentCounter()
 
         val button1 = view.findViewById<Button>(R.id.button_1)
         val button2 = view.findViewById<Button>(R.id.button_2)
         val button3 = view.findViewById<Button>(R.id.button_3)
 
         button1.setOnClickListener {
-            curItemId = R.id.button_1
+            viewModel.setItemId(R.id.button_1)
+            viewModel.setTextShow(false)
             showDetailsButton(button1.text.toString())
         }
         button2.setOnClickListener {
-            curItemId = R.id.button_2
+            viewModel.setItemId(R.id.button_1)
+            viewModel.setTextShow(false)
             showDetailsButton(button2.text.toString())
         }
         button3.setOnClickListener {
-            curItemId = R.id.button_3
+            viewModel.setItemId(R.id.button_1)
+            viewModel.setTextShow(false)
             showDetailsButton(button3.text.toString())
         }
         return view
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (savedInstanceState != null) {
-            curItemId = savedInstanceState.getInt(ARG_ITEM_ID, 0)
-            println("MENU: onCreated, savedInstanceState != null, curItemId: $curItemId")
-            println(savedInstanceState.describeContents())
-        }
-        if (curItemId != 0) {
-            showDetailsButton(resources.getResourceEntryName(curItemId))
-            println("MENU: onCreate getResNameBy id $curItemId")
-        }
-    }
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+//        updateFragmentCounter()
+//    }
 
     private fun showDetailsButton(buttonText: String) {
-        val containerId =
-            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                R.id.container_list
-            } else {
-                R.id.container_item
-            }
+        // todo контейнера 2 и класть надо в один и тот же всегда конкретные фрагменты,
+        // один должен перекрывать другой, либо один должен быть gone при перевороте
+        println("ShowDetailsbutton: is container list visible ${resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE}")
+        menuVisibilityListener?.onVisibilityChange(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
         parentFragmentManager.popBackStack("bla", FragmentManager.POP_BACK_STACK_INCLUSIVE)
         parentFragmentManager.beginTransaction()
-            .replace(containerId, FragmentDetailsButton.create(buttonText), "button")
+            .replace(R.id.container_item, FragmentDetailsButton.create(buttonText), "button")
             .addToBackStack("bla")
             .commit()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putInt(ARG_ITEM_ID, curItemId)
-        println("MENU: save instance, curItemId: $curItemId")
-    }
-
-    private fun updateFragmentCounter() {
-        viewModel.updateCounter(parentFragmentManager.fragments.size)
-    }
+//    private fun updateFragmentCounter() {
+//        println("MENU: counter(filtered) : ${parentFragmentManager.fragments.filter { it.isVisible }.size}")
+//        println("MENU: counter : ${parentFragmentManager.fragments.size}")
+//        for (frag in parentFragmentManager.fragments) {
+//            println("TAG: ${frag.tag}, isVisible: ${frag.isVisible}")
+//        }
+//        viewModel.setCounter(parentFragmentManager.fragments.size)
+//    }
 }
