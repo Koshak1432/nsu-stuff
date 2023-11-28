@@ -21,10 +21,8 @@ class MainActivity : AppCompatActivity(), OnVisibilityChangeListener {
 
     override fun onVisibilityChange(isVisible: Boolean) {
         findViewById<FragmentContainerView>(R.id.container_list).visibility = if (isVisible) {
-            println("CONTAINER LIST IS VISIBLE")
             View.VISIBLE
         } else {
-            println("CONTAINER LIST IS GONE")
             View.GONE
         }
     }
@@ -37,37 +35,30 @@ class MainActivity : AppCompatActivity(), OnVisibilityChangeListener {
             fragmentCounterText.text = "Фрагменты: ${it.toString()}"
         }
 
-        onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val backStackEntryCount = supportFragmentManager.backStackEntryCount
-                if (backStackEntryCount > 0) {
+                if (backStackEntryCount > 1) {
                     if (supportFragmentManager.getBackStackEntryAt(backStackEntryCount - 1).name == "back") {
                         viewModel.setTextShow(false)
-                        println("ACTIVITY: SET TEXT SHOW TO FALSE")
                     }
-                    if (backStackEntryCount > 1) {
-                        onVisibilityChange(false)
-                    } else {
-                        onVisibilityChange(true)
-                        viewModel.setItemId(null)
-                    }
-                    println("BACKSTAСK at $backStackEntryCount: ${supportFragmentManager.getBackStackEntryAt(backStackEntryCount - 1).name}")
+                    onVisibilityChange(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE || backStackEntryCount <= 2)
                     supportFragmentManager.popBackStack()
                 } else {
                     finish()
                 }
             }
         })
+
         supportFragmentManager.addOnBackStackChangedListener {
             viewModel.setCounter(supportFragmentManager.fragments.size)
         }
 
         if (savedInstanceState == null) {
-            println("ACTIVITY: savedInstanceState == null, set menu")
             supportFragmentManager.beginTransaction()
                 .add(R.id.container_list, FragmentMenu.create(false), "menu")
+                .addToBackStack("start")
                 .commit()
-            viewModel.setCounter(supportFragmentManager.fragments.size)
         }
     }
 }

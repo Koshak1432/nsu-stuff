@@ -11,13 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import java.lang.RuntimeException
 
-class FragmentDetailsButton() : Fragment() {
+class FragmentDetailsButton : Fragment() {
     // аналогичен статическим методам и свойствам в Java
     private val viewModel: MyViewModel by activityViewModels()
     private var menuVisibilityListener: OnVisibilityChangeListener? = null
 
     companion object {
-        private const val ARG_IS_TEXT_SHOWN = "textShown"
         private const val ARG_BUTTON_TEXT = "text"
 
         fun create(text: String): FragmentDetailsButton {
@@ -47,11 +46,10 @@ class FragmentDetailsButton() : Fragment() {
         val button = view.findViewById<Button>(R.id.button)
         val text = requireArguments().getString(ARG_BUTTON_TEXT)
         button.text = text
-//        updateFragmentCounter()
-        menuVisibilityListener?.onVisibilityChange(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
         button.setOnClickListener {
             createText(text)
         }
+        menuVisibilityListener?.onVisibilityChange(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
         return view
     }
 
@@ -62,50 +60,21 @@ class FragmentDetailsButton() : Fragment() {
             parentFragmentManager.popBackStack()
             createText(text)
         }
-//        updateFragmentCounter()
     }
 
     private fun createText(text: String?) {
         if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.container_item, FragmentDetailsText.create(text), "text")
-//                .remove(parentFragmentManager.findFragmentByTag("menu")!!)
                 .addToBackStack("back")
                 .commit()
-            println("createText: create just text")
         } else {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.container_item, FragmentDetailsText.create(text), "text")
                 .replace(R.id.container_list, FragmentMenu.create(true), "menuBack")
                 .addToBackStack("back")
                 .commit()
-            println("createText: create text and menu with back button")
         }
         viewModel.setTextShow(true)
-        println("createText: Set is text shown to true")
     }
-
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
-//        updateFragmentCounter()
-//    }
-
-//    private fun updateFragmentCounter() {
-//        val fragments = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            parentFragmentManager.fragments.size
-//        } else {
-//            parentFragmentManager.fragments.filter { it.isVisible }.size
-//        }
-//
-//        println("FRAGMENTS:")
-//        for (frag in parentFragmentManager.fragments) {
-//            println("TAG: ${frag.tag}, isVisible: ${frag.isVisible}")
-//        }
-//        println("BUTTON: counter: ${parentFragmentManager.fragments.size}")
-//        println("BUTTON: filtered counter: ${parentFragmentManager.fragments.filter { it.isVisible }.size}")
-//        println("BUTTON: updated counter to : $fragments")
-//
-//        viewModel.setCounter(parentFragmentManager.fragments.size)
-////        viewModel.setCounter(fragments)
-//    }
 }

@@ -13,7 +13,6 @@ import java.lang.RuntimeException
 
 class FragmentDetailsText : Fragment() {
     // аналогичен статическим методам и свойствам в Java
-    private val viewModel: MyViewModel by activityViewModels()
     private var menuVisibilityListener: OnVisibilityChangeListener? = null
 
     companion object {
@@ -44,33 +43,8 @@ class FragmentDetailsText : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_details_text, container, false)
         val textView = view.findViewById<TextView>(R.id.text)
-        updateCounter()
         textView.text = requireArguments().getString(ARG_TEXT)
-        val menu =
         menuVisibilityListener?.onVisibilityChange(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
-        println("TEXT with text: ${requireArguments().getString(ARG_TEXT)}")
         return view
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-//        updateCounter()
-    }
-
-    private fun updateCounter() {
-        val fragments =
-            if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                parentFragmentManager.fragments.size
-            } else {
-                parentFragmentManager.fragments.filter { it.isVisible }.size
-            }
-        for (frag in parentFragmentManager.fragments) {
-            println("TAG: ${frag.tag}, isVisible: ${frag.isVisible}")
-        }
-        println("TEXT: counter: ${parentFragmentManager.fragments.size}")
-        println("TEXT: filtered counter: ${parentFragmentManager.fragments.filter { it.isVisible }.size}")
-        println("TEXT: updated counter to : $fragments")
-//        viewModel.setCounter(fragments)
-        viewModel.setCounter(parentFragmentManager.fragments.size)
     }
 }
