@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.jokeswithpunchline.view.JokeItem
 import com.example.jokeswithpunchline.viewmodel.JokesViewModel
@@ -40,6 +42,7 @@ class MainActivity : ComponentActivity() {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
+                        .background(Color(0xff4ea8de))
                 ) {
                     items(state.items.size) { i ->
                         if (i >= state.items.size - 1 && !state.isLoading) {

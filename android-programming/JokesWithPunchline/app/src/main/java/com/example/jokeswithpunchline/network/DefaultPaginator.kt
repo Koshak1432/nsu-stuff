@@ -7,7 +7,7 @@ class DefaultPaginator<Key, Item>(
     private val getNextKey: suspend (List<Item>) -> Key,
     private val onError: suspend (Throwable?) -> Unit,
     private val onSuccess: suspend (items: List<Item>, newKey: Key) -> Unit
-): Paginator<Key, Item> {
+) : Paginator<Key, Item> {
     private var currentKey = initialKey
     private var isMakingRequest = false
 
