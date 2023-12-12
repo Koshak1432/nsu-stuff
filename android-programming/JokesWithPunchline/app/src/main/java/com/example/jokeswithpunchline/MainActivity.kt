@@ -65,14 +65,14 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun JokeList(jokeList: List<Joke>, jokesViewModel: JokesViewModel) {
-    LaunchedEffect(true) {
-        jokesViewModel.getJokeList()
-    }
-    LazyColumn {
-        items(items = jokeList) {item ->
-            JokeItem(joke = item)
-        }
-    }
-}
+//@Composable
+//fun JokeList(jokeList: List<Joke>, jokesViewModel: JokesViewModel) {
+//    LaunchedEffect(true) {
+//        jokesViewModel.getJokeList()
+//    }
+//    LazyColumn {
+//        items(items = jokeList) {item ->
+//            JokeItem(joke = item)
+//        }
+//    }
+//}

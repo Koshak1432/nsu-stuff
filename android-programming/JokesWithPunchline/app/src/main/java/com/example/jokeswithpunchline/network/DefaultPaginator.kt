@@ -13,6 +13,7 @@ class DefaultPaginator<Key, Item>(
 
     override suspend fun loadNextItems() {
         if (isMakingRequest) {
+            println("MAKING REQUEST")
             return
         }
         isMakingRequest = true
@@ -20,10 +21,12 @@ class DefaultPaginator<Key, Item>(
         val result = onRequest(currentKey)
         isMakingRequest = false
         val items = result.getOrElse {
+            println("GOR ERROR")
             onError(it)
             onLoadUpdated(false)
             return
         }
+        println("ITEMS: $items")
         currentKey = getNextKey(items)
         onSuccess(items, currentKey)
         onLoadUpdated(false)

@@ -43,24 +43,25 @@ class JokesViewModel: ViewModel() {
     init {
         loadNextJokes()
     }
+
     fun loadNextJokes() {
         viewModelScope.launch {
             paginator.loadNextItems()
         }
     }
 
-    var jokeListResponse: List<Joke> by mutableStateOf(listOf())
-
-    fun getJokeList() {
-        viewModelScope.launch {
-            Log.i("GetRandomJokes", "get joke list")
-            try {
-                jokeListResponse = RetrofitInstance.api.getRandomJokes()
-            } catch (e: Exception) {
-                Log.e("GetRandomJokes", "getJokeList: caught exception", )
-            }
-        }
-    }
+//    var jokeListResponse: List<Joke> by mutableStateOf(listOf())
+//
+//    fun getJokeList() {
+//        viewModelScope.launch {
+//            Log.i("GetRandomJokes", "get joke list")
+//            try {
+//                jokeListResponse = RetrofitInstance.api.getRandomJokes()
+//            } catch (e: Exception) {
+//                Log.e("GetRandomJokes", "getJokeList: caught exception", )
+//            }
+//        }
+//    }
 }
 
 data class ScreenState(
