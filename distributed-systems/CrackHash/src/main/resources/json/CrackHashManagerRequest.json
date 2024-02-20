@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "CrackHashManagerRequest": {
+      "description": "Запрос на взлом хэша в заданном пространстве строк",
+      "type": "object",
+      "properties": {
+        "RequestId": {
+          "type": "string",
+          "description": "GUID запроса"
+        },
+        "PartNumber": {
+          "type": "integer",
+          "description": "Номер части запроса"
+        },
+        "PartCount": {
+          "type": "integer",
+          "description": "Общее количество частей"
+        },
+        "Hash": {
+          "type": "string",
+          "description": "Хэш"
+        },
+        "MaxLength": {
+          "type": "integer",
+          "description": "Максимальная длина последовательности"
+        },
+        "Alphabet": {
+          "type": "object",
+          "description": "Алфавит для генерации строк",
+          "properties": {
+            "symbols": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "CrackHashWorkerResponse": {
+      "description": "Ответ, содержащий строки с совпадающим хэшом",
+      "type": "object",
+      "properties": {
+        "RequestId": {
+          "type": "string",
+          "description": "GUID запроса"
+        },
+        "PartNumber": {
+          "type": "integer",
+          "description": "Номер запроса"
+        },
+        "Answers": {
+          "type": "object",
+          "properties": {
+            "words": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Строки"
+        }
+      }
+    }
+  }
+}

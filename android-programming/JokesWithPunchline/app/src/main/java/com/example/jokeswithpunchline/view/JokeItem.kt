@@ -61,7 +61,6 @@ fun JokeItem(joke: Joke) {
                     Text(
                         text = if (isPunchlineVisible) "Hide punch" else "Show punch"
                     )
-
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
