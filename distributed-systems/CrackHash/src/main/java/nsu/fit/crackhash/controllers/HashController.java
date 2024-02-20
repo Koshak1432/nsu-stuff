@@ -1,6 +1,7 @@
 package nsu.fit.crackhash.controllers;
 
 import nsu.fit.crackhash.config.Constants;
+import nsu.fit.crackhash.model.dto.CrackHashManagerRequest;
 import nsu.fit.crackhash.model.dto.CrackResponseDto;
 import nsu.fit.crackhash.model.dto.HashDto;
 import nsu.fit.crackhash.model.dto.StatusResponseDto;

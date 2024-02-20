@@ -1,8 +1,10 @@
 package nsu.fit.crackhash.config;
 
+import org.springframework.beans.factory.annotation.Value;
+
 public class Constants {
     public static final String BASE_API_PATH = "/api";
+    public static final String WORKER_URL = "/internal/api/worker/hash/crack/task";
     public static final String ALPHABET = "abcdefghijklmnopqrstuvwxyz0123456789"; // ^[a-z0-9]+$
-
     public static final int SEQ_MAX_LEN = 10;
 }
