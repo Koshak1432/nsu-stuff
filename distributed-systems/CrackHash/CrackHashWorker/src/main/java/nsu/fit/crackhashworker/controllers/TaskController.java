@@ -1,5 +1,6 @@
 package nsu.fit.crackhashworker.controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
 import nsu.fit.crackhashworker.config.Constants;
 import nsu.fit.crackhashworker.model.dto.CrackHashManagerRequest;
 import nsu.fit.crackhashworker.services.TaskService;
@@ -18,8 +19,9 @@ public class TaskController {
     }
 
     @PostMapping
-    public Void createTask(@RequestBody CrackHashManagerRequest request) {
-        return taskService.crackHash(request);
+    public void createTask(@RequestBody CrackHashManagerRequest request, HttpServletResponse response) {
+        response.setStatus(HttpServletResponse.SC_OK);
+        taskService.crackHash(request);
     }
 
 }

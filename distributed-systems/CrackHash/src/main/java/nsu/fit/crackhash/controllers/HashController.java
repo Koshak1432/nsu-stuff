@@ -1,7 +1,7 @@
 package nsu.fit.crackhash.controllers;
 
 import nsu.fit.crackhash.config.Constants;
-import nsu.fit.crackhash.model.dto.CrackHashManagerRequest;
+import nsu.fit.crackhash.model.dto.CrackHashWorkerResponse;
 import nsu.fit.crackhash.model.dto.CrackResponseDto;
 import nsu.fit.crackhash.model.dto.HashDto;
 import nsu.fit.crackhash.model.dto.StatusResponseDto;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(maxAge = 1440)
 @Validated
-@RequestMapping(Constants.BASE_API_PATH + "/hash")
 @RestController
 public class HashController {
     private final HashService hashService;
@@ -20,13 +19,18 @@ public class HashController {
         this.hashService = hashService;
     }
 
-    @PostMapping( "/crack")
+    @PostMapping( Constants.MANAGER_BASE_API_PATH + "/crack")
     public CrackResponseDto crackHash(@RequestBody HashDto dto) {
         return hashService.crackHash(dto);
     }
 
-    @GetMapping("/status")
+    @GetMapping(Constants.MANAGER_BASE_API_PATH + "/status")
     public StatusResponseDto getStatus(@RequestParam String requestId) {
         return hashService.getStatus(requestId);
+    }
+
+    @PatchMapping(Constants.WORKER_TO_MANAGER_URL)
+    public void updateCrackHashResult(@RequestBody CrackHashWorkerResponse response) {
+        hashService.updateAnswers(response);
     }
 }

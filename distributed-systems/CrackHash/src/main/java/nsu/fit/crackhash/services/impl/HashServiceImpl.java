@@ -1,6 +1,8 @@
 package nsu.fit.crackhash.services.impl;
 
 import nsu.fit.crackhash.config.Constants;
+import nsu.fit.crackhash.model.CrackHashTask;
+import nsu.fit.crackhash.model.WorkStatus;
 import nsu.fit.crackhash.model.dto.*;
 import nsu.fit.crackhash.services.HashService;
 import nsu.fit.crackhash.util.Util;
@@ -9,20 +11,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.*;
 
 @Service
 public class HashServiceImpl implements HashService {
     private final RestTemplate restTemplate;
-    private final ConcurrentMap<UUID, Integer> hashMap = new ConcurrentHashMap<>();
     private final int workerCount;
+    private final ConcurrentMap<String, CrackHashTask> tasks = new ConcurrentHashMap<>();
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
 
     public HashServiceImpl(RestTemplate restTemplate, @Value("${WORKER_COUNT}") int workerCount) {
         this.restTemplate = restTemplate;
@@ -30,41 +29,58 @@ public class HashServiceImpl implements HashService {
     }
 
     @Override
-    public CrackResponseDto crackHash(HashDto dto) {
-        UUID uuid = UUID.randomUUID();
-        for (int i = 0; i < workerCount; ++i) {
-            CrackHashManagerRequest__1 request = fillRequest(dto.getHash(), dto.getMaxLength(), uuid, i);
-            CrackHashManagerRequest crackHashManagerRequest = new CrackHashManagerRequest();
-            crackHashManagerRequest.setCrackHashManagerRequest(request);
-            ResponseEntity<Void> response = restTemplate.postForEntity(Constants.WORKER_URL, crackHashManagerRequest, Void.class);
-
-        }
-
-        // сохранить uuid в бд
-        // отправить воркерам
-
-
-        return new CrackResponseDto(uuid.toString());
+    public void updateAnswers(CrackHashWorkerResponse response) {
+        CrackHashWorkerResponse__1 actuallyResponse = response.getCrackHashWorkerResponse();
+        CrackHashTask task = tasks.get(actuallyResponse.getRequestId());
+        task.addWords(actuallyResponse.getAnswers().getWords());
     }
 
+    @Override
+    public CrackResponseDto crackHash(HashDto dto) {
+        String uuid = UUID.randomUUID().toString();
+        tasks.put(uuid, new CrackHashTask(workerCount));
+        for (int workerNum = 0; workerNum < workerCount; ++workerNum) {
+            CrackHashManagerRequest crackHashManagerRequest = formRequest(dto, uuid, workerNum);
+            // how to send to different workers?
+            ResponseEntity<Void> response = restTemplate.postForEntity(Constants.WORKER_TASK_URL,
+                                                                       crackHashManagerRequest, Void.class);
+        }
+        scheduler.scheduleAtFixedRate(() -> checkTimeout(uuid), Constants.CHECK_PERIOD_MILLIS,
+                                      Constants.CHECK_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
 
+        return new CrackResponseDto(uuid);
+    }
 
-    private CrackHashManagerRequest__1 fillRequest(String hash, int maxLen, UUID uuid, int workerId) {
+    private void checkTimeout(String requestId) {
+        long currentTime = System.currentTimeMillis();
+        CrackHashTask task = tasks.get(requestId);
+        if (currentTime - task.getTaskStartTime() > Constants.TASK_TIMEOUT_MILLIS) {
+            task.setTimeoutExpired();
+        }
+    }
+
+    private CrackHashManagerRequest formRequest(HashDto dto, String requestId, int workerNum) {
         CrackHashManagerRequest__1 request = new CrackHashManagerRequest__1();
-        request.setHash(hash);
+        request.setHash(dto.getHash());
         request.setAlphabet(Util.getAlphabetFromString(Constants.ALPHABET));
-        request.setRequestId(uuid.toString());
-        request.setMaxLength(maxLen);
+        request.setRequestId(requestId);
+        request.setMaxLength(dto.getMaxLength());
+        request.setPartNumber(workerNum);
         request.setPartCount(workerCount);
-        request.setPartNumber(Util.countAllCombinations(Constants.ALPHABET, maxLen) / workerCount * workerId);
-        return request;
+
+        CrackHashManagerRequest crackHashManagerRequest = new CrackHashManagerRequest();
+        crackHashManagerRequest.setCrackHashManagerRequest(request);
+        return crackHashManagerRequest;
     }
 
     @Override
     public StatusResponseDto getStatus(String requestId) {
-        // поиск задачи в бд по requestId
-        // return StatusResponseDto
-
-        return null;
+        List<String> data = null;
+        CrackHashTask task = tasks.get(requestId);
+        WorkStatus status = task.getStatus();
+        if (status == WorkStatus.READY) {
+            data = task.getWords();
+        }
+        return new StatusResponseDto(status.name(), data);
     }
 }

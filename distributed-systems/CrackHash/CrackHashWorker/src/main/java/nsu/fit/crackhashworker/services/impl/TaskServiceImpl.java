@@ -5,44 +5,62 @@ import nsu.fit.crackhashworker.model.dto.CrackHashManagerRequest;
 import nsu.fit.crackhashworker.model.dto.CrackHashManagerRequest__1;
 import nsu.fit.crackhashworker.services.TaskService;
 import org.paukov.combinatorics3.Generator;
-import org.paukov.combinatorics3.IGenerator;
-import org.paukov.combinatorics3.PermutationGenerator;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Service
 public class TaskServiceImpl implements TaskService {
     private final MessageDigest md;
+    private final RestTemplate restTemplate;
 
-    public TaskServiceImpl() {
+    public TaskServiceImpl(RestTemplate restTemplate) {
         try {
             this.md = MessageDigest.getInstance(Constants.HASH_NAME);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             throw new RuntimeException("Couldn't get message digest");
         }
+        this.restTemplate = restTemplate;
     }
 
     @Override
-    public Void crackHash(CrackHashManagerRequest request) {
-        CrackHashManagerRequest__1 packet = request.getCrackHashManagerRequest();
-        // тут отправить ответ через другой поток, типа всё ок?
-        long startIdx = calculateStartWordIdx(request.getCrackHashManagerRequest());
-        Stream<List<String>> allPermutations = generatePermutations(packet.getMaxLength(), packet.getAlphabet().getSymbols());
-        List<String> workerPermutations = allPermutations
+    public void crackHash(CrackHashManagerRequest request) {
+        List<String> result = processTask(request.getCrackHashManagerRequest());
+        sendResult(result);
+    }
+
+    private List<String> processTask(CrackHashManagerRequest__1 packet) {
+        List<String> alphabet = packet.getAlphabet().getSymbols();
+        long totalWords = countAllCombinations(alphabet.size(), packet.getMaxLength());
+        long startIdx = calculateStartWordIdx(totalWords, packet.getPartNumber(), packet.getPartCount());
+        long endIdx = calculateEndWordIdx(totalWords, packet.getPartNumber(), packet.getPartCount());
+
+        Stream<List<String>> allPermutations = generatePermutations(packet.getMaxLength(), alphabet);
+        return allPermutations
                 .skip(startIdx)
-                .limit(calculateEndWordIdx(packet) - startIdx)
+                .limit(endIdx - startIdx)
                 .map(permutation -> String.join("", permutation))
                 .filter(word -> calculateHash(word).equals(packet.getHash()))
                 .toList();
-        // щас в листе ответы, надо patch сделать менеджеру, кинуть их
+    }
+
+    private void sendResult(List<String> words) {
+        System.out.println("SENDING WORDS: " + words);
+        RequestEntity<List<String>> request = RequestEntity.patch(Constants.MANAGER_URL)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(words);
+        restTemplate.exchange(request, Void.class);
     }
 
     private Stream<List<String>> generatePermutations(int maxLen, List<String> alphabet) {
@@ -70,26 +88,21 @@ public class TaskServiceImpl implements TaskService {
         return hexString.toString();
     }
 
-    private long calculateStartWordIdx(CrackHashManagerRequest__1 request) {
-        long totalWords = countAllCombinations(String.join("", request.getAlphabet().getSymbols()),
-                                              request.getMaxLength());
-        long wordsPerWorker = totalWords / request.getPartCount();
-        return request.getPartNumber() * wordsPerWorker; // or (partNumber - 1)
+    private long calculateStartWordIdx(long totalWords, int partNumber, int partCount) {
+        long wordsPerWorker = totalWords / partCount;
+        return partNumber * wordsPerWorker;
     }
 
-    private long calculateEndWordIdx(CrackHashManagerRequest__1 request) {
-        long totalWords = countAllCombinations(String.join("", request.getAlphabet().getSymbols()),
-                                              request.getMaxLength());
-        long wordsPerWorker = totalWords / request.getPartCount();
-        long endWordIdx = (request.getPartNumber() + 1) * wordsPerWorker;
+    private long calculateEndWordIdx(long totalWords, int partNumber, int partCount) {
+        long wordsPerWorker = totalWords / partCount;
+        long endWordIdx = (partNumber + 1) * wordsPerWorker;
         return Math.min(endWordIdx, totalWords);
     }
 
-    public static int countAllCombinations(String alphabet, int maxLen) {
-        int res = 0;
-        int alphabetSymbols = alphabet.length();
+    private static long countAllCombinations(int alphabetLen, int maxLen) {
+        long res = 0;
         for (int i = 1; i <= maxLen; ++i) {
-            res += (int) Math.pow(alphabetSymbols, i);
+            res += (long) Math.pow(alphabetLen, i);
         }
         return res;
     }

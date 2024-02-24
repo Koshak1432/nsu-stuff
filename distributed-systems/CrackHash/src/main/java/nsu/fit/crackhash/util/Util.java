@@ -11,13 +11,4 @@ public class Util {
         alphabet.setSymbols(Arrays.asList(alfabetString.split("")));
         return alphabet;
     }
-
-    public static int countAllCombinations(String alphabet, int maxLen) {
-        int res = 0;
-        int alphabetSymbols = alphabet.length();
-        for (int i = 1; i <= maxLen; ++i) {
-            res += (int) Math.pow(alphabetSymbols, i);
-        }
-        return res;
-    }
 }
