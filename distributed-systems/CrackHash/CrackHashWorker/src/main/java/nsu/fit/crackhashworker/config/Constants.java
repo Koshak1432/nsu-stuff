@@ -1,8 +1,9 @@
 package nsu.fit.crackhashworker.config;
 
+import java.net.URI;
+
 public class Constants {
-    public static final String BASE_API_PATH = "/internal/api";
     public static final String HASH_NAME = "MD5";
-    public static final String MANAGER_URL = "/internal/api/manager/hash/crack/request";
+    public static final URI MANAGER_URI = URI.create("http://localhost:8080/internal/api/manager/hash/crack/request");
 
 }

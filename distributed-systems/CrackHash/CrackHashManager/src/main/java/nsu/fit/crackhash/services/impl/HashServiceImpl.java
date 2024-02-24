@@ -42,7 +42,7 @@ public class HashServiceImpl implements HashService {
         for (int workerNum = 0; workerNum < workerCount; ++workerNum) {
             CrackHashManagerRequest crackHashManagerRequest = formRequest(dto, uuid, workerNum);
             // how to send to different workers?
-            ResponseEntity<Void> response = restTemplate.postForEntity(Constants.WORKER_TASK_URL,
+            ResponseEntity<Void> response = restTemplate.postForEntity(Constants.WORKER_TASK_URI,
                                                                        crackHashManagerRequest, Void.class);
         }
         scheduler.scheduleAtFixedRate(() -> checkTimeout(uuid), Constants.CHECK_PERIOD_MILLIS,

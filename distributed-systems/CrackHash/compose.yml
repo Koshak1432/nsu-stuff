@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  manager:
+    build: CrackHashManager
+    ports:
+      - "8080:8080"
+    networks:
+      - crackhash-net
+
+
+
+
+networks:
+  crackhash-net:
+    driver: bridge

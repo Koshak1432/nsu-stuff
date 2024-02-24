@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(maxAge = 1440)
 @Validated
-@RequestMapping(Constants.BASE_API_PATH + "/worker/hash/crack/task")
 @RestController
 public class TaskController {
     private final TaskService taskService;
@@ -18,10 +17,8 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @PostMapping
-    public void createTask(@RequestBody CrackHashManagerRequest request, HttpServletResponse response) {
-        response.setStatus(HttpServletResponse.SC_OK);
+    @PostMapping("/internal/api/worker/hash/crack/task")
+    public void createTask(@RequestBody CrackHashManagerRequest request) {
         taskService.crackHash(request);
     }
-
 }

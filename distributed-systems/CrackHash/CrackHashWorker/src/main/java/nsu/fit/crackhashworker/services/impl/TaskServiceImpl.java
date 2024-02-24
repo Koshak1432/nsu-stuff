@@ -1,12 +1,12 @@
 package nsu.fit.crackhashworker.services.impl;
 
 import nsu.fit.crackhashworker.config.Constants;
-import nsu.fit.crackhashworker.model.dto.CrackHashManagerRequest;
-import nsu.fit.crackhashworker.model.dto.CrackHashManagerRequest__1;
+import nsu.fit.crackhashworker.model.dto.*;
 import nsu.fit.crackhashworker.services.TaskService;
 import org.paukov.combinatorics3.Generator;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -14,8 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -35,9 +33,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Async
     public void crackHash(CrackHashManagerRequest request) {
-        List<String> result = processTask(request.getCrackHashManagerRequest());
-        sendResult(result);
+        CrackHashManagerRequest__1 packet = request.getCrackHashManagerRequest();
+        List<String> result = processTask(packet);
+        CrackHashWorkerResponse response = formResponse(result, packet.getPartNumber(), packet.getRequestId());
+        System.out.println("SENDING WORDS: " + result);
+        sendResult(response);
     }
 
     private List<String> processTask(CrackHashManagerRequest__1 packet) {
@@ -55,12 +57,23 @@ public class TaskServiceImpl implements TaskService {
                 .toList();
     }
 
-    private void sendResult(List<String> words) {
-        System.out.println("SENDING WORDS: " + words);
-        RequestEntity<List<String>> request = RequestEntity.patch(Constants.MANAGER_URL)
+    private void sendResult(CrackHashWorkerResponse response) {
+        RequestEntity<CrackHashWorkerResponse> request = RequestEntity.patch(Constants.MANAGER_URI)
                 .accept(MediaType.APPLICATION_JSON)
-                .body(words);
+                .body(response);
         restTemplate.exchange(request, Void.class);
+    }
+
+    private static CrackHashWorkerResponse formResponse(List<String> words, int partNumber, String requestId) {
+        CrackHashWorkerResponse response = new CrackHashWorkerResponse();
+        CrackHashWorkerResponse__1 response__1 = new CrackHashWorkerResponse__1();
+        Answers answers = new Answers();
+        answers.setWords(words);
+        response__1.setAnswers(answers);
+        response__1.setPartNumber(partNumber);
+        response__1.setRequestId(requestId);
+        response.setCrackHashWorkerResponse(response__1);
+        return response;
     }
 
     private Stream<List<String>> generatePermutations(int maxLen, List<String> alphabet) {
