@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.*;
@@ -23,7 +25,7 @@ public class HashServiceImpl implements HashService {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 
-    public HashServiceImpl(RestTemplate restTemplate, @Value("${WORKER_COUNT}") int workerCount) {
+    public HashServiceImpl(RestTemplate restTemplate, @Value("${worker_count}") int workerCount) {
         this.restTemplate = restTemplate;
         this.workerCount = workerCount;
     }
@@ -40,10 +42,11 @@ public class HashServiceImpl implements HashService {
         String uuid = UUID.randomUUID().toString();
         tasks.put(uuid, new CrackHashTask(workerCount));
         for (int workerNum = 0; workerNum < workerCount; ++workerNum) {
+            String workerUrl = MessageFormat.format("http://crackhash-worker-{0}:808{0}" + Constants.WORKER_TASK_URI,
+                                                    workerNum + 1);
             CrackHashManagerRequest crackHashManagerRequest = formRequest(dto, uuid, workerNum);
-            // how to send to different workers?
-            ResponseEntity<Void> response = restTemplate.postForEntity(Constants.WORKER_TASK_URI,
-                                                                       crackHashManagerRequest, Void.class);
+            ResponseEntity<Void> response = restTemplate.postForEntity(URI.create(workerUrl), crackHashManagerRequest,
+                                                                       Void.class);
         }
         scheduler.scheduleAtFixedRate(() -> checkTimeout(uuid), Constants.CHECK_PERIOD_MILLIS,
                                       Constants.CHECK_PERIOD_MILLIS, TimeUnit.MILLISECONDS);

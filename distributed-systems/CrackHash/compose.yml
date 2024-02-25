@@ -1,14 +1,26 @@
-version: '3'
-
 services:
   manager:
     build: CrackHashManager
+    container_name: crackhash-manager
     ports:
       - "8080:8080"
     networks:
       - crackhash-net
+    env_file:
+      - .env
+    environment:
+      - WORKER_COUNT=${WORKER_COUNT:-1}
 
-
+  worker:
+    build: CrackHashWorker
+    networks:
+      - crackhash-net
+    env_file:
+      - .env
+    deploy:
+      replicas: ${WORKER_COUNT:-1}
+    ports:
+      - "8081-808${WORKER_COUNT:-1}:8081"
 
 
 networks:
