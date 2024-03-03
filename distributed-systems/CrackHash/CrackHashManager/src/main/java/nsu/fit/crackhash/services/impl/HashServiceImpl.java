@@ -13,7 +13,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.*;
 
@@ -22,7 +24,8 @@ public class HashServiceImpl implements HashService {
     private final RestTemplate restTemplate;
     private final int workerCount;
     private final ConcurrentMap<String, CrackHashTask> tasks = new ConcurrentHashMap<>();
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final Map<String, ScheduledFuture<?>> shedulerTasks = new HashMap<>();
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
 
     public HashServiceImpl(RestTemplate restTemplate, @Value("${worker_count}") int workerCount) {
@@ -42,15 +45,14 @@ public class HashServiceImpl implements HashService {
         String uuid = UUID.randomUUID().toString();
         tasks.put(uuid, new CrackHashTask(workerCount));
         for (int workerNum = 0; workerNum < workerCount; ++workerNum) {
-            String workerUrl = MessageFormat.format("http://crackhash-worker-{0}:808{0}" + Constants.WORKER_TASK_URI,
+            String workerUrl = MessageFormat.format("http://crackhash-worker-{0}:8081" + Constants.WORKER_TASK_URI,
                                                     workerNum + 1);
             CrackHashManagerRequest crackHashManagerRequest = formRequest(dto, uuid, workerNum);
             ResponseEntity<Void> response = restTemplate.postForEntity(URI.create(workerUrl), crackHashManagerRequest,
                                                                        Void.class);
         }
-        scheduler.scheduleAtFixedRate(() -> checkTimeout(uuid), Constants.CHECK_PERIOD_MILLIS,
-                                      Constants.CHECK_PERIOD_MILLIS, TimeUnit.MILLISECONDS);
-
+        shedulerTasks.put(uuid, scheduler.scheduleAtFixedRate(() -> checkTimeout(uuid), Constants.CHECK_PERIOD_MILLIS,
+                                                              Constants.CHECK_PERIOD_MILLIS, TimeUnit.MILLISECONDS));
         return new CrackResponseDto(uuid);
     }
 
@@ -59,6 +61,7 @@ public class HashServiceImpl implements HashService {
         CrackHashTask task = tasks.get(requestId);
         if (currentTime - task.getTaskStartTime() > Constants.TASK_TIMEOUT_MILLIS) {
             task.setTimeoutExpired();
+            shedulerTasks.get(requestId).cancel(true);
         }
     }
 

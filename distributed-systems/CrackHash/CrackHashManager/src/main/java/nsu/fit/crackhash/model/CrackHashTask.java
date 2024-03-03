@@ -39,7 +39,7 @@ public class CrackHashTask {
         return status;
     }
 
-    public synchronized void setTimeoutExpired() {
+    public void setTimeoutExpired() {
         status = WorkStatus.ERROR;
     }
 }

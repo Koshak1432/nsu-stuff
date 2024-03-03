@@ -33,12 +33,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    @Async
+    @Async("threadPoolTaskExecutor")
     public void crackHash(CrackHashManagerRequest request) {
         CrackHashManagerRequest__1 packet = request.getCrackHashManagerRequest();
         List<String> result = processTask(packet);
         CrackHashWorkerResponse response = formResponse(result, packet.getPartNumber(), packet.getRequestId());
-        System.out.println("SENDING WORDS: " + result);
         sendResult(response);
     }
 
