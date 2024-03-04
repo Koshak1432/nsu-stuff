@@ -31,6 +31,7 @@ jsonSchema2Pojo {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.modelmapper:modelmapper:3.2.0'
+    implementation 'org.springframework.amqp:spring-rabbit:3.1.2'
     implementation 'com.github.java-json-tools:json-schema-validator:2.2.14'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
     compileOnly 'org.projectlombok:lombok'

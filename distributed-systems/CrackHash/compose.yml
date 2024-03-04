@@ -22,6 +22,16 @@ services:
     ports:
       - "8081-808${WORKER_COUNT:-1}:8081"
 
+  rabbitmq:
+    image: rabbitmq:latest
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+      - crackhash-net
 
 networks:
   crackhash-net:

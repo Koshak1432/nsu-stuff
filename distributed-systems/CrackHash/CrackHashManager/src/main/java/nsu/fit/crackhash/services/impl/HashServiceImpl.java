@@ -6,13 +6,11 @@ import nsu.fit.crackhash.model.WorkStatus;
 import nsu.fit.crackhash.model.dto.*;
 import nsu.fit.crackhash.services.HashService;
 import nsu.fit.crackhash.util.Util;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,16 +19,22 @@ import java.util.concurrent.*;
 
 @Service
 public class HashServiceImpl implements HashService {
-    private final RestTemplate restTemplate;
     private final int workerCount;
+    private final String exchangeName;
+    private final String taskRouting;
+    private final AmqpTemplate rabbitTemplate;
     private final ConcurrentMap<String, CrackHashTask> tasks = new ConcurrentHashMap<>();
-    private final Map<String, ScheduledFuture<?>> shedulerTasks = new HashMap<>();
+    private final Map<String, ScheduledFuture<?>> schedulerTasks = new HashMap<>();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-
-    public HashServiceImpl(RestTemplate restTemplate, @Value("${worker_count}") int workerCount) {
-        this.restTemplate = restTemplate;
+    public HashServiceImpl(@Value("${worker.count}") int workerCount,
+                           @Value("${rabbitmq.exchange.name}") String exchangeName,
+                           @Value("${rabbitmq.routing.task.key}") String taskRouting,
+                           @Qualifier("myRabbitTemplate") AmqpTemplate template) {
         this.workerCount = workerCount;
+        this.exchangeName = exchangeName;
+        this.taskRouting = taskRouting;
+        this.rabbitTemplate = template;
     }
 
     @Override
@@ -45,14 +49,11 @@ public class HashServiceImpl implements HashService {
         String uuid = UUID.randomUUID().toString();
         tasks.put(uuid, new CrackHashTask(workerCount));
         for (int workerNum = 0; workerNum < workerCount; ++workerNum) {
-            String workerUrl = MessageFormat.format("http://crackhash-worker-{0}:8081" + Constants.WORKER_TASK_URI,
-                                                    workerNum + 1);
             CrackHashManagerRequest crackHashManagerRequest = formRequest(dto, uuid, workerNum);
-            ResponseEntity<Void> response = restTemplate.postForEntity(URI.create(workerUrl), crackHashManagerRequest,
-                                                                       Void.class);
+            rabbitTemplate.convertAndSend(exchangeName, taskRouting, crackHashManagerRequest);
         }
-        shedulerTasks.put(uuid, scheduler.scheduleAtFixedRate(() -> checkTimeout(uuid), Constants.CHECK_PERIOD_MILLIS,
-                                                              Constants.CHECK_PERIOD_MILLIS, TimeUnit.MILLISECONDS));
+        schedulerTasks.put(uuid, scheduler.scheduleAtFixedRate(() -> checkTimeout(uuid), Constants.CHECK_PERIOD_MILLIS,
+                                                               Constants.CHECK_PERIOD_MILLIS, TimeUnit.MILLISECONDS));
         return new CrackResponseDto(uuid);
     }
 
@@ -61,7 +62,7 @@ public class HashServiceImpl implements HashService {
         CrackHashTask task = tasks.get(requestId);
         if (currentTime - task.getTaskStartTime() > Constants.TASK_TIMEOUT_MILLIS) {
             task.setTimeoutExpired();
-            shedulerTasks.get(requestId).cancel(true);
+            schedulerTasks.get(requestId).cancel(true);
         }
     }
 
