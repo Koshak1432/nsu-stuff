@@ -7,6 +7,8 @@ import nsu.fit.crackhash.model.dto.*;
 import nsu.fit.crackhash.services.HashService;
 import nsu.fit.crackhash.util.Util;
 import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.core.MessageDeliveryMode;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -50,13 +52,22 @@ public class HashServiceImpl implements HashService {
         tasks.put(uuid, new CrackHashTask(workerCount));
         for (int workerNum = 0; workerNum < workerCount; ++workerNum) {
             CrackHashManagerRequest crackHashManagerRequest = formRequest(dto, uuid, workerNum);
-            rabbitTemplate.convertAndSend(exchangeName, taskRouting, crackHashManagerRequest);
+            sendTaskToQueue(crackHashManagerRequest);
         }
         schedulerTasks.put(uuid, scheduler.scheduleAtFixedRate(() -> checkTimeout(uuid), Constants.CHECK_PERIOD_MILLIS,
                                                                Constants.CHECK_PERIOD_MILLIS, TimeUnit.MILLISECONDS));
         return new CrackResponseDto(uuid);
     }
 
+    private void sendTaskToQueue(CrackHashManagerRequest crackHashManagerRequest) {
+        rabbitTemplate.convertAndSend(exchangeName, taskRouting, crackHashManagerRequest, message -> {
+            MessageProperties properties = message.getMessageProperties();
+            properties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+            return message;
+        });
+    }
+
+    // todo если пришли все ответы, то тоже отменить проверку надо по-хорошему?
     private void checkTimeout(String requestId) {
         long currentTime = System.currentTimeMillis();
         CrackHashTask task = tasks.get(requestId);

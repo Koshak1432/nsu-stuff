@@ -3,16 +3,18 @@ package nsu.fit.crackhashworker.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.web.client.RestTemplate;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 @Configuration
 @EnableAsync
 @Import(RabbitConfig.class)
 public class Config {
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate(new HttpComponentsClientHttpRequestFactory());
-    }
+
+//    @Bean("threadPoolTaskExecutor")
+//    public Executor asyncExecutor() {
+//        return Executors.newSingleThreadExecutor();
+//    }
 }

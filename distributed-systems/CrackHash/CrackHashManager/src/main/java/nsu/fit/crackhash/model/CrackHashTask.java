@@ -9,9 +9,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CrackHashTask {
     @Getter
     private final long taskStartTime;
+
+    // todo настроить acknowledgement
     private final AtomicInteger completionCount;
     private final List<String> words = new ArrayList<>();
-
     private WorkStatus status;
 
     public CrackHashTask(int workerCount) {

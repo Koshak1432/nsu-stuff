@@ -4,11 +4,13 @@ import nsu.fit.crackhashworker.config.Constants;
 import nsu.fit.crackhashworker.model.dto.*;
 import nsu.fit.crackhashworker.services.TaskService;
 import org.paukov.combinatorics3.Generator;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.core.MessageDeliveryMode;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -20,20 +22,25 @@ import java.util.stream.Stream;
 @Service
 public class TaskServiceImpl implements TaskService {
     private final MessageDigest md;
-    private final RestTemplate restTemplate;
+    private final AmqpTemplate template;
+    private final String exchange;
+    private final String routing;
 
-    public TaskServiceImpl(RestTemplate restTemplate) {
+    public TaskServiceImpl(@Qualifier("myRabbitTemplate") AmqpTemplate template,
+                           @Value("${rabbitmq.routing.response.key}") String routing,
+                           @Value("${rabbitmq.exchange.name}") String exchange) {
         try {
             this.md = MessageDigest.getInstance(Constants.HASH_NAME);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             throw new RuntimeException("Couldn't get message digest");
         }
-        this.restTemplate = restTemplate;
+        this.template = template;
+        this.exchange = exchange;
+        this.routing = routing;
     }
 
     @Override
-    @Async("threadPoolTaskExecutor")
     public void crackHash(CrackHashManagerRequest request) {
         CrackHashManagerRequest__1 packet = request.getCrackHashManagerRequest();
         List<String> result = processTask(packet);
@@ -48,19 +55,17 @@ public class TaskServiceImpl implements TaskService {
         long endIdx = calculateEndWordIdx(totalWords, packet.getPartNumber(), packet.getPartCount());
 
         Stream<List<String>> allPermutations = generatePermutations(packet.getMaxLength(), alphabet);
-        return allPermutations
-                .skip(startIdx)
-                .limit(endIdx - startIdx)
-                .map(permutation -> String.join("", permutation))
-                .filter(word -> calculateHash(word).equals(packet.getHash()))
-                .toList();
+        return allPermutations.skip(startIdx).limit(endIdx - startIdx).map(
+                permutation -> String.join("", permutation)).filter(
+                word -> calculateHash(word).equals(packet.getHash())).toList();
     }
 
     private void sendResult(CrackHashWorkerResponse response) {
-        RequestEntity<CrackHashWorkerResponse> request = RequestEntity.patch(Constants.MANAGER_URI)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(response);
-        restTemplate.exchange(request, Void.class);
+        template.convertAndSend(exchange, routing, response, message -> {
+            MessageProperties properties = message.getMessageProperties();
+            properties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+            return message;
+        });
     }
 
     private static CrackHashWorkerResponse formResponse(List<String> words, int partNumber, String requestId) {
@@ -76,18 +81,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private Stream<List<String>> generatePermutations(int maxLen, List<String> alphabet) {
-        List<Stream<List<String>>> streamsList = IntStream
-                .rangeClosed(1, maxLen)
-                .mapToObj(len -> generateStreamForLen(len, alphabet))
-                .toList();
+        List<Stream<List<String>>> streamsList = IntStream.rangeClosed(1, maxLen).mapToObj(
+                len -> generateStreamForLen(len, alphabet)).toList();
         return streamsList.stream().flatMap(s -> s);
     }
 
     private Stream<List<String>> generateStreamForLen(int len, List<String> alphabet) {
-        return Generator
-                .permutation(alphabet)
-                .withRepetitions(len)
-                .stream();
+        return Generator.permutation(alphabet).withRepetitions(len).stream();
     }
 
     private String calculateHash(String word) {

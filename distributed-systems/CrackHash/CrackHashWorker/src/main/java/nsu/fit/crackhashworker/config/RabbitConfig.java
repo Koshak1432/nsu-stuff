@@ -36,12 +36,12 @@ public class RabbitConfig {
 
     @Bean
     public Queue taskQueue() {
-        return new Queue(taskQueue);
+        return new Queue(taskQueue, true);
     }
 
     @Bean
     public Queue responseQueue() {
-        return new Queue(responseQueue);
+        return new Queue(responseQueue, true);
     }
 
     @Bean
@@ -59,7 +59,7 @@ public class RabbitConfig {
         return new Jackson2JsonMessageConverter();
     }
 
-    @Bean
+    @Bean("myRabbitTemplate")
     public AmqpTemplate amqpTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(converter());

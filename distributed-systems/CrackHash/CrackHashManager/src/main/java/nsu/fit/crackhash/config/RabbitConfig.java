@@ -1,6 +1,7 @@
 package nsu.fit.crackhash.config;
 
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -36,12 +37,12 @@ public class RabbitConfig {
 
     @Bean
     public Queue taskQueue() {
-        return new Queue(taskQueue);
+        return new Queue(taskQueue, true);
     }
 
     @Bean
     public Queue responseQueue() {
-        return new Queue(responseQueue);
+        return new Queue(responseQueue, true);
     }
 
     @Bean
