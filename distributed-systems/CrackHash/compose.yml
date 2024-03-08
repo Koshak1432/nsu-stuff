@@ -54,12 +54,12 @@ services:
   mongo1:
     image: mongo
     container_name: mongo1
-    command: [ "--replSet", "my-replica-set","--bind_ip_all", "--keyFile", "/data/keyfile.key", "--port", "27017" ]
+    command: [ "--replSet", "my-replica-set","--bind_ip_all", "--port", "27017" ]
     env_file:
       - .env
     volumes:
-      - ./mongo/data/mongo-1:/data/db
-      - ./mongo/keyfile.key:/data/keyfile.key
+      - ./mongodb/data/mongo-1:/data/db
+#      - ./mongo/keyfile.key:/data/keyfile.key
     ports:
       - 27017:27017
 
@@ -74,12 +74,12 @@ services:
   mongo2:
     image: mongo
     container_name: mongo2
-    command: [ "--replSet", "my-replica-set", "--bind_ip_all", "--keyFile", "/data/keyfile.key", "--port", "27018" ]
+    command: [ "--replSet", "my-replica-set", "--bind_ip_all", "--port", "27018" ]
     env_file:
       - .env
     volumes:
-      - ./mongo/data/mongo-2:/data/db
-      - ./mongo/keyfile.key:/data/keyfile.key
+      - ./mongodb/data/mongo-2:/data/db
+#      - ./mongo/keyfile.key:/data/keyfile.key
     ports:
       - 27018:27018
     networks:
@@ -88,12 +88,12 @@ services:
   mongo3:
     image: mongo
     container_name: mongo3
-    command: [ "--replSet", "my-replica-set", "--bind_ip_all", "--keyFile", "/data/keyfile.key", "--port", "27019" ]
+    command: [ "--replSet", "my-replica-set", "--bind_ip_all", "--port", "27019" ]
     env_file:
       - .env
     volumes:
-      - ./mongo/data/mongo-3:/data/db
-      - ./mongo/keyfile.key:/data/keyfile.key
+      - ./mongodb/data/mongo-3:/data/db
+#      - ./mongo/keyfile.key:/data/keyfile.key
     ports:
       - 27019:27019
     networks:
