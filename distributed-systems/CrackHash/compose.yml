@@ -1,18 +1,20 @@
 services:
   manager:
     build: CrackHashManager
+    depends_on:
+      - rabbitmq
     container_name: crackhash-manager
     ports:
-      - "8080:8080"
+      - 8080:8080
     networks:
       - crackhash-net
     env_file:
       - .env
-    environment:
-      - WORKER_COUNT=${WORKER_COUNT:-1}
 
   worker:
     build: CrackHashWorker
+    depends_on:
+      - rabbitmq
     networks:
       - crackhash-net
     env_file:
@@ -27,11 +29,78 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+    env_file:
+      - .env
     networks:
       - crackhash-net
+#    volumes:
+#      - rabbitmq.conf:/etc/rabbitmq/rabbitmq.config
+
+#  mongodb:
+#    image: mongo
+##    restart: always
+#    ports:
+#      - "27017-27019:27017"
+#    env_file:
+#      - .env
+#    volumes:
+##      - ./mongo-data:/data/db
+#      - ./init-replica-set.sh:/docker-entrypoint-initdb.d/init-replica-set.sh
+#    deploy:
+#      replicas: ${BD_REPLICAS:-3}
+#    networks:
+#      - crackhash-net
+
+  mongo1:
+    image: mongo
+    container_name: mongo1
+    command: [ "--replSet", "my-replica-set", "--bind_ip_all", "--port", "27017" ]
+    env_file:
+      - .env
+    volumes:
+      - ./data/mongo-1:/data/db
+    ports:
+      - 27017:27017
+    healthcheck:
+#      test: test $$(echo "rs.initiate({_id:'my-replica-set',members:[{_id:0,host:\"mongo1:27017\"},{_id:1,host:\"mongo2:27018\"},{_id:2,host:\"mongo3:27019\"}]}).ok || rs.status().ok" | mongo --port 30001 --quiet) -eq 1
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'my-replica-set',members:[{_id:0,host:'mongo1:27017',priority:1},{_id:1,host:'mongo2:27018',priority:0.5},{_id:2,host:'mongo3:27019',priority:0.5}]}) }" | mongosh --port 27017 --quiet
+      interval: 10s
+      start_period: 30s
+
+  mongo2:
+    image: mongo
+    container_name: mongo2
+    command: [ "--replSet", "my-replica-set", "--bind_ip_all", "--port", "27018" ]
+    env_file:
+      - .env
+    volumes:
+      - ./data/mongo-2:/data/db
+    ports:
+      - 27018:27018
+
+  mongo3:
+    image: mongo
+    container_name: mongo3
+    command: [ "--replSet", "my-replica-set", "--bind_ip_all", "--port", "27019" ]
+    env_file:
+      - .env
+    volumes:
+      - ./data/mongo-3:/data/db
+    ports:
+      - 27019:27019
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    depends_on:
+      - mongo1
+    ports:
+      - 8090:8081
+    env_file:
+      - .env
+    networks:
+      - crackhash-net
+
 
 networks:
   crackhash-net:

@@ -43,6 +43,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void crackHash(CrackHashManagerRequest request) {
         CrackHashManagerRequest__1 packet = request.getCrackHashManagerRequest();
+        System.out.println("GOT request: " + packet);
         List<String> result = processTask(packet);
         CrackHashWorkerResponse response = formResponse(result, packet.getPartNumber(), packet.getRequestId());
         sendResult(response);

@@ -4,6 +4,8 @@ import nsu.fit.crackhash.config.Constants;
 import nsu.fit.crackhash.model.CrackHashTask;
 import nsu.fit.crackhash.model.WorkStatus;
 import nsu.fit.crackhash.model.dto.*;
+import nsu.fit.crackhash.model.entities.CrackTask;
+import nsu.fit.crackhash.repositories.CrackTaskRepository;
 import nsu.fit.crackhash.services.HashService;
 import nsu.fit.crackhash.util.Util;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -13,8 +15,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.*;
@@ -25,6 +27,7 @@ public class HashServiceImpl implements HashService {
     private final String exchangeName;
     private final String taskRouting;
     private final AmqpTemplate rabbitTemplate;
+    private final CrackTaskRepository crackTaskRepository;
     private final ConcurrentMap<String, CrackHashTask> tasks = new ConcurrentHashMap<>();
     private final Map<String, ScheduledFuture<?>> schedulerTasks = new HashMap<>();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -32,26 +35,36 @@ public class HashServiceImpl implements HashService {
     public HashServiceImpl(@Value("${worker.count}") int workerCount,
                            @Value("${rabbitmq.exchange.name}") String exchangeName,
                            @Value("${rabbitmq.routing.task.key}") String taskRouting,
-                           @Qualifier("myRabbitTemplate") AmqpTemplate template) {
+                           @Qualifier("myRabbitTemplate") AmqpTemplate template,
+                           CrackTaskRepository crackTaskRepository) {
         this.workerCount = workerCount;
         this.exchangeName = exchangeName;
         this.taskRouting = taskRouting;
         this.rabbitTemplate = template;
+        this.crackTaskRepository = crackTaskRepository;
     }
 
+    // todo what to do with concurrency and db data?
     @Override
     public void updateAnswers(CrackHashWorkerResponse response) {
         CrackHashWorkerResponse__1 actuallyResponse = response.getCrackHashWorkerResponse();
-        CrackHashTask task = tasks.get(actuallyResponse.getRequestId());
-        task.addWords(actuallyResponse.getAnswers().getWords());
+        CrackTask request = crackTaskRepository.findById(actuallyResponse.getRequestId()).orElseThrow(
+                () -> new RuntimeException("Can't find request with id " + actuallyResponse.getRequestId()));
+        request.getWords().addAll(actuallyResponse.getAnswers().getWords());
+        // todo как-то надо понимать, когда будет реди
+        crackTaskRepository.save(request);
     }
 
     @Override
     public CrackResponseDto crackHash(HashDto dto) {
         String uuid = UUID.randomUUID().toString();
-        tasks.put(uuid, new CrackHashTask(workerCount));
+        CrackTask task = new CrackTask(uuid, dto.getHash(), dto.getMaxLength(), new ArrayList<>(),
+                                       WorkStatus.IN_PROGRESS);
+        crackTaskRepository.save(task);
+        // need to replicate task
+
         for (int workerNum = 0; workerNum < workerCount; ++workerNum) {
-            CrackHashManagerRequest crackHashManagerRequest = formRequest(dto, uuid, workerNum);
+            CrackHashManagerRequest crackHashManagerRequest = formRequestToWorker(dto, uuid, workerNum);
             sendTaskToQueue(crackHashManagerRequest);
         }
         schedulerTasks.put(uuid, scheduler.scheduleAtFixedRate(() -> checkTimeout(uuid), Constants.CHECK_PERIOD_MILLIS,
@@ -77,7 +90,7 @@ public class HashServiceImpl implements HashService {
         }
     }
 
-    private CrackHashManagerRequest formRequest(HashDto dto, String requestId, int workerNum) {
+    private CrackHashManagerRequest formRequestToWorker(HashDto dto, String requestId, int workerNum) {
         CrackHashManagerRequest__1 request = new CrackHashManagerRequest__1();
         request.setHash(dto.getHash());
         request.setAlphabet(Util.getAlphabetFromString(Constants.ALPHABET));
@@ -93,12 +106,8 @@ public class HashServiceImpl implements HashService {
 
     @Override
     public StatusResponseDto getStatus(String requestId) {
-        List<String> data = null;
-        CrackHashTask task = tasks.get(requestId);
-        WorkStatus status = task.getStatus();
-        if (status == WorkStatus.READY) {
-            data = task.getWords();
-        }
-        return new StatusResponseDto(status.name(), data);
+        CrackTask task = crackTaskRepository.findById(requestId).orElseThrow(
+                () -> new RuntimeException("Couldn't find task with id " + requestId));
+        return new StatusResponseDto(task.getStatus().name(), task.getWords().isEmpty() ? null : task.getWords());
     }
 }
