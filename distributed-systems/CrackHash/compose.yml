@@ -54,52 +54,62 @@ services:
   mongo1:
     image: mongo
     container_name: mongo1
-    command: [ "--replSet", "my-replica-set", "--bind_ip_all", "--port", "27017" ]
+    command: [ "--replSet", "my-replica-set","--bind_ip_all", "--keyFile", "/data/keyfile.key", "--port", "27017" ]
     env_file:
       - .env
     volumes:
-      - ./data/mongo-1:/data/db
+      - ./mongo/data/mongo-1:/data/db
+      - ./mongo/keyfile.key:/data/keyfile.key
     ports:
       - 27017:27017
+
     healthcheck:
 #      test: test $$(echo "rs.initiate({_id:'my-replica-set',members:[{_id:0,host:\"mongo1:27017\"},{_id:1,host:\"mongo2:27018\"},{_id:2,host:\"mongo3:27019\"}]}).ok || rs.status().ok" | mongo --port 30001 --quiet) -eq 1
       test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'my-replica-set',members:[{_id:0,host:'mongo1:27017',priority:1},{_id:1,host:'mongo2:27018',priority:0.5},{_id:2,host:'mongo3:27019',priority:0.5}]}) }" | mongosh --port 27017 --quiet
       interval: 10s
       start_period: 30s
+    networks:
+      - crackhash-net
 
   mongo2:
     image: mongo
     container_name: mongo2
-    command: [ "--replSet", "my-replica-set", "--bind_ip_all", "--port", "27018" ]
+    command: [ "--replSet", "my-replica-set", "--bind_ip_all", "--keyFile", "/data/keyfile.key", "--port", "27018" ]
     env_file:
       - .env
     volumes:
-      - ./data/mongo-2:/data/db
+      - ./mongo/data/mongo-2:/data/db
+      - ./mongo/keyfile.key:/data/keyfile.key
     ports:
       - 27018:27018
+    networks:
+      - crackhash-net
 
   mongo3:
     image: mongo
     container_name: mongo3
-    command: [ "--replSet", "my-replica-set", "--bind_ip_all", "--port", "27019" ]
+    command: [ "--replSet", "my-replica-set", "--bind_ip_all", "--keyFile", "/data/keyfile.key", "--port", "27019" ]
     env_file:
       - .env
     volumes:
-      - ./data/mongo-3:/data/db
+      - ./mongo/data/mongo-3:/data/db
+      - ./mongo/keyfile.key:/data/keyfile.key
     ports:
       - 27019:27019
-
-  mongo-express:
-    image: mongo-express
-    restart: always
-    depends_on:
-      - mongo1
-    ports:
-      - 8090:8081
-    env_file:
-      - .env
     networks:
       - crackhash-net
+
+#  mongo-express:
+#    image: mongo-express
+#    restart: always
+#    depends_on:
+#      - mongo1
+#    ports:
+#      - 8090:8081
+#    env_file:
+#      - .env
+#    networks:
+#      - crackhash-net
 
 
 networks:
