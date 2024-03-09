@@ -16,7 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 @Document
 public class CrackTask {
-
     @Id
     private String requestId;
 
@@ -28,4 +27,9 @@ public class CrackTask {
 
     // how it will save in db?
     private WorkStatus status;
+
+    private int partsRemaining;
+
+    private boolean isSentToQueue = false;
+    private long taskCreated;
 }

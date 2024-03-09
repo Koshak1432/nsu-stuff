@@ -55,6 +55,7 @@ public class TaskServiceImpl implements TaskService {
         long startIdx = calculateStartWordIdx(totalWords, packet.getPartNumber(), packet.getPartCount());
         long endIdx = calculateEndWordIdx(totalWords, packet.getPartNumber(), packet.getPartCount());
 
+        System.out.println("Generating permutations...");
         Stream<List<String>> allPermutations = generatePermutations(packet.getMaxLength(), alphabet);
         return allPermutations.skip(startIdx).limit(endIdx - startIdx).map(
                 permutation -> String.join("", permutation)).filter(
@@ -62,6 +63,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private void sendResult(CrackHashWorkerResponse response) {
+        System.out.println("sending result...");
         template.convertAndSend(exchange, routing, response, message -> {
             MessageProperties properties = message.getMessageProperties();
             properties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);

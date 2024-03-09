@@ -23,7 +23,9 @@ public class TaskListener {
     @RabbitListener(queues = {"${rabbitmq.queue.task.name}"})
     public void createTask(CrackHashManagerRequest request, Channel channel,
                            @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
+        System.out.println("Got message from queue");
         service.crackHash(request);
+        System.out.println("Going to ack the message");
         channel.basicAck(tag, false);
     }
 }
