@@ -23,9 +23,13 @@ public class RabbitResponseListener {
     @RabbitListener(queues = {"${rabbitmq.queue.response.name}"})
     public void processResponse(CrackHashWorkerResponse response, Channel channel,
                                 @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
-        System.out.println("Got message from queue!");
-        service.updateAnswers(response);
-        System.out.println("Going to ack the message");
-        channel.basicAck(tag, false);
+        if (response != null && channel != null) {
+            System.out.println("Got message from queue!");
+            service.updateAnswers(response);
+            System.out.println("Going to ack the message");
+            channel.basicAck(tag, false);
+        } else {
+            System.err.println("WTF, response or channel is null [rabbitlistener]");
+        }
     }
 }

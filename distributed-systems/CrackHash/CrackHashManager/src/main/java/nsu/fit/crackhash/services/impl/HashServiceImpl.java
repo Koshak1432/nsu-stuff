@@ -48,12 +48,18 @@ public class HashServiceImpl implements HashService {
         CrackHashWorkerResponse__1 actuallyResponse = response.getCrackHashWorkerResponse();
         CrackTask task = crackTaskRepository.findById(actuallyResponse.getRequestId()).orElseThrow(
                 () -> new RuntimeException("Can't find task with id " + actuallyResponse.getRequestId()));
+        // При рестарте RabbitMQ сбрасывает статус отправленных сообщений (персистентных) из unacked в ready
+        if (task.getStatus() == WorkStatus.READY) {
+            return;
+        }
         System.out.println("UPDATING ANSWERS: " + actuallyResponse.getRequestId() + " to " + actuallyResponse.getAnswers().getWords());
         task.getWords().addAll(actuallyResponse.getAnswers().getWords());
         task.setPartsRemaining(task.getPartsRemaining() - 1);
         if (task.getPartsRemaining() == 0) {
             task.setStatus(WorkStatus.READY);
-            schedulerTasks.get(task.getRequestId()).cancel(true);
+            if (schedulerTasks.containsKey(task.getRequestId())) {
+                schedulerTasks.get(task.getRequestId()).cancel(true);
+            }
         }
         crackTaskRepository.save(task);
     }
