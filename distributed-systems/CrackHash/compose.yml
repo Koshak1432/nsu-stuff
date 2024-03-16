@@ -2,7 +2,10 @@ services:
   manager:
     build: CrackHashManager
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_started
+      mongo1:
+        condition: service_healthy
     container_name: crackhash-manager
     ports:
       - 8080:8080
@@ -45,7 +48,9 @@ services:
     healthcheck:
       test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'my-replica-set',members:[{_id:0,host:'mongo1:27017',priority:1},{_id:1,host:'mongo2:27018',priority:0.5},{_id:2,host:'mongo3:27019',priority:0.5}]}) }" | mongosh --port 27017 --quiet
       interval: 10s
-      start_period: 30s
+      timeout: 18s
+      retries: 3
+      start_period: 40s
     networks:
       - crackhash-net
 

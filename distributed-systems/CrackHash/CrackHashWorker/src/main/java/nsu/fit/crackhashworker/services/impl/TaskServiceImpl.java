@@ -4,12 +4,13 @@ import nsu.fit.crackhashworker.config.Constants;
 import nsu.fit.crackhashworker.model.dto.*;
 import nsu.fit.crackhashworker.services.TaskService;
 import org.paukov.combinatorics3.Generator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -25,6 +26,7 @@ public class TaskServiceImpl implements TaskService {
     private final AmqpTemplate template;
     private final String exchange;
     private final String routing;
+    private final Logger logger = LoggerFactory.getLogger(TaskServiceImpl.class);
 
     public TaskServiceImpl(@Qualifier("myRabbitTemplate") AmqpTemplate template,
                            @Value("${rabbitmq.routing.response.key}") String routing,
@@ -43,7 +45,6 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void crackHash(CrackHashManagerRequest request) {
         CrackHashManagerRequest__1 packet = request.getCrackHashManagerRequest();
-        System.out.println("GOT request: " + packet);
         List<String> result = processTask(packet);
         CrackHashWorkerResponse response = formResponse(result, packet.getPartNumber(), packet.getRequestId());
         sendResult(response);
@@ -55,7 +56,7 @@ public class TaskServiceImpl implements TaskService {
         long startIdx = calculateStartWordIdx(totalWords, packet.getPartNumber(), packet.getPartCount());
         long endIdx = calculateEndWordIdx(totalWords, packet.getPartNumber(), packet.getPartCount());
 
-        System.out.println("Generating permutations...");
+        logger.info("Generating permutations...");
         Stream<List<String>> allPermutations = generatePermutations(packet.getMaxLength(), alphabet);
         return allPermutations.skip(startIdx).limit(endIdx - startIdx).map(
                 permutation -> String.join("", permutation)).filter(
@@ -63,7 +64,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private void sendResult(CrackHashWorkerResponse response) {
-        System.out.println("sending result...");
+        logger.info("Sending cracking results to queue...");
         template.convertAndSend(exchange, routing, response, message -> {
             MessageProperties properties = message.getMessageProperties();
             properties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);

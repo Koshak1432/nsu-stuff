@@ -25,11 +25,11 @@ public class CrackTask {
 
     private List<String> words;
 
-    // how it will save in db?
     private WorkStatus status;
 
     private int partsRemaining;
 
     private boolean isSentToQueue = false;
+
     private long taskCreated;
 }

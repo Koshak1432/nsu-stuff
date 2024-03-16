@@ -3,8 +3,9 @@ package nsu.fit.crackhash.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -14,8 +15,8 @@ import java.util.concurrent.Executors;
 @Import(RabbitConfig.class)
 public class Config {
     @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
+    public MongoTransactionManager mongoTransactionManager(MongoDatabaseFactory db) {
+        return new MongoTransactionManager(db);
     }
 
     @Bean(name = "threadPoolTaskExecutor")

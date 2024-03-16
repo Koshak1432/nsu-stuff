@@ -1,6 +1,5 @@
 package nsu.fit.crackhash.util;
 
-import nsu.fit.crackhash.config.Constants;
 import nsu.fit.crackhash.model.dto.Alphabet;
 
 import java.util.Arrays;

@@ -7,6 +7,8 @@ import nsu.fit.crackhash.model.entities.CrackTask;
 import nsu.fit.crackhash.repositories.CrackTaskRepository;
 import nsu.fit.crackhash.services.HashService;
 import nsu.fit.crackhash.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.MessageProperties;
@@ -14,12 +16,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.*;
 
 @Service
 public class HashServiceImpl implements HashService {
@@ -28,8 +31,9 @@ public class HashServiceImpl implements HashService {
     private final String taskRouting;
     private final AmqpTemplate rabbitTemplate;
     private final CrackTaskRepository crackTaskRepository;
-    private final Map<String, ScheduledFuture<?>> schedulerTasks = new HashMap<>();
+    private final Map<String, ScheduledFuture<?>> schedulerTasks = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private final Logger logger = LoggerFactory.getLogger(HashServiceImpl.class);
 
     public HashServiceImpl(@Value("${worker.count}") int workerCount,
                            @Value("${rabbitmq.exchange.name}") String exchangeName,
@@ -44,6 +48,7 @@ public class HashServiceImpl implements HashService {
     }
 
     @Override
+    @Transactional
     public void updateAnswers(CrackHashWorkerResponse response) {
         CrackHashWorkerResponse__1 actuallyResponse = response.getCrackHashWorkerResponse();
         CrackTask task = crackTaskRepository.findById(actuallyResponse.getRequestId()).orElseThrow(
@@ -52,7 +57,6 @@ public class HashServiceImpl implements HashService {
         if (task.getStatus() == WorkStatus.READY) {
             return;
         }
-        System.out.println("UPDATING ANSWERS: " + actuallyResponse.getRequestId() + " to " + actuallyResponse.getAnswers().getWords());
         task.getWords().addAll(actuallyResponse.getAnswers().getWords());
         task.setPartsRemaining(task.getPartsRemaining() - 1);
         if (task.getPartsRemaining() == 0) {
@@ -64,11 +68,20 @@ public class HashServiceImpl implements HashService {
         crackTaskRepository.save(task);
     }
 
+    //    In MongoDB, a write operation is atomic on the level of a single document,
+    //    even if the operation modifies multiple embedded documents within a single document
+    //    but why not to add @Transactional
     @Override
+    @Transactional
     public CrackResponseDto crackHash(HashDto dto) {
         String requestId = UUID.randomUUID().toString();
         CrackTask task = new CrackTask(requestId, dto.getHash(), dto.getMaxLength(), new ArrayList<>(),
                                        WorkStatus.IN_PROGRESS, workerCount, false, System.currentTimeMillis());
+        for (int workerNum = 0; workerNum < workerCount; ++workerNum) {
+            CrackHashManagerRequest crackHashManagerRequest = formRequestToWorker(task, workerNum);
+            sendTaskToQueue(crackHashManagerRequest);
+        }
+        task.setSentToQueue(true);
         crackTaskRepository.save(task);
         schedulerTasks.put(requestId,
                            scheduler.scheduleAtFixedRate(() -> checkTimeout(requestId), Constants.CHECK_PERIOD_MILLIS,
@@ -89,18 +102,17 @@ public class HashServiceImpl implements HashService {
         CrackTask task = crackTaskRepository.findById(requestId).orElseThrow(
                 () -> new RuntimeException("Couldn't find task with id : " + requestId));
         if (currentTime - task.getTaskCreated() > Constants.TASK_TIMEOUT_MILLIS) {
+            logger.info("Task timeout expired, task hash: {}", task.getHash());
             task.setStatus(WorkStatus.ERROR);
             schedulerTasks.get(requestId).cancel(true);
         }
     }
 
     @Scheduled(fixedDelayString = "${fixedDelay.in.milliseconds}")
-    private void sendTasksToWorkers() {
+    void sendTasksToWorkers() {
         List<CrackTask> tasks = crackTaskRepository.findCrackTasksByIsSentToQueue(false);
-        System.out.println("SendingToWorkers moment, worker count: " + workerCount);
         for (CrackTask task : tasks) {
-            System.out.println(
-                    "hash: " + task.getHash() + ", id: " + task.getRequestId() + ", status: " + task.getStatus().name());
+            logger.info("Sending task with hash {} to workers", task.getHash());
             for (int workerNum = 0; workerNum < workerCount; ++workerNum) {
                 CrackHashManagerRequest crackHashManagerRequest = formRequestToWorker(task, workerNum);
                 sendTaskToQueue(crackHashManagerRequest);
