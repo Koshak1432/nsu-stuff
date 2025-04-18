@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class HashServiceImpl implements HashService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void updateAnswers(CrackHashWorkerResponse response) {
         CrackHashWorkerResponse__1 actuallyResponse = response.getCrackHashWorkerResponse();
         CrackTask task = crackTaskRepository.findById(actuallyResponse.getRequestId()).orElseThrow(
@@ -72,7 +73,7 @@ public class HashServiceImpl implements HashService {
     //    even if the operation modifies multiple embedded documents within a single document
     //    but why not to add @Transactional
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public CrackResponseDto crackHash(HashDto dto) {
         String requestId = UUID.randomUUID().toString();
         CrackTask task = new CrackTask(requestId, dto.getHash(), dto.getMaxLength(), new ArrayList<>(),
@@ -109,7 +110,8 @@ public class HashServiceImpl implements HashService {
     }
 
     @Scheduled(fixedDelayString = "${fixedDelay.in.milliseconds}")
-    void sendTasksToWorkers() {
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public void sendTasksToWorkers() {
         List<CrackTask> tasks = crackTaskRepository.findCrackTasksByIsSentToQueue(false);
         for (CrackTask task : tasks) {
             logger.info("Sending task with hash {} to workers", task.getHash());
